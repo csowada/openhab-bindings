@@ -59,7 +59,7 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Solar",
+		"comment":	"Kromschröder/Wolf: Solar",
 		"cmd": "0x5017",
 		
 		"values": {
@@ -71,7 +71,7 @@
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: Solarerträge",
+		"comment":	"Kromschröder/Wolf: Solarerträge",
 		"cmd": "0x5018",
 		
 		"values": {
@@ -89,7 +89,7 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"Kromschröder/Wolf: Durchfluss Telegram",
 		"cmd": 		"0x5022",
 		"byte_0x07":"0x5E",
 		"byte_0x07":"0xF8",
@@ -101,19 +101,19 @@
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: Betriebsstunden Solar Telegram",
+		"comment":	"Kromschröder/Wolf: Betriebsstunden Solar Telegram",
 		"cmd": 		"0x5022",
 		"byte_0x07":"0x02",
 		"byte_0x07":"0xF9",
 		"byte_0x07":"0x02",
 		
 		"values": {
-			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
+			"betriebstunden":		{"type": "word", "pos": 12, "label": "Betriebsstunden"}
 		}
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: ???",
+		"comment":	"Kromschröder/Wolf: ???",
 		"cmd": 		"0x5023",
 		
 		"values": {}
