@@ -50,7 +50,7 @@
 		
 		"values": {
 			"temp_t_boiler":		{"type": "data2c", "pos": 6, "label": "Kesselsollwert"},
-			"temp_at2":				{"type": "data2b", "pos":8, "label": "Außentemperatur2"},
+			"temp_at2":				{"type": "data2b", "pos":8, "label": "Außentemperatur gemittelt"},
 			"power_enforcement":	{"type": "data1b", "pos":10, "label": "Leistungszwang"},
 			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv"},
 			"status_hk":			{"type": "bit", "pos":11, "bit": 1, "label": "Heizkreis aktiv"},
@@ -59,28 +59,28 @@
 	},
 
 	{
-		"comment":	"Kromschröder/Wolf: Solar",
+		"comment":	"Fa. Kromschröder: Solar",
 		"cmd": "0x5017",
 		
 		"values": {
-			"solar_pump":			{"type": "byte", "pos":6},
+			"solar_pump":			{"type": "byte", "pos":6, "label": "Solarpumpe an?"},
 			"unknown1":				{"type": "byte", "pos":7},
-			"temp_col":				{"type": "word", "pos":8, "script":"temp_col*16"},
-			"temp_ww":				{"type": "word", "pos":10, "script":"temp_ww*16"}
+			"temp_col":				{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C"},
+			"temp_ww":				{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C"}
 		}
 	},
 	
 	{
-		"comment":	"Kromschröder/Wolf: Solarerträge",
+		"comment":	"Fa. Kromschröder: Solarerträge",
 		"cmd": "0x5018",
 		
 		"values": {
-			"solar_current":		{"type": "data2b", "pos": 7},
-			"yield_day_l":			{"type": "word", "pos":9},
-			"yield_day_h":			{"type": "word", "pos":11},
-			"yield_sum_l":			{"type": "word", "pos":13},
-			"yield_sum_h":			{"type": "word", "pos":13},
-			"yield_sum_m":			{"type": "word", "pos":13}
+			"solar_current":		{"type": "data2b", "pos": 6},
+			"yield_day_l":			{"type": "word", "pos":8},
+			"yield_day_h":			{"type": "word", "pos":10},
+			"yield_sum_l":			{"type": "word", "pos":12, "script":"thisValue*100"},
+			"yield_sum_h":			{"type": "word", "pos":14},
+			"yield_sum_m":			{"type": "word", "pos":16}
 		},
 		"computed_values": {
 			"yield_day":			{"type": "script", "script": "yield_day_h * 1000 + yield_day_l"},
@@ -89,11 +89,11 @@
 	},
 
 	{
-		"comment":	"Kromschröder/Wolf: Durchfluss Telegram",
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
 		"cmd": 		"0x5022",
-		"byte_0x07":"0x5E",
+		"byte_0x06":"0x5E",
 		"byte_0x07":"0xF8",
-		"byte_0x07":"0x02",
+		"byte_0x08":"0x02",
 		
 		"values": {
 			"durchfluss":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
@@ -101,19 +101,31 @@
 	},
 	
 	{
-		"comment":	"Kromschröder/Wolf: Betriebsstunden Solar Telegram",
+		"comment":	"Fa. Kromschröder: Betriebsstunden Solar Telegram",
 		"cmd": 		"0x5022",
-		"byte_0x07":"0x02",
+		"byte_0x06":"0xCC",
 		"byte_0x07":"0xF9",
-		"byte_0x07":"0x02",
+		"byte_0x08":"0x02",
 		
 		"values": {
-			"betriebstunden":		{"type": "word", "pos": 12, "label": "Betriebsstunden"}
+			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
 		}
 	},
 	
 	{
-		"comment":	"Kromschröder/Wolf: ???",
+		"comment":	"Fa. Kromschröder: E1 Solar Telegram",
+		"cmd": 		"0x5022",
+		"byte_0x06":"0xCC",
+		"byte_0x07":"0x2B",
+		"byte_0x08":"0x0A",
+		
+		"values": {
+			"e1":			{"type": "word", "pos": 12, "label": "e1", "script": "thisValue / 10"}
+		}
+	},
+	
+	{
+		"comment":	"Fa. Kromschröder: ???",
 		"cmd": 		"0x5023",
 		
 		"values": {}
