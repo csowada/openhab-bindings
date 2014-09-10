@@ -125,6 +125,15 @@
 	},
 	
 	{
+		"comment":	"Fa. Kromschröder: Telegram",
+		"cmd": 		"0x5022",
+		
+		"values": {
+			"unknown":			{"type": "word", "pos": 12, "label": "Value"}
+		}
+	},
+	
+	{
 		"comment":	"Fa. Kromschröder: ???",
 		"cmd": 		"0x5023",
 		

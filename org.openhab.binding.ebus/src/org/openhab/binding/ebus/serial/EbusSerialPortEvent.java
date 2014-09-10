@@ -25,7 +25,7 @@ public class EbusSerialPortEvent implements SerialPortEventListener {
 	
 	public EbusSerialPortEvent() {
 		parser = new EBusTelegramParser();
-		parser.loadConfigurationFile("C:\\openhab\\MINIMAL\\workspace\\org.openhab.binding.ebus\\META-INF\\test.json");
+		parser.loadConfigurationFile("C:\\Users\\CSo\\git\\openhab-bindings\\org.openhab.binding.ebus\\META-INF\\test.json");
 	}
 	
 	@Override

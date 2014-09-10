@@ -178,16 +178,16 @@ public class EBusUtils {
 		buffer.put(crc);
 		buffer.put(data[crcPos+1]);
 		
-		System.out.println("--x->        " + toHexDumpString(buffer.array()));
+//		System.out.println("--x->        " + toHexDumpString(buffer.array()));
 		
 		if(data[crcPos+1] == EbusTelegram.SYN) {
-			System.out.println("TYPE: Broadcast Telegram");
+//			System.out.println("TYPE: Broadcast Telegram");
 			return new EbusTelegram(buffer);
 		}
 		
 		if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
 				&& data[crcPos+2] == EbusTelegram.SYN) {
-			System.out.println("TYPE: Master-Master Telegram");
+//			System.out.println("TYPE: Master-Master Telegram");
 			buffer.put(data[crcPos+2]);
 			return new EbusTelegram(buffer);
 		}
@@ -219,7 +219,7 @@ public class EBusUtils {
 		buffer.put(data, data.length-3, 3);
 		
 		if(crc == uc_crc) {
-			System.out.println("TYPE: Master-Slave Telegram");
+//			System.out.println("TYPE: Master-Slave Telegram");
 //			System.out.println("Alles klar!");
 			return new EbusTelegram(buffer);
 		}
