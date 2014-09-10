@@ -1,7 +1,8 @@
-package org.openhab.binding.ebus;
+package org.openhab.binding.ebus.test;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.openhab.binding.ebus.EbusTelegram;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 

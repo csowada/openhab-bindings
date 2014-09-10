@@ -1,4 +1,4 @@
-package org.openhab.binding.ebus;
+package org.openhab.binding.ebus.test;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
