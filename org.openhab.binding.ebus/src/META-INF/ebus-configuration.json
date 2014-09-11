@@ -4,7 +4,6 @@
 		"cmd":		"0x0503",
 		"len":		"0x08",
 		"byte_0x06":"0x01",
-		"debug":	2,
 		
 		"values": {
 			"status":				{"type": "byte", "pos":7, "label": "Statusanzeige"},
@@ -28,6 +27,7 @@
 		"comment":	"Datum/Zeitmeldung eines eBUS Masters",
 		"cmd":		"0x0700",
 		"len":		"0x09",
+		
 		
 		"values": {
 			"temp_at":				{"type": "data2b", "pos":6, "label": "Außentemperatur"},
@@ -106,10 +106,69 @@
 
 	{
 		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 1A 27 .*",
+		"debug":	2,
+		
+		"values": {
+			"druck":			{"type": "word", "pos": 12, "label": "Anlagedruck"}
+		}
+	},
+
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 9A 01 .*",
+		"debug":	2,
+		
+		"values": {
+			"brenner_fw":			{"type": "word", "pos": 12, "label": "Brenner Software Ver."}
+		}
+	},
+	
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 26 02 .*",
+		"debug":	2,
+		
+		"values": {
+			"anz_zuendung":			{"type": "word", "pos": 12, "label": "Anz. Zündungen"}
+		}
+	},
+
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 4F 27 .*",
+		"debug":	2,
+		
+		"values": {
+			"ion":			{"type": "word", "pos": 12, "label": "Ionisation"}
+		}
+	},
+
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 5E 27 .*",
+		"debug":	2,
+		
+		"values": {
+			"netz_ein":			{"type": "word", "pos": 12, "label": "Anz. Netz-Ein"}
+		}
+	},
+
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? 08 50 22 ?? CC 2A 02 .*",
+		"debug":	2,
+		
+		"values": {
+			"brenner_h":			{"type": "word", "pos": 12, "label": "Betriebsstunden Brenner"}
+		}
+	},
+
+	{
+		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"filter":	"?? ?? 50 22 ?? 5E F8 02 .*",
 		"cmd": 		"0x5022",
-		"byte_0x06":"0x5E",
-		"byte_0x07":"0xF8",
-		"byte_0x08":"0x02",
+		"debug":	2,
 		
 		"values": {
 			"durchfluss":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
@@ -118,11 +177,8 @@
 	
 	{
 		"comment":	"Fa. Kromschröder: Betriebsstunden Solar Telegram",
-		"cmd": 		"0x5022",
-		"byte_0x06":"0xCC",
-		"byte_0x07":"0xF9",
-		"byte_0x08":"0x02",
-		"filter":	"?? ?? 50 22 ?? CC F9 02 .*",
+		"filter":	"?? 76 50 22 ?? CC F9 02 .*",
+		"debug":	2,
 		
 		"values": {
 			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
@@ -131,7 +187,8 @@
 	
 	{
 		"comment":	"Fa. Kromschröder: E1 Solar Telegram",
-		"filter":	"?? ?? 50 22 ?? CC 2B 0A .*",
+		"filter":	"?? 76 50 22 ?? CC 2B 0A .*",
+		"debug":	2,
 		
 		"values": {
 			"e1":			{"type": "word", "pos": 12, "label": "e1", "script": "thisValue / 10"}
@@ -140,7 +197,7 @@
 	
 	{
 		"comment":	"Fa. Kromschröder: Telegram",
-		"filter":	"?? ?? 50 22 .*",
+		"filter":	"?? 08 50 22 .*",
 		"debug":	2,
 		
 		"values": {
@@ -155,12 +212,5 @@
 			"try5a":			{"type": "byte", "pos": 12, "label": "BYTE"},
 			"try5b":			{"type": "byte", "pos": 13, "label": "BYTE"},
 		}
-	},
-	
-	{
-		"comment":	"Fa. Kromschröder: ???",
-		"filter":	"?? ?? 50 22 .*",
-		
-		"values": {}
 	}
 ]
