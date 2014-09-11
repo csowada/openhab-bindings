@@ -280,7 +280,7 @@ public class EBusTelegramParser {
 					valueRegistry.put(entry.getKey(), value);
 
 //					System.out.println("EBusTelegramParser.parse()");
-					if(debugShowResults) {
+					if(debugLevel == DEBUG_ALL || debugShowResults) {
 						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
 						System.out.printf("   %-20s%-10s%s%n", entry.getKey(), value, label);
 					}
@@ -302,7 +302,7 @@ public class EBusTelegramParser {
 						Object value = cscript.eval(bindings);
 						valueRegistry.put(entry.getKey(), value);
 
-						if(debugShowResults) {
+						if(debugLevel == DEBUG_ALL || debugShowResults) {
 							String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
 							System.out.printf("   $%-20s%-10s%s%n", entry.getKey(), value, label);
 						}
@@ -315,7 +315,7 @@ public class EBusTelegramParser {
 			}
 
 		if(matchCount == 0) {
-			if(debugLevel == DEBUG_UNKNOWN) {
+			if(debugLevel == DEBUG_UNKNOWN || debugLevel == DEBUG_ALL) {
 				if(bufferString == null)
 					bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
 				System.err.println("UNKNOWN TELEGRAM  : " + bufferString);

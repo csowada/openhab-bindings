@@ -87,8 +87,8 @@
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: Solarerträge",
-		"cmd": "0x5018",
+		"comment":	"[OK] Kromschröder/Wolf: Solarerträge",
+		"filter":	"?? ?? 50 18 .*",
 		
 		"values": {
 			"solar_current":		{"type": "data2b", "pos": 6},
@@ -105,27 +105,27 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK] Kromschröder/Wolf: Anlagendruck (bar)",
 		"filter":	"?? 08 50 22 ?? CC 1A 27 .*",
 		"debug":	2,
 		
 		"values": {
-			"druck":			{"type": "word", "pos": 12, "label": "Anlagedruck"}
+			"druck":			{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100"}
 		}
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK] Kromschröder/Wolf: Software Version Brenner",
 		"filter":	"?? 08 50 22 ?? CC 9A 01 .*",
 		"debug":	2,
 		
 		"values": {
-			"brenner_fw":			{"type": "word", "pos": 12, "label": "Brenner Software Ver."}
+			"brenner_fw":			{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 10"}
 		}
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK] Kromschröder/Wolf: Anzahl Zündungen",
 		"filter":	"?? 08 50 22 ?? CC 26 02 .*",
 		"debug":	2,
 		
@@ -135,7 +135,7 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK] Kromschröder/Wolf: Ionisierung",
 		"filter":	"?? 08 50 22 ?? CC 4F 27 .*",
 		"debug":	2,
 		
@@ -145,7 +145,7 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK} Kromschröder/Wolf: Anzahl Netz-Ein",
 		"filter":	"?? 08 50 22 ?? CC 5E 27 .*",
 		"debug":	2,
 		
@@ -155,12 +155,92 @@
 	},
 
 	{
-		"comment":	"Fa. Kromschröder: Durchfluss Telegram",
+		"comment":	"[OK] Kromschröder/Wolf: Betriebsstunden Brenner",
 		"filter":	"?? 08 50 22 ?? CC 2A 02 .*",
 		"debug":	2,
 		
 		"values": {
 			"brenner_h":			{"type": "word", "pos": 12, "label": "Betriebsstunden Brenner"}
+		}
+	},
+
+	{
+		"comment":	"[OK] Kromschröder: Abgas-Temperatur",
+		"filter":	"?? 08 50 22 ?? CC 1D 27.*",
+		"debug":	2,
+		
+		"values": {
+			"ag_temp":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10"}
+		}
+	},
+
+	{
+		"comment":	"[OK] Kromschröder: Betriebsstd. a Netz",
+		"filter":	"?? 08 50 22 ?? CC 28 02 .*",
+		"debug":	2,
+		
+		"values": {
+			"netz":			{"type": "word", "pos": 12, "label": "Betriebsstd. a Netz"}
+		}
+	},
+
+	{
+		"comment":	"[OK] Kromschröder/Wolf: Kessel-Temperatur IST",
+		"filter":	"?? 08 50 22 ?? CC 0D 00 .*",
+		"debug":	2,
+		
+		"values": {
+			"k_temp":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10"}
+		}
+	},
+
+	{
+		"comment":	"[OK] Kromschröder/Wolf: Warmwasser-Temperatur",
+		"filter":	"?? 08 50 22 ?? CC 0E 00 .*",
+		"debug":	2,
+		
+		"values": {
+			"ww_temp":			{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10"}
+		}
+	},
+
+	{
+		"comment":	"[OK] Kromschröder/Wolf: Rücklauf-Temperatur",
+		"filter":	"?? 08 50 22 ?? CC 16 00 .*",
+		"debug":	2,
+		
+		"values": {
+			"rueck_temp":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10"}
+		}
+	},
+	
+	{
+		"comment":	"[OK] Kromschröder/Wolf: Betriebsstunden Solar",
+		"filter":	"?? 76 50 22 ?? CC F9 02 .*",
+		"debug":	2,
+		
+		"values": {
+			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
+		}
+	},
+	
+	{
+		"comment":	"[OK] Kromschröder/Wolf: E1 Solar Telegram",
+		"filter":	"?? 76 50 22 ?? CC 2B 0A .*",
+		"debug":	2,
+		
+		"values": {
+			"e1":			{"type": "word", "pos": 12, "label": "e1", "script": "thisValue / 10"}
+		}
+	},
+	
+	{
+		"comment":	"[??] Kromschröder/Wolf: Drehzahl Pumpe",
+		"filter":	"?? 08 50 22 ?? CC 57 27 .*",
+		"debug":	2,
+		
+		"values": {
+			"pumpe_drehz":			{"type": "word", "pos": 12, "label": "Drehzahl Pumpe"}
 		}
 	},
 
@@ -176,29 +256,9 @@
 	},
 	
 	{
-		"comment":	"Fa. Kromschröder: Betriebsstunden Solar Telegram",
-		"filter":	"?? 76 50 22 ?? CC F9 02 .*",
-		"debug":	2,
-		
-		"values": {
-			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
-		}
-	},
-	
-	{
-		"comment":	"Fa. Kromschröder: E1 Solar Telegram",
-		"filter":	"?? 76 50 22 ?? CC 2B 0A .*",
-		"debug":	2,
-		
-		"values": {
-			"e1":			{"type": "word", "pos": 12, "label": "e1", "script": "thisValue / 10"}
-		}
-	},
-	
-	{
 		"comment":	"Fa. Kromschröder: Telegram",
-		"filter":	"?? 08 50 22 .*",
-		"debug":	2,
+		"filter":	"ZZ ?? 08 50 22 .*",
+		"xdebug":	2,
 		
 		"values": {
 			
