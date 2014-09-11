@@ -4,6 +4,7 @@
 		"cmd":		"0x0503",
 		"len":		"0x08",
 		"byte_0x06":"0x01",
+		"debug":	2,
 		
 		"values": {
 			"status":				{"type": "byte", "pos":7, "label": "Statusanzeige"},

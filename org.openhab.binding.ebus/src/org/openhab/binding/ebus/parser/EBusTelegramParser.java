@@ -59,7 +59,7 @@ public class EBusTelegramParser {
 
 		try {
 			InputStream inputStream = url.openConnection().getInputStream();
-		    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 			telegramRegistry = (JSONArray)parser.parse(in);
 			
 			for (Iterator<Map<String, Object>> iterator = telegramRegistry.iterator(); iterator.hasNext();) {

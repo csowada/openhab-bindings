@@ -6,10 +6,6 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
 import org.openhab.binding.ebus.serial.EbusSerialPortEvent;

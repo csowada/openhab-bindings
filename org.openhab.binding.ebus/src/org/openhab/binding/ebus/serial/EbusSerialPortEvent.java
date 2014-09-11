@@ -6,6 +6,7 @@ import gnu.io.SerialPortEventListener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 
 import org.openhab.binding.ebus.EbusTelegram;
@@ -25,7 +26,10 @@ public class EbusSerialPortEvent implements SerialPortEventListener {
 	
 	public EbusSerialPortEvent() {
 		parser = new EBusTelegramParser();
-		parser.loadConfigurationFile("C:\\Users\\CSo\\git\\openhab-bindings\\org.openhab.binding.ebus\\META-INF\\test.json");
+		final URL configurationUrl = ClassLoader.getSystemResource("META-INF/ebus-configuration.json");
+
+		parser.loadConfigurationFile(configurationUrl);
+		parser.setDebugLevel(EBusTelegramParser.DEBUG_ALL);
 	}
 	
 	@Override

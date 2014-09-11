@@ -1935,11 +1935,3 @@ FULL DATA  : 03 FE 05 03 08 01 00 00 FF 3B 24 32 0D BB AA
    state_uwp           0         UWP
    temp_rt             36        Rücklauftemperatur
 FULL DATA  : 30 90 50 12 00 2E AA
-FULL DATA  : 30 90 50 12 00 2E AA AA
-Wrong CRC!
-Wrong CRC!
-FULL DATA  : 30 90 50 12 00 2E AA AA AA
-Wrong CRC!
-FULL DATA  : 30 90 50 12 00 2E AA AA AA AA
-Wrong CRC!
-FULL DATA  : 30 90 50 12 00 2E AA AA AA AA AA

@@ -15,7 +15,7 @@ public class TestMain {
 	public static void main(String[] args) {
 
 		final EBusTelegramParser parser = new EBusTelegramParser();
-		parser.loadConfigurationFile("C:\\openhab\\MINIMAL\\workspace\\org.openhab.binding.ebus\\META-INF\\test.json");
+//		parser.loadConfigurationFile("C:\\openhab\\MINIMAL\\workspace\\org.openhab.binding.ebus\\META-INF\\test.json");
 		
 //		byte[] a0 = convertString("71 FE 50 17 10 A9 00 B5 50 03 A3 02 00 80 00 80 00 80 00 80 00 80 0E AA");
 //		byte[] a0 = convertString("30 50 50 14 07 20 80 21 00 00 00 64 05 00 09 00 00 00 80 00 80 00 B4 05 3C 00 AA");

@@ -1,7 +1,6 @@
 package org.openhab.binding.ebus.test;
 
 import java.net.URL;
-import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
