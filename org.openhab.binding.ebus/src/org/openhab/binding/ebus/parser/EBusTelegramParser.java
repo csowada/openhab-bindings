@@ -1,14 +1,19 @@
 package org.openhab.binding.ebus.parser;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -25,7 +30,7 @@ import org.openhab.binding.ebus.EbusTelegram;
 
 public class EBusTelegramParser {
 
-	ArrayList<Map<String, Object>> telegramRegistry;
+	private ArrayList<Map<String, Object>> telegramRegistry;
 	private Map<String, Object> settings;
 	private Compilable compEngine; 
 	
@@ -39,11 +44,13 @@ public class EBusTelegramParser {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void loadConfigurationFile(String filename) {
+	public void loadConfigurationFile(URL url) {
 		JSONParser parser=new JSONParser();
 
 		try {
-			telegramRegistry = (JSONArray)parser.parse(new FileReader(filename));
+			InputStream inputStream = url.openConnection().getInputStream();
+		    BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+			telegramRegistry = (JSONArray)parser.parse(in);
 			
 			for (Iterator<Map<String, Object>> iterator = telegramRegistry.iterator(); iterator.hasNext();) {
 				JSONObject object = (JSONObject) iterator.next();
@@ -58,6 +65,13 @@ public class EBusTelegramParser {
 				
 				if(object.get("dst") instanceof String) {
 					object.put("dst", Short.decode((String) object.get("dst")));
+				}
+				
+				if(object.get("filter") instanceof String) {
+					String filter = (String)object.get("filter");
+					filter = filter.replaceAll("\\?\\?", "[0-9A-Z]{2}");
+					object.put("cfilter", Pattern.compile(filter));
+//					object.put("dst", Short.decode((String) object.get("dst")));
 				}
 				
 				// compile scipt's if available
@@ -100,42 +114,57 @@ public class EBusTelegramParser {
 		}
 	}
 	
-	public Object parse(EbusTelegram telegram) {
+	public Map<String, Object> parse(EbusTelegram telegram) {
 
-		ByteBuffer byteBuffer = telegram.getBuffer();
 		Map<String, Object> valueRegistry = new HashMap<String, Object>();
+		
+		ByteBuffer byteBuffer = telegram.getBuffer();
 		
 		telegramRegistryLoop:
 		for (Map<String, Object> registryEntry : telegramRegistry) {
 			
-			if(registryEntry.containsKey("cmd")) {
-				if(!registryEntry.get("cmd").equals(telegram.getCommand()))
+			// Is compiled pattern aka 
+			if(registryEntry.containsKey("cfilter")) {
+				Pattern pattern = (Pattern) registryEntry.get("cfilter");
+				Matcher matcher = pattern.matcher(EBusUtils.toHexDumpString(byteBuffer));
+				if(!matcher.matches()) {
 					continue;
-			}
-			
-			if(registryEntry.containsKey("src")) {
-				if(!registryEntry.get("src").equals(telegram.getSource()))
-					continue;
-			}
-			
-			if(registryEntry.containsKey("dst")) {
-				if(!registryEntry.get("dst").equals(telegram.getDestination()))
-					continue;
-			}
-
-			
-			for (Entry<String, Object> entry : registryEntry.entrySet()) {
-				if(entry.getKey().startsWith("byte_")) {
-
-					Short pos = Short.decode(entry.getKey().substring(5));
-					Short val = Short.decode((String) entry.getValue());
-					
-					short b = (short) (telegram.getBuffer().get(pos-1) & 0xFF);
-					
-					if(!val.equals(b))
-						continue telegramRegistryLoop;
 				}
+				
+			} else {
+				
+				if(registryEntry.containsKey("cmd")) {
+					if(!registryEntry.get("cmd").equals(telegram.getCommand()))
+						continue;
+				}
+				
+				if(registryEntry.containsKey("src")) {
+					if(!registryEntry.get("src").equals(telegram.getSource()))
+						continue;
+				}
+				
+				if(registryEntry.containsKey("dst")) {
+					if(!registryEntry.get("dst").equals(telegram.getDestination()))
+						continue;
+				}
+
+				
+				for (Entry<String, Object> entry : registryEntry.entrySet()) {
+					if(entry.getKey().startsWith("byte_")) {
+
+						Short pos = Short.decode(entry.getKey().substring(5));
+						Short val = Short.decode((String) entry.getValue());
+						
+						short b = (short) (telegram.getBuffer().get(pos-1) & 0xFF);
+						
+						if(!val.equals(b))
+							continue telegramRegistryLoop;
+					}
+				}
+				
 			}
+			
+
 			
 			
 			@SuppressWarnings("unchecked")
@@ -248,7 +277,7 @@ public class EBusTelegramParser {
 		}
 
 		
-		return null;
+		return valueRegistry;
 	}
 	
 }

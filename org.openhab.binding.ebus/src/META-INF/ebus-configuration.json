@@ -121,6 +121,7 @@
 		"byte_0x06":"0xCC",
 		"byte_0x07":"0xF9",
 		"byte_0x08":"0x02",
+		"filter":	"?? ?? 50 22 ?? CC F9 02 .*",
 		
 		"values": {
 			"betriebstunden":			{"type": "word", "pos": 12, "label": "Betriebsstunden"}
@@ -129,10 +130,7 @@
 	
 	{
 		"comment":	"Fa. Kromschröder: E1 Solar Telegram",
-		"cmd": 		"0x5022",
-		"byte_0x06":"0xCC",
-		"byte_0x07":"0x2B",
-		"byte_0x08":"0x0A",
+		"filter":	"?? ?? 50 22 ?? CC 2B 0A .*",
 		
 		"values": {
 			"e1":			{"type": "word", "pos": 12, "label": "e1", "script": "thisValue / 10"}
@@ -141,16 +139,26 @@
 	
 	{
 		"comment":	"Fa. Kromschröder: Telegram",
-		"cmd": 		"0x5022",
+		"filter":	"?? ?? 50 22 .*",
+		"debug":	1,
 		
 		"values": {
-			"unknown":			{"type": "word", "pos": 12, "label": "Value"}
+			
+			"try1":			{"type": "word", "pos": 12, "label": "WORD"},
+			"try2":			{"type": "data2b", "pos": 12, "label": "DATA2B"},
+			"try3":			{"type": "data2c", "pos": 12, "label": "DATA2C"},
+			
+			"try4a":			{"type": "data1c", "pos": 12, "label": "DATA1C"},
+			"try4b":			{"type": "data1c", "pos": 13, "label": "DATA1C"},
+			
+			"try5a":			{"type": "byte", "pos": 12, "label": "BYTE"},
+			"try5b":			{"type": "byte", "pos": 13, "label": "BYTE"},
 		}
 	},
 	
 	{
 		"comment":	"Fa. Kromschröder: ???",
-		"cmd": 		"0x5023",
+		"filter":	"?? ?? 50 22 .*",
 		
 		"values": {}
 	}

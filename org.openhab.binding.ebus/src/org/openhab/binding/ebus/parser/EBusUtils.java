@@ -97,6 +97,16 @@ public class EBusUtils {
 		(byte) 0xE0, (byte) 0x7B
 	};
 
+	static public StringBuilder toHexDumpString(ByteBuffer data) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < data.position(); i++) {
+			byte c = data.get(i);
+			if(i > 0) sb.append(' ');
+			sb.append(toHexDumpString(c));
+		}
+		return sb;
+	}
+	
 	static public StringBuilder toHexDumpString(byte[] data) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < data.length; i++) {
