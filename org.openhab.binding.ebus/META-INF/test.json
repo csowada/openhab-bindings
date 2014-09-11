@@ -59,6 +59,20 @@
 	},
 
 	{
+		"comment":	"Fa. Kromschröder: Solar Regler",
+		"cmd": "0x5014",
+		
+		"values": {
+			"solar_status2":			{"type": "byte", "pos":6, "label": "Solarstatus (???)"},
+			"unknown141":			{"type": "byte", "pos":7, "label": "???"},
+			"m_s_t":				{"type": "data2b", "pos":8, "label": "Mischer Soll Temp."},
+			"rt":				{"type": "byte", "pos":10, "label": "Raumtemp."},
+			"unknown142":			{"type": "byte", "pos":11, "label": "???"},
+			"soll_ww":				{"type": "data1c", "pos":12, "label": "Warmwassertemperatur °C"}
+		}
+	},
+
+	{
 		"comment":	"Fa. Kromschröder: Solar",
 		"cmd": "0x5017",
 		
@@ -79,8 +93,8 @@
 			"solar_current":		{"type": "data2b", "pos": 6},
 			"yield_day_l":			{"type": "word", "pos":8},
 			"yield_day_h":			{"type": "word", "pos":10},
-			"yield_sum_l":			{"type": "word", "pos":12, "script":"thisValue*100"},
-			"yield_sum_h":			{"type": "word", "pos":14},
+			"yield_sum_l":			{"type": "word", "pos":12},
+			"yield_sum_h":			{"type": "word", "pos":14, "comment": "Word Umrechnung falsch?"},
 			"yield_sum_m":			{"type": "word", "pos":16}
 		},
 		"computed_values": {
