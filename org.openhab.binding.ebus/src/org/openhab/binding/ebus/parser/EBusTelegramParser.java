@@ -178,7 +178,7 @@ public class EBusTelegramParser {
 					break;
 					
 				case "word":
-					value = (byteBuffer.get(pos)<<8) + byteBuffer.get(pos-1);
+					value = ((byteBuffer.get(pos) & 0xFF)<<8) + (byteBuffer.get(pos-1) & 0xFF);
 					break;
 					
 				case "uchar":
