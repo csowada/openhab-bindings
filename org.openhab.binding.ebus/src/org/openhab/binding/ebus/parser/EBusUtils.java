@@ -146,8 +146,7 @@ public class EBusUtils {
 	}
 	
 	static public EbusTelegram convertData2(byte[] data) {
-		
-		System.out.println("FULL DATA  : " + toHexDumpString(data).toString());
+
 		ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
 
 		buffer.put(data, 0, 5);

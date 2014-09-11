@@ -67,6 +67,10 @@ public class TestMain3 {
 //		go("30 76 50 22 03 CC FA 02 DD 00 02 00 00 2C 00 AA", parser);
 		
 		
+		
+		
+		go("30 76 50 23 05 D4 66 00 00 00 0C 00 00 00 AA", parser);
+		
 		/*
 		 * 
 unknown -48 Value

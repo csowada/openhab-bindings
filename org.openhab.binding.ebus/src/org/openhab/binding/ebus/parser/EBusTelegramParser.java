@@ -29,10 +29,16 @@ import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.EbusTelegram;
 
 public class EBusTelegramParser {
-
+	
+	public static final int DEBUG_OFF = 0;
+	public static final int DEBUG_UNKNOWN = 1;
+	public static final int DEBUG_ALL = 2;
+	
 	private ArrayList<Map<String, Object>> telegramRegistry;
 	private Map<String, Object> settings;
 	private Compilable compEngine; 
+	
+	private int debugLevel = DEBUG_OFF;
 	
 	public EBusTelegramParser() {
         ScriptEngineManager mgr = new ScriptEngineManager();
@@ -41,6 +47,10 @@ public class EBusTelegramParser {
         if (engine instanceof Compilable) {
             compEngine = (Compilable) engine;
         }
+	}
+	
+	public void setDebugLevel(int level) {
+		debugLevel = level;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -71,7 +81,6 @@ public class EBusTelegramParser {
 					String filter = (String)object.get("filter");
 					filter = filter.replaceAll("\\?\\?", "[0-9A-Z]{2}");
 					object.put("cfilter", Pattern.compile(filter));
-//					object.put("dst", Short.decode((String) object.get("dst")));
 				}
 				
 				// compile scipt's if available
@@ -119,14 +128,28 @@ public class EBusTelegramParser {
 		Map<String, Object> valueRegistry = new HashMap<String, Object>();
 		
 		ByteBuffer byteBuffer = telegram.getBuffer();
+		int matchCount = 0;
+		
+		
+		
+		String bufferString = null;
+		
+//		if(debugLevel == DEBUG_ALL) {
+//			bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+//			System.out.println("FULL DATA  : " + bufferString);
+//		}
 		
 		telegramRegistryLoop:
 		for (Map<String, Object> registryEntry : telegramRegistry) {
 			
-			// Is compiled pattern aka 
+			// Is compiled pattern aka filter available, only use this
 			if(registryEntry.containsKey("cfilter")) {
 				Pattern pattern = (Pattern) registryEntry.get("cfilter");
-				Matcher matcher = pattern.matcher(EBusUtils.toHexDumpString(byteBuffer));
+				
+				if(bufferString == null)
+					bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+				
+				Matcher matcher = pattern.matcher(bufferString);
 				if(!matcher.matches()) {
 					continue;
 				}
@@ -164,17 +187,22 @@ public class EBusTelegramParser {
 				
 			}
 			
+			matchCount++;
 
-			
-			
 			@SuppressWarnings("unchecked")
 			Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) registryEntry.get("values");
+			boolean debugShowResults = registryEntry.containsKey("debug");
+			
+			if(matchCount == 1 && (debugLevel == DEBUG_ALL || debugShowResults)) {
+				bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+				System.out.println("FULL DATA  : " + bufferString);
+//				System.out.println("EBusTelegramParser.parse()++++++++++++");
+			}
+			
 			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
 				
 				settings = entry.getValue();
-				
-				
-				
+
 				String type = ((String) settings.get("type")).toLowerCase();
 				int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
 				
@@ -247,8 +275,10 @@ public class EBusTelegramParser {
 				
 				valueRegistry.put(entry.getKey(), value);
 
-				String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-				System.out.printf("   %-20s%-10s%s%n", entry.getKey(), value, label);
+				if(debugShowResults) {
+					String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
+					System.out.printf("   %-20s%-10s%s%n", entry.getKey(), value, label);
+				}
 			}
 			
 			
@@ -267,8 +297,11 @@ public class EBusTelegramParser {
 					Object value = cscript.eval(bindings);
 					valueRegistry.put(entry.getKey(), value);
 
-					String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-					System.out.printf("   $%-20s%-10s%s%n", entry.getKey(), value, label);
+					if(debugShowResults) {
+						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
+						System.out.printf("   $%-20s%-10s%s%n", entry.getKey(), value, label);
+					}
+					
 
 				} catch (ScriptException e) {
 					e.printStackTrace();
@@ -276,6 +309,13 @@ public class EBusTelegramParser {
 			}
 		}
 
+		if(matchCount == 0) {
+			if(debugLevel == DEBUG_UNKNOWN) {
+				if(bufferString == null)
+					bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+				System.err.println("UNKNOWN TELEGRAM  : " + bufferString);
+			}
+		}
 		
 		return valueRegistry;
 	}

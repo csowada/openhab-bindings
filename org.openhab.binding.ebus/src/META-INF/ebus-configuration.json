@@ -140,7 +140,7 @@
 	{
 		"comment":	"Fa. Kromschröder: Telegram",
 		"filter":	"?? ?? 50 22 .*",
-		"debug":	1,
+		"debug":	2,
 		
 		"values": {
 			
