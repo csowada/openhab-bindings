@@ -1,12 +1,18 @@
 ID's
 03      Feuerungsautomat
-08
-30  BM  Bedienmodus
-50
+08		Brenner
+30  BM  Bedieneinheit
+50		Brenner Reglung
 71  SM  Solarmodus
 76  SM  Solarmodus
 F1  XX  Brenner
 FE      -Alle-
+
+
+Brenner
+Mischer
+Pumpe
+Regler
 
 
 
