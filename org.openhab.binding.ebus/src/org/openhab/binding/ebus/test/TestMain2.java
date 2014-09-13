@@ -8,6 +8,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 import java.util.TooManyListenersException;
 
+import org.openhab.binding.ebus.EbusTelegram;
 import org.openhab.binding.ebus.serial.EbusSerialPortEvent;
 
 public class TestMain2 {
@@ -25,7 +26,14 @@ public class TestMain2 {
 			serialPort.disableReceiveTimeout();
 			serialPort.enableReceiveThreshold(1);
 			
-			serialPort.addEventListener(new EbusSerialPortEvent());
+			EbusSerialPortEvent event = new EbusSerialPortEvent() {
+				@Override
+				public void onEBusTelegramAvailable(EbusTelegram telegram) {
+					
+				}
+			};
+			
+			serialPort.addEventListener(event);
 			serialPort.notifyOnDataAvailable(true);
 			serialPort.notifyOnOutputEmpty(true);
 			

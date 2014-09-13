@@ -1,7 +1,6 @@
 package org.openhab.binding.ebus.parser;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,9 +26,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.EbusTelegram;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EBusTelegramParser {
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(EBusTelegramParser.class);
+	
 	public static final int DEBUG_OFF = 0;
 	public static final int DEBUG_UNKNOWN = 1;
 	public static final int DEBUG_ALL = 2;
@@ -54,10 +58,10 @@ public class EBusTelegramParser {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadConfigurationFile(URL url) {
+	public void loadConfigurationFile(URL url) throws IOException, ParseException {
 		JSONParser parser=new JSONParser();
 
-		try {
+	
 			InputStream inputStream = url.openConnection().getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 			telegramRegistry = (JSONArray)parser.parse(in);
@@ -114,17 +118,15 @@ public class EBusTelegramParser {
 				}
 			}
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public Map<String, Object> parse(EbusTelegram telegram) {
 
+		if(telegramRegistry == null) {
+			logger.error("sf  s sfs");
+			return null;
+		}
+		
 		Map<String, Object> valueRegistry = new HashMap<String, Object>();
 
 		if(telegram == null) {
@@ -248,14 +250,25 @@ public class EBusTelegramParser {
 						break;
 
 					case "char":
+						value = byteBuffer.get(pos-1);
+						if((byte)value == (byte)0xFF)
+							value = null;
+						break;
+						
 					case "data1b":
 						value = byteBuffer.get(pos-1);
+						if((byte)value == (byte)0x80)
+							value = null;
 						break;
 
 					case "bit":
 						int bit = ((Long) settings.get("bit")).intValue();
-						byte n = (byte) (1 << bit);
-						value = byteBuffer.get(pos-1) & n;
+//						byte n = (byte) (1 << bit);
+						value = byteBuffer.get(pos-1);
+//						value = (byte)value & n;
+						
+						boolean isSet = ((byte)value >> bit& 0x1) == 1;
+						value = isSet;
 						break;
 
 					default:
@@ -282,7 +295,7 @@ public class EBusTelegramParser {
 //					System.out.println("EBusTelegramParser.parse()");
 					if(debugLevel == DEBUG_ALL || debugShowResults) {
 						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-						System.out.printf("   %-20s%-10s%s%n", entry.getKey(), value, label);
+						System.out.printf("   %-22s%-10s%s%n", entry.getKey(), value, label);
 					}
 				}
 
@@ -304,7 +317,7 @@ public class EBusTelegramParser {
 
 						if(debugLevel == DEBUG_ALL || debugShowResults) {
 							String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-							System.out.printf("   $%-20s%-10s%s%n", entry.getKey(), value, label);
+							System.out.printf("   $%-21s%-10s%s%n", entry.getKey(), value, label);
 						}
 
 

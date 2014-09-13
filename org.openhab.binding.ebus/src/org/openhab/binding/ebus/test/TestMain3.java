@@ -1,9 +1,11 @@
 package org.openhab.binding.ebus.test;
 
+import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.EbusTelegram;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
@@ -22,7 +24,12 @@ public class TestMain3 {
 		final URL configurationUrl = ClassLoader.getSystemResource("META-INF/ebus-configuration.json");
 		
 //		url = new URL("platform:/plugin/de.vogella.rcp.plugin.filereader/files/test.txt")
-		parser.loadConfigurationFile(configurationUrl);
+		try {
+			parser.loadConfigurationFile(configurationUrl);
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		byte[] buffer = null;
 		EbusTelegram telegram = null;

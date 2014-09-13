@@ -37,7 +37,7 @@ public class TestMain {
 		
 		//                          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 
 		byte[] a1 = convertString("71 FE 50 17 10 41 B5 2A 05 85 03 00 80 00 80 00 80 00 80 00 80 05 aa");
-//		byte[] a1 = convertString("71 FE 50 17 10 41 B5 50 03 A3 02 00 80 00 80 00 80 00 80 00 80 0E AA");
+//		byte[] a1 = convertString("71 FE 50 17 10 40 B5 E2 01 B3 02 00 80 00 80 00 80 00 80 00 80 A0 AA");
 		EbusTelegram convertData22 = EBusUtils.convertData2(a1);
 		
 		parser.parse(convertData22);

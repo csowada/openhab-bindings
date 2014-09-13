@@ -245,7 +245,7 @@ public class EBusUtils {
 		return (psuedoUnsigned / 2);
 	}
 
-	public static float decodeDATA2c(byte highData, byte lowData) {
+	public static Float decodeDATA2c(byte highData, byte lowData) {
 
 		int h = unsignedInt(highData);
 		int l = unsignedInt(lowData);
@@ -260,7 +260,7 @@ public class EBusUtils {
 		float z = y + g2;
 		
 		if((highData & (byte) 0x80) == (byte) 0x80) {
-			return -9999;
+			return null;
 		}
 		
 		return z;
@@ -276,12 +276,12 @@ public class EBusUtils {
 //		}
 	}
 	
-	public static float decodeDATA2b(byte highData, byte lowData) {
+	public static Float decodeDATA2b(byte highData, byte lowData) {
 		float h = unsignedInt(highData);
 		float l = unsignedInt(lowData);
 		if((highData & (byte) 0x80) == (byte) 0x80) {
 			//return (1 - h) - (1- (l / 256));
-			return -9999;
+			return null;
 		} else {
 			return h + (l / 256);
 		}

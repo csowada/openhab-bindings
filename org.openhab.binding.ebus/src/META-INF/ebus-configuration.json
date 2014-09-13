@@ -76,7 +76,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Anlagendruck (bar)",
 		"filter":	"?? 08 50 22 ?? CC 1A 27 .*",
-		"debug":	2,
 		
 		"values": {
 			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100"}
@@ -89,14 +88,13 @@
 		"debug":	2,
 		
 		"values": {
-			"heat_unit_fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 10"}
+			"heat_unit_fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 100"}
 		}
 	},
 	
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Anzahl Zündungen",
 		"filter":	"?? 08 50 22 ?? CC 26 02 .*",
-		"debug":	2,
 		
 		"values": {
 			"no_of_firing":			{"type": "word", "pos": 12, "label": "Anz. Zündungen"}
@@ -106,7 +104,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Ionisierung",
 		"filter":	"?? 08 50 22 ?? CC 4F 27 .*",
-		"debug":	2,
 		
 		"values": {
 			"ionisation":			{"type": "word", "pos": 12, "label": "Ionisation"}
@@ -116,7 +113,6 @@
 	{
 		"comment":	"[OK} Kromschröder/Wolf: Anzahl Netz-Ein",
 		"filter":	"?? 08 50 22 ?? CC 5E 27 .*",
-		"debug":	2,
 		
 		"values": {
 			"no_of_power_on":		{"type": "word", "pos": 12, "label": "Anz. Netz-Ein"}
@@ -126,7 +122,6 @@
 	{
 		"comment":	"[OK] Kromschröder/Wolf: Betriebsstunden Brenner",
 		"filter":	"?? 08 50 22 ?? CC 2A 02 .*",
-		"debug":	2,
 		
 		"values": {
 			"op_hrs_heating_unit":	{"type": "word", "pos": 12, "label": "Betriebsstunden Brenner"}
@@ -136,7 +131,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder: Abgas-Temperatur",
 		"filter":	"?? 08 50 22 ?? CC 1D 27.*",
-		"debug":	2,
 		
 		"values": {
 			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10"}
@@ -146,7 +140,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder: Betriebsstd. a Netz",
 		"filter":	"?? 08 50 22 ?? CC 28 02 .*",
-		"debug":	2,
 		
 		"values": {
 			"op_hrs_supply":		{"type": "word", "pos": 12, "label": "Betriebsstunden am Netz"}
@@ -156,7 +149,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Kessel-Temperatur IST",
 		"filter":	"?? 08 50 22 ?? CC 0D 00 .*",
-		"debug":	2,
 		
 		"values": {
 			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10"}
@@ -196,7 +188,6 @@
 	{
 		"comment":	"[OK] <Solar> Kromschröder/Wolf: E1 (hier Solar-Rücklauf-Temp.)",
 		"filter":	"?? 76 50 22 ?? CC 2B 0A .*",
-		"debug":	2,
 		
 		"values": {
 			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10"}
@@ -215,6 +206,7 @@
 	{
 		"comment":	"[??] <Brenner?> Kromschröder/Wolf: Regler",
 		"filter":	"?? 50 50 14 .*",
+		"debug":	2,
 		
 		"values": {
 			"solar_status2":		{"type": "byte", "pos":6, "label": "Solarstatus (???)"},
@@ -229,10 +221,11 @@
 	{
 		"comment":	"<Solar> Kromschröder/Wolf: Solar",
 		"filter":	"?? ?? 50 17 .*",
+		"debug":	2,
 		
 		"values": {
 			"solar_status":			{"type": "byte", "pos":6, "label": "Solarstatus (Solarpumpe an?)"},
-			"solar_pump":			{"type": "bit", "pos":6, "bit": 6, "label": "Solarpumpe"},
+			"solar_pump":			{"type": "bit", "pos":6, "bit": 0, "label": "Solarpumpe"},
 			"_unknown1":			{"type": "byte", "pos":7},
 			"temp_collector":		{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C"},
 			"temp_reservoir_1":		{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C"}
@@ -256,6 +249,53 @@
 		
 		"values": {
 			"flow":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
+		}
+	},
+
+
+
+
+
+
+
+
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: Kollektor 24H Max",
+		"filter":	"?? ?? 50 22 ?? A5 78 09 .*",
+		"debug":	2,
+		
+		"values": {
+			"col24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "Kollektor 24H Max"}
+		}
+	},
+	
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
+		"filter":	"?? ?? 50 22 ?? 41 7B 09 .*",
+		"debug":	2,
+		
+		"values": {
+			"wws24in":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Min"}
+		}
+	},
+	
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
+		"filter":	"?? ?? 50 22 ?? 89 7C 09 .*",
+		"debug":	2,
+		
+		"values": {
+			"wws24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Max * 10"}
+		}
+	},
+
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: Antilegionellen ",
+		"filter":	"?? ?? 50 22 ?? CE F7 02 .*",
+		"debug":	2,
+		
+		"values": {
+			"leg":			{"type": "word", "pos": 12, "label": "Antilegionellen"}
 		}
 	},
 	
