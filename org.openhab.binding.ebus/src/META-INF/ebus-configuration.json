@@ -2,6 +2,7 @@
 	{
 		"comment":	"[OK] Betriebsdaten des Feuerungsautomaten an den Regler - Block 1",
 		"filter":	"?? ?? 05 03 08 01 .*",
+		"debug": 2,
 		
 		"values": {
 			"status_auto_stroker":	{"type": "byte", "pos":7, "label": "Statusanzeige"},
@@ -33,7 +34,7 @@
 			
 			"date_day":				{"type": "bcd", "pos":11, "label": "Zeit Stunde"},
 			"date_month":			{"type": "bcd", "pos":12, "label": "Zeit Stunde"},
-			"date_year":			{"type": "bcd", "pos":14, "label": "Zeit Stunde"}
+			"date_year":			{"type": "bcd", "pos":14, "label": "Zeit Stunde", "debug": 1}
 		},
 		"computed_values": {
 			"time":					{"type": "script", "script": "time_hour + ':' + time_hour + ':' + time_sec", "label": "Aktuelle Zeit"},
@@ -47,7 +48,7 @@
 		
 		"values": {
 			"temp_t_vessel":		{"type": "data2c", "pos": 6, "label": "Kesselsollwert"},
-			"temp_average_outside":	{"type": "data2b", "pos":8, "label": "Außentemperatur gemittelt"},
+			"temp_outside":			{"type": "data2b", "pos":8, "label": "Außentemperatur"},
 			"power_enforcement":	{"type": "data1b", "pos":10, "label": "Leistungszwang"},
 			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv (Wärmepumpen?)"},
 			"status_heat_circuit":	{"type": "bit", "pos":11, "bit": 1, "label": "Heizkreis aktiv"},
@@ -60,16 +61,16 @@
 		"filter":	"?? ?? 50 18 .*",
 		
 		"values": {
-			"solar_current":		{"type": "data2b", "pos": 6},
+			"solar_current":		{"type": "data2c", "pos": 6},
 			"yield_day_l":			{"type": "word", "pos":8},
 			"yield_day_h":			{"type": "word", "pos":10},
 			"yield_sum_l":			{"type": "word", "pos":12},
-			"yield_sum_h":			{"type": "word", "pos":14, "comment": "Word Umrechnung falsch?"},
+			"yield_sum_h":			{"type": "word", "pos":14},
 			"yield_sum_m":			{"type": "word", "pos":16}
 		},
 		"computed_values": {
-			"yield_day":			{"type": "script", "script": "yield_day_h * 1000 + yield_day_l"},
-			"yield_sum":			{"type": "script", "script":	"yield_sum_m * 1000000  + yield_sum_h * 1000 + yield_sum_l"}
+			"yield_day":			{"type": "script", "script": "(yield_day_h * 1000 + yield_day_l) / 1000", "label": "Tagesertrag kW/h"},
+			"yield_sum":			{"type": "script", "script":	"(yield_sum_m * 1000000  + yield_sum_h * 1000 + yield_sum_l) / 1000", "label": "Gesamtertrag kW/h"}
 		}
 	},
 
@@ -85,7 +86,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Software Version Brenner",
 		"filter":	"?? 08 50 22 ?? CC 9A 01 .*",
-		"debug":	2,
 		
 		"values": {
 			"heat_unit_fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 100"}
@@ -158,7 +158,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Warmwasser-Temperatur",
 		"filter":	"?? 08 50 22 ?? CC 0E 00 .*",
-		"debug":	2,
 		
 		"values": {
 			"ww_temp":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10"}
@@ -168,7 +167,6 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Rücklauf-Temperatur",
 		"filter":	"?? 08 50 22 ?? CC 16 00 .*",
-		"debug":	2,
 		
 		"values": {
 			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10"}
@@ -178,7 +176,6 @@
 	{
 		"comment":	"[OK] <Solar> Kromschröder/Wolf: Betriebsstunden Pumpe 1",
 		"filter":	"?? 76 50 22 ?? CC F9 02 .*",
-		"debug":	2,
 		
 		"values": {
 			"op_hrs_pump1":		{"type": "word", "pos": 12, "label": "Betriebsstunden Pumpe 1"}
@@ -206,7 +203,7 @@
 	{
 		"comment":	"[??] <Brenner?> Kromschröder/Wolf: Regler",
 		"filter":	"?? 50 50 14 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"solar_status2":		{"type": "byte", "pos":6, "label": "Solarstatus (???)"},
@@ -221,7 +218,7 @@
 	{
 		"comment":	"<Solar> Kromschröder/Wolf: Solar",
 		"filter":	"?? ?? 50 17 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"solar_status":			{"type": "byte", "pos":6, "label": "Solarstatus (Solarpumpe an?)"},
@@ -235,7 +232,7 @@
 	{
 		"comment":	"[??] <> Kromschröder/Wolf: Drehzahl Pumpe",
 		"filter":	"?? 08 50 22 ?? CC 57 27 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"speed_pump":			{"type": "word", "pos": 12, "label": "Drehzahl Pumpe"}
@@ -245,7 +242,7 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Durchfluss ",
 		"filter":	"?? ?? 50 22 ?? 5E F8 02 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"flow":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
@@ -262,7 +259,7 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Kollektor 24H Max",
 		"filter":	"?? ?? 50 22 ?? A5 78 09 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"col24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "Kollektor 24H Max"}
@@ -272,7 +269,7 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
 		"filter":	"?? ?? 50 22 ?? 41 7B 09 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"wws24in":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Min"}
@@ -282,7 +279,7 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
 		"filter":	"?? ?? 50 22 ?? 89 7C 09 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"wws24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Max * 10"}
@@ -292,7 +289,7 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Antilegionellen ",
 		"filter":	"?? ?? 50 22 ?? CE F7 02 .*",
-		"debug":	2,
+		"debug": 1,
 		
 		"values": {
 			"leg":			{"type": "word", "pos": 12, "label": "Antilegionellen"}
@@ -301,8 +298,7 @@
 	
 	{
 		"comment":	"[XX] Kromschröder/Wolf: Bruteforce 50 22 Telegram",
-		"filter":	"ZZ ?? 08 50 22 .*",
-		"xdebug":	2,
+		"filter":	"ZZ ?? 50 22 03 ?? ?? ?? ?? ?? .*",
 		
 		"values": {
 			

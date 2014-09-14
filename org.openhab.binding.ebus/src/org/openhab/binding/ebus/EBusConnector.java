@@ -18,6 +18,7 @@ import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.serial.EbusSerialPortEvent;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.osgi.service.cm.ConfigurationException;
 //import org.openhab.core.library.types.DecimalType;
@@ -66,6 +67,8 @@ public class EBusConnector {
 			serialPort.disableReceiveTimeout();
 			serialPort.enableReceiveThreshold(1);
 			
+			
+			
 			final EBusTelegramParser parser = new EBusTelegramParser();
 			URL configurationUrl = this.getClass().getResource("/META-INF/ebus-configuration.json");
 
@@ -77,7 +80,6 @@ public class EBusConnector {
 			}
 			
 			parser.loadConfigurationFile(configurationUrl);
-			parser.setDebugLevel(EBusTelegramParser.DEBUG_UNKNOWN);
 			
 			EbusSerialPortEvent event = new EbusSerialPortEvent() {
 				@Override
@@ -89,12 +91,20 @@ public class EBusConnector {
 							State state = null;
 							if(entry.getValue() instanceof Float) {
 								state = new DecimalType((Float)entry.getValue());
+							} else if(entry.getValue() instanceof Double) {
+								state = new DecimalType((Double)entry.getValue());
 							} else if(entry.getValue() instanceof Integer) {
 									state = new DecimalType((Integer)entry.getValue());
 							} else if(entry.getValue() instanceof Byte) {
 								state = new DecimalType((Byte)entry.getValue());
 							} else if(entry.getValue() instanceof Boolean) {
 								state = (boolean)entry.getValue() ? OnOffType.ON : OnOffType.OFF;
+							} else if(entry.getValue() instanceof String) {
+								state = new StringType((String)entry.getValue());
+							} else if(entry.getValue() == null) {
+								// noop
+							} else {
+								logger.error("Unknwon data type!");
 							}
 							
 							if(state != null) {
@@ -109,7 +119,9 @@ public class EBusConnector {
 			// setz events
 			serialPort.addEventListener(event);
 			serialPort.notifyOnDataAvailable(true);
-
+			
+			logger.debug("EBus Connector communication running ...");
+			
 		} catch (TooManyListenersException e) {
 			logger.error(e.toString(), e);
 		} catch (UnsupportedCommOperationException e) {
@@ -121,6 +133,7 @@ public class EBusConnector {
 	 * Closes the connector
 	 */
 	public void close() {
+		logger.debug("Close EBus Connector ...");
 		if(serialPort != null) {
 			serialPort.close();
 		}

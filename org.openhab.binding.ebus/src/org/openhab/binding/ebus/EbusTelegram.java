@@ -47,7 +47,7 @@ public class EbusTelegram {
 		byte b = data.get(pos);
 		if(b == SYN) {
 			return BROADCAST;
-		} else if(b == ACK_OK && data.get(getDataLen()+1) == SYN) {
+		} else if(b == ACK_OK && data.get(pos+1) == SYN) {
 			return MASTER_MASTER;
 		}
 		

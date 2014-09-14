@@ -28,7 +28,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 */
 	@Override
 	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-		logger.debug("Update EBusBinding Binding ...");
+		logger.debug("Update EBus Binding ...");
 
 		if(connector != null && connector.isOpen()) {
 			connector.close();
@@ -66,13 +66,14 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 * @see org.openhab.core.binding.AbstractBinding#activate()
 	 */
 	public void activate() {
+		logger.debug("EBus binding has been started.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#deactivate()
 	 */
 	public void deactivate() {
-		System.out.println("EBusBinding.deactivate()");
+		logger.debug("EBus binding has been stopped.");
 		if(connector != null) {
 			connector.close();
 			connector = null;
@@ -84,7 +85,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 */
 	@Override
 	protected void execute() {
-		System.out.println("EBusBinding.execute()");
+
 	}
 
 	/* (non-Javadoc)

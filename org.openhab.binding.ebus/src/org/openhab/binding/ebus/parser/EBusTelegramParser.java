@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -34,15 +35,15 @@ public class EBusTelegramParser {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusTelegramParser.class);
 	
-	public static final int DEBUG_OFF = 0;
-	public static final int DEBUG_UNKNOWN = 1;
-	public static final int DEBUG_ALL = 2;
+	private static final Logger logger2 = LoggerFactory
+			.getLogger(EBusTelegramParser.class.getPackage().getName() + ".Analyses");
+	
+	private static final Logger logger3 = LoggerFactory
+			.getLogger(EBusTelegramParser.class.getPackage().getName() + ".BruteForce");
 
 	private ArrayList<Map<String, Object>> telegramRegistry;
 	private Map<String, Object> settings;
 	private Compilable compEngine; 
-
-	private int debugLevel = DEBUG_OFF;
 
 	public EBusTelegramParser() {
 		ScriptEngineManager mgr = new ScriptEngineManager();
@@ -53,43 +54,42 @@ public class EBusTelegramParser {
 		}
 	}
 
-	public void setDebugLevel(int level) {
-		debugLevel = level;
-	}
-
 	@SuppressWarnings("unchecked")
 	public void loadConfigurationFile(URL url) throws IOException, ParseException {
 		JSONParser parser=new JSONParser();
 
-	
-			InputStream inputStream = url.openConnection().getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			telegramRegistry = (JSONArray)parser.parse(in);
+		InputStream inputStream = url.openConnection().getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+		telegramRegistry = (JSONArray)parser.parse(in);
 
-			for (Iterator<Map<String, Object>> iterator = telegramRegistry.iterator(); iterator.hasNext();) {
-				JSONObject object = (JSONObject) iterator.next();
+		for (Iterator<Map<String, Object>> iterator = telegramRegistry.iterator(); iterator.hasNext();) {
+			JSONObject object = (JSONObject) iterator.next();
 
-				if(object.get("cmd") instanceof String) {
-					object.put("cmd", Short.decode((String) object.get("cmd")));
+			if(object.get("filter") instanceof String) {
+				String filter = (String)object.get("filter");
+				filter = filter.replaceAll("\\?\\?", "[0-9A-Z]{2}");
+				logger.trace("Compile RegEx filter: {}", filter);
+				object.put("cfilter", Pattern.compile(filter));
+			}
+
+			// compile scipt's if available
+			Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) object.get("values");
+			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
+				if(entry.getValue().containsKey("script")) {
+					String script = (String) entry.getValue().get("script");
+					try {
+						CompiledScript compile = compEngine.compile(script);
+						entry.getValue().put("cscript", compile);
+					} catch (ScriptException e) {
+						e.printStackTrace();
+					}
 				}
+			}
 
-				if(object.get("src") instanceof String) {
-					object.put("src", Short.decode((String) object.get("src")));
-				}
-
-				if(object.get("dst") instanceof String) {
-					object.put("dst", Short.decode((String) object.get("dst")));
-				}
-
-				if(object.get("filter") instanceof String) {
-					String filter = (String)object.get("filter");
-					filter = filter.replaceAll("\\?\\?", "[0-9A-Z]{2}");
-					object.put("cfilter", Pattern.compile(filter));
-				}
-
-				// compile scipt's if available
-				Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) object.get("values");
-				for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
+			// compile scipt's if available
+			if(object.containsKey("computed_values")) {
+				Map<String, Map<String, Object>> cvalues = (Map<String, Map<String, Object>>) object.get("computed_values");
+				for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
 					if(entry.getValue().containsKey("script")) {
 						String script = (String) entry.getValue().get("script");
 						try {
@@ -100,236 +100,254 @@ public class EBusTelegramParser {
 						}
 					}
 				}
-
-				// compile scipt's if available
-				if(object.containsKey("computed_values")) {
-					Map<String, Map<String, Object>> cvalues = (Map<String, Map<String, Object>>) object.get("computed_values");
-					for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
-						if(entry.getValue().containsKey("script")) {
-							String script = (String) entry.getValue().get("script");
-							try {
-								CompiledScript compile = compEngine.compile(script);
-								entry.getValue().put("cscript", compile);
-							} catch (ScriptException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
 			}
+		}
 
 	}
 
+	private Object getValue(ByteBuffer byteBuffer, String type, int pos) {
+		Object value = null;
+		byte hByte = 0;
+		byte lByte = 0;
+
+		switch (type) {
+		case "data2b":
+			hByte = byteBuffer.get(pos);
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeDATA2b(hByte, lByte);
+			break;
+
+		case "data2c":
+			hByte = byteBuffer.get(pos);
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeDATA2c(hByte, lByte);
+			break;
+
+
+		case "data1c":
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeDATA1c(lByte);
+			break;
+
+		case "bcd":
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeBCD(lByte);
+			break;
+
+		case "word":
+			hByte = byteBuffer.get(pos);
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeWORD(hByte, lByte);
+			break;
+
+		case "uchar":
+		case "byte":
+			value = byteBuffer.get(pos-1) & 0xFF;
+			break;
+
+		case "char":
+			value = byteBuffer.get(pos-1);
+			if((byte)value == (byte)0xFF)
+				value = null;
+			break;
+
+		case "data1b":
+			value = byteBuffer.get(pos-1);
+			if((byte)value == (byte)0x80)
+				value = null;
+			break;
+
+		case "bit":
+			int bit = ((Long) settings.get("bit")).intValue();
+			value = byteBuffer.get(pos-1);
+
+			boolean isSet = ((byte)value >> bit& 0x1) == 1;
+			value = isSet;
+			break;
+
+		default:
+			logger.warn("Configuration Error: Unknown command type! {}", type);
+			break;
+		}
+		
+		return value;
+	}
+	
+	private Object evaluateScript(Entry<String, Map<String, Object>> entry, Map<String, Object> bindings2) throws ScriptException {
+		Object value = null;
+		if(entry.getValue().containsKey("cscript")) {
+			CompiledScript cscript = (CompiledScript) entry.getValue().get("cscript");
+
+			// Add global varaibles thisValue and keyName to JavaScript context
+			Bindings bindings = cscript.getEngine().createBindings();
+			bindings.putAll(bindings2);
+			value = cscript.eval(bindings);
+		}
+		
+		return value;
+	}
+	
+	private void bruteforceEBusTelegram(EbusTelegram telegram) {
+
+//		logger3.trace(telegram.getBuffer());
+		
+		byte[] data = telegram.getData();
+		
+		String format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", "Pos", "WORD", "UInt", "DATA2B", "DATA2C", "DATA1c", "BCD");
+		logger3.trace("    " + format);
+		logger3.trace("    -----------------------------------------------------------------------------");
+		
+		for (int i = 0; i < data.length; i++) {
+
+			Object word = i == data.length-1 ? "---" : EBusUtils.decodeWORD(data[i+1], data[i]);
+			Object data2b = i == data.length-1 ? "---" : EBusUtils.decodeDATA2b(data[i+1], data[i]);
+			Object data2c = i == data.length-1 ? "---" : EBusUtils.decodeDATA2c(data[i+1], data[i]);
+			Object data1c = i == data.length-1 ? "---" : EBusUtils.decodeDATA1c(data[i+1]);
+			int bcd = EBusUtils.decodeBCD(data[i]);
+			int uint = EBusUtils.unsignedInt(data[i]);
+			
+			format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", i+6, word, uint, data2b, data2c, data1c, bcd);
+			logger3.trace("    " + format);
+		}
+		
+		if(telegram.getType() == EbusTelegram.MASTER_SLAVE) {
+			data = telegram.getSlaveData();
+			
+			logger3.trace("    ---------------------------------- Answer ----------------------------------");
+			
+			for (int i = 0; i < data.length; i++) {
+
+				Object word = i == data.length-1 ? "---" : EBusUtils.decodeWORD(data[i+1], data[i]);
+				Object data2b = i == data.length-1 ? "---" : EBusUtils.decodeDATA2b(data[i+1], data[i]);
+				Object data2c = i == data.length-1 ? "---" : EBusUtils.decodeDATA2c(data[i+1], data[i]);
+				Object data1c = i == data.length-1 ? "---" : EBusUtils.decodeDATA1c(data[i+1]);
+				int bcd = EBusUtils.decodeBCD(data[i]);
+				int uint = EBusUtils.unsignedInt(data[i]);
+				
+				format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", i+6, word, uint, data2b, data2c, data1c, bcd);
+				logger3.trace("    " + format);
+			}
+			
+		}
+	}
+	
 	public Map<String, Object> parse(EbusTelegram telegram) {
 
 		if(telegramRegistry == null) {
 			logger.error("Configuration not loaded, can't parse telegram!");
 			return null;
 		}
-		
-		Map<String, Object> valueRegistry = new HashMap<String, Object>();
+
+		final Map<String, Object> valueRegistry = new HashMap<String, Object>();
 
 		if(telegram == null) {
 			return null;
 		}
+
+		final ByteBuffer byteBuffer = telegram.getBuffer();
+		final String bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+
+		final List<Map<String, Object>> matchedTelegramRegistry = new ArrayList<Map<String, Object>>();
 		
-		ByteBuffer byteBuffer = telegram.getBuffer();
-		int matchCount = 0;
+		/** select matching telegram registry entries */
+		for (Map<String, Object> registryEntry : telegramRegistry) {
+			Pattern pattern = (Pattern) registryEntry.get("cfilter");
+			Matcher matcher = pattern.matcher(bufferString);
+			if(matcher.matches()) {
+				matchedTelegramRegistry.add(registryEntry);
+			}
+		}
 
-		String bufferString = null;
+		logger2.info(bufferString);
+		
+		if(matchedTelegramRegistry.isEmpty()) {
+			logger2.debug("  >>> Unknown ----------------------------------------");
+			if(logger3.isTraceEnabled()) {
+				logger2.trace(bufferString);
+				bruteforceEBusTelegram(telegram);
+			}
+			
+			return null;
+		}
 
-		//		if(debugLevel == DEBUG_ALL) {
-		//			bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
-		//			System.out.println("FULL DATA  : " + bufferString);
-		//		}
+		for (Map<String, Object> registryEntry : matchedTelegramRegistry) {
 
-		telegramRegistryLoop:
-			for (Map<String, Object> registryEntry : telegramRegistry) {
+			int debugLevel = 0;
+			if(registryEntry.containsKey("debug")) {
+				debugLevel = ((Long)registryEntry.get("debug")).intValue();
+			}
+//			debugLevel = 0;
+			
+			@SuppressWarnings("unchecked")
+			Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) registryEntry.get("values");
+			
+//			if(debugLevel >= 1) {
+				logger2.debug("  >>> {}", registryEntry.containsKey("comment") ? 
+						registryEntry.get("comment") : "<No comment available>");
+//			}
 
-				// Is compiled pattern aka filter available, only use this
-				if(registryEntry.containsKey("cfilter")) {
-					Pattern pattern = (Pattern) registryEntry.get("cfilter");
+			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
 
-					if(bufferString == null)
-						bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
+				settings = entry.getValue();
 
-					Matcher matcher = pattern.matcher(bufferString);
-					if(!matcher.matches()) {
-						continue;
-					}
+				String type = ((String) settings.get("type")).toLowerCase();
+				int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
 
-				} else {
+				Object value = getValue(byteBuffer, type, pos);
 
-					if(registryEntry.containsKey("cmd")) {
-						if(!registryEntry.get("cmd").equals(telegram.getCommand()))
-							continue;
-					}
-
-					if(registryEntry.containsKey("src")) {
-						if(!registryEntry.get("src").equals(telegram.getSource()))
-							continue;
-					}
-
-					if(registryEntry.containsKey("dst")) {
-						if(!registryEntry.get("dst").equals(telegram.getDestination()))
-							continue;
-					}
-
-
-					for (Entry<String, Object> entry : registryEntry.entrySet()) {
-						if(entry.getKey().startsWith("byte_")) {
-
-							Short pos = Short.decode(entry.getKey().substring(5));
-							Short val = Short.decode((String) entry.getValue());
-
-							short b = (short) (telegram.getBuffer().get(pos-1) & 0xFF);
-
-							if(!val.equals(b))
-								continue telegramRegistryLoop;
-						}
-					}
-
-				}
-
-				matchCount++;
-
-				@SuppressWarnings("unchecked")
-				Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) registryEntry.get("values");
-				boolean debugShowResults = registryEntry.containsKey("debug");
-
-				if(matchCount == 1 && (debugLevel == DEBUG_ALL || debugShowResults)) {
-					bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
-					System.out.println("FULL DATA  : " + bufferString);
-					//				System.out.println("EBusTelegramParser.parse()++++++++++++");
-				}
-
-				for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
-
-					settings = entry.getValue();
-
-					String type = ((String) settings.get("type")).toLowerCase();
-					int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
-
-					Object value = null;
-					byte hByte = 0;
-					byte lByte = 0;
-
-					switch (type) {
-					case "data2b":
-						hByte = byteBuffer.get(pos);
-						lByte = byteBuffer.get(pos-1);
-						value = EBusUtils.decodeDATA2b(hByte, lByte);
-						break;
-
-					case "data2c":
-						hByte = byteBuffer.get(pos);
-						lByte = byteBuffer.get(pos-1);
-						value = EBusUtils.decodeDATA2c(hByte, lByte);
-						break;
-
-
-					case "data1c":
-						lByte = byteBuffer.get(pos-1);
-						value = EBusUtils.decodeDATA1c(lByte);
-						break;
-
-					case "bcd":
-						lByte = byteBuffer.get(pos-1);
-						value = EBusUtils.decodeBCD(lByte);
-						break;
-
-					case "word":
-						value = ((byteBuffer.get(pos) & 0xFF)<<8) + (byteBuffer.get(pos-1) & 0xFF);
-						break;
-
-					case "uchar":
-					case "byte":
-						value = byteBuffer.get(pos-1) & 0xFF;
-						break;
-
-					case "char":
-						value = byteBuffer.get(pos-1);
-						if((byte)value == (byte)0xFF)
-							value = null;
-						break;
-						
-					case "data1b":
-						value = byteBuffer.get(pos-1);
-						if((byte)value == (byte)0x80)
-							value = null;
-						break;
-
-					case "bit":
-						int bit = ((Long) settings.get("bit")).intValue();
-//						byte n = (byte) (1 << bit);
-						value = byteBuffer.get(pos-1);
-//						value = (byte)value & n;
-						
-						boolean isSet = ((byte)value >> bit& 0x1) == 1;
-						value = isSet;
-						break;
-
-					default:
-						System.out.println("Error: Unknown command type!" + type);
-						break;
-					}
-
-					if(entry.getValue().containsKey("cscript")) {
-						CompiledScript cscript = (CompiledScript) entry.getValue().get("cscript");
-						Bindings bindings = cscript.getEngine().createBindings();
-						bindings.put(entry.getKey(), value);
-						bindings.put("thisValue", value);
-
-						try {
-							value = cscript.eval(bindings);
-
-						} catch (ScriptException e) {
-							e.printStackTrace();
-						}
-					}
-
-					valueRegistry.put(entry.getKey(), value);
-
-//					System.out.println("EBusTelegramParser.parse()");
-					if(debugLevel == DEBUG_ALL || debugShowResults) {
-						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-						System.out.printf("   %-22s%-10s%s%n", entry.getKey(), value, label);
-					}
-				}
-
-
-				if(!registryEntry.containsKey("computed_values"))
-					continue;
-
-				@SuppressWarnings("unchecked")
-				Map<String, Map<String, Object>> cvalues = (Map<String, Map<String, Object>>) registryEntry.get("computed_values");
-				for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
-
-					CompiledScript cscript = (CompiledScript) entry.getValue().get("cscript");
-					Bindings bindings = cscript.getEngine().createBindings();
-					bindings.putAll(valueRegistry);
-
+				// Add global variables thisValue and keyName to JavaScript context
+				HashMap<String, Object> bindings = new HashMap<String, Object>();
+				bindings.put(entry.getKey(), value);
+				bindings.put("thisValue", value);
+				
+				if(settings.containsKey("cscript")) {
 					try {
-						Object value = cscript.eval(bindings);
-						valueRegistry.put(entry.getKey(), value);
-
-						if(debugLevel == DEBUG_ALL || debugShowResults) {
-							String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-							System.out.printf("   $%-21s%-10s%s%n", entry.getKey(), value, label);
-						}
-
-
+						value = evaluateScript(entry, bindings);
 					} catch (ScriptException e) {
-						e.printStackTrace();
+						logger.error("Error on evaluating JavaScript!", e);
+						break;
 					}
 				}
+				
+//				if(debugLevel >= 2) {
+//				if(logger2.isTraceEnabled()) {
+					String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
+					String format = String.format("%-22s%-10s%s", entry.getKey(), value, label);
+					if(debugLevel >= 2) {
+						logger2.debug("    >>> " + format);
+					} else {
+						logger2.trace("    >>> " + format);
+					}
+					
+//				}
+
+				valueRegistry.put(entry.getKey(), value);
 			}
 
-		if(matchCount == 0) {
-			if(debugLevel == DEBUG_UNKNOWN || debugLevel == DEBUG_ALL) {
-				if(bufferString == null)
-					bufferString = EBusUtils.toHexDumpString(byteBuffer).toString();
-				System.err.println("UNKNOWN TELEGRAM  : " + bufferString);
+			// computes values available? if not exit here
+			if(!registryEntry.containsKey("computed_values"))
+				continue;
+
+			@SuppressWarnings("unchecked")
+			Map<String, Map<String, Object>> cvalues = (Map<String, Map<String, Object>>) registryEntry.get("computed_values");
+			for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
+
+				HashMap<String, Object> bindings = new HashMap<String, Object>();
+				bindings.putAll(valueRegistry);
+				Object value;
+				try {
+					value = evaluateScript(entry, bindings);
+					valueRegistry.put(entry.getKey(), value);
+					
+					if(debugLevel >= 2) {
+						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
+						String format = String.format("%-22s%-10s%s", entry.getKey(), value, label);
+						logger2.debug("    >>> " + format);
+					}
+					
+				} catch (ScriptException e) {
+					logger.error("Error on evaluating JavaScript!", e);
+				}
 			}
 		}
 

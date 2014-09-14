@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ebus
+Bundle-Name: EBus Binding
 Bundle-SymbolicName: org.openhab.binding.ebus;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.6.0.qualifier
 Bundle-Activator: org.openhab.binding.ebus.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.apache.commons.lang;version="2.6.0",

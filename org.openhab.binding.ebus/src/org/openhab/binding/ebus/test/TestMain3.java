@@ -48,26 +48,26 @@ public class TestMain3 {
 //		telegram = EBusUtils.convertData2(buffer);
 //		parse = parser.parse(telegram);
 		
-		go("30 08 50 22 03 CC 0D 00 BB 00 02 2A 01 FD 00 AA", parser);	// Temp ?
-		go("30 08 50 22 03 CC 6F 01 BB 00 02 00 00 2C 00 AA", parser);	// 0
-		go("30 08 50 22 03 CC 1A 27 59 00 02 9A 00 A1 00 AA", parser);	// Anlagendruck WORD / 10			1,54
-		go("30 08 50 22 03 CC 53 27 13 00 02 0D 00 6F 00 AA", parser);	// 13
-		go("30 08 50 22 03 CC 54 27 E4 00 02 00 00 2C 00 AA", parser);	// 0
-		go("30 08 50 22 03 CC 16 00 A6 00 02 6F 01 6F 00 AA", parser);	// Temp ?
-		go("30 08 50 22 03 CC 6C 01 8D 00 02 00 00 2C 00 AA", parser);	// 0
-		go("30 08 50 22 03 CC 9A 01 74 00 02 82 00 8A 00 AA", parser);	// Softwareversion WORD				130
-		go("30 08 50 22 03 CC 26 02 F2 00 02 30 1E 64 00 AA", parser);	// Anz. Zündungen WORD				7728
-		go("30 08 50 22 03 CC 27 02 69 00 02 00 00 2C 00 AA", parser);	// 0
-		go("30 08 50 22 03 CC 2A 02 2A 00 02 D0 00 DD 00 AA", parser);	// Betriebsstunden Brenner WORD		208
-		go("30 08 50 22 03 CC 16 27 81 00 02 40 FE 1A 00 AA", parser);	// 
-		go("30 08 50 22 03 CC 1D 27 AE 00 02 9A 01 A0 00 AA", parser);	// Temp ?
-		go("30 08 50 22 03 CC 4F 27 F9 00 02 03 00 1A 00 AA", parser);	// Ionisation WORD					3
-		go("30 08 50 22 03 CC 57 27 D2 00 02 00 00 2C 00 AA", parser);	// 0
-		go("30 08 50 22 03 CC 5E 27 50 00 02 29 00 CA 00 AA", parser);	// Anz. Netz-Ein WORD o. Byte		41
-		
-		go("30 08 50 22 03 CC 0E 00 8D 00 02 F8 01 A1 00 AA", parser);
-		go("30 08 50 22 03 CC 29 02 1C 00 02 00 00 2C 00 AA", parser);
-		go("30 08 50 22 03 CC 16 27 81 00 02 40 FE 1A 00 AA", parser);
+//		go("30 08 50 22 03 CC 0D 00 BB 00 02 2A 01 FD 00 AA", parser);	// Temp ?
+//		go("30 08 50 22 03 CC 6F 01 BB 00 02 00 00 2C 00 AA", parser);	// 0
+//		go("30 08 50 22 03 CC 1A 27 59 00 02 9A 00 A1 00 AA", parser);	// Anlagendruck WORD / 10			1,54
+//		go("30 08 50 22 03 CC 53 27 13 00 02 0D 00 6F 00 AA", parser);	// 13
+//		go("30 08 50 22 03 CC 54 27 E4 00 02 00 00 2C 00 AA", parser);	// 0
+//		go("30 08 50 22 03 CC 16 00 A6 00 02 6F 01 6F 00 AA", parser);	// Temp ?
+//		go("30 08 50 22 03 CC 6C 01 8D 00 02 00 00 2C 00 AA", parser);	// 0
+//		go("30 08 50 22 03 CC 9A 01 74 00 02 82 00 8A 00 AA", parser);	// Softwareversion WORD				130
+//		go("30 08 50 22 03 CC 26 02 F2 00 02 30 1E 64 00 AA", parser);	// Anz. Zündungen WORD				7728
+//		go("30 08 50 22 03 CC 27 02 69 00 02 00 00 2C 00 AA", parser);	// 0
+//		go("30 08 50 22 03 CC 2A 02 2A 00 02 D0 00 DD 00 AA", parser);	// Betriebsstunden Brenner WORD		208
+//		go("30 08 50 22 03 CC 16 27 81 00 02 40 FE 1A 00 AA", parser);	// 
+//		go("30 08 50 22 03 CC 1D 27 AE 00 02 9A 01 A0 00 AA", parser);	// Temp ?
+//		go("30 08 50 22 03 CC 4F 27 F9 00 02 03 00 1A 00 AA", parser);	// Ionisation WORD					3
+//		go("30 08 50 22 03 CC 57 27 D2 00 02 00 00 2C 00 AA", parser);	// 0
+//		go("30 08 50 22 03 CC 5E 27 50 00 02 29 00 CA 00 AA", parser);	// Anz. Netz-Ein WORD o. Byte		41
+//		
+//		go("30 08 50 22 03 CC 0E 00 8D 00 02 F8 01 A1 00 AA", parser);
+//		go("30 08 50 22 03 CC 29 02 1C 00 02 00 00 2C 00 AA", parser);
+//		go("30 08 50 22 03 CC 16 27 81 00 02 40 FE 1A 00 AA", parser);
 		
 //		go("30 76 50 22 03 CC AE 09 ED 00 02 02 00 81 00 AA", parser);
 //		go("30 76 50 22 03 CC F8 02 70 00 02 00 00 2C 00 AA", parser);
@@ -76,7 +76,7 @@ public class TestMain3 {
 		
 		
 		
-		go("30 76 50 23 05 D4 66 00 00 00 0C 00 00 00 AA", parser);
+		go("71 FE 50 18 0E 10 00 97 00 03 00 A5 00 16 00 02 00 00 00 B2 AA", parser);
 		
 		/*
 		 * 

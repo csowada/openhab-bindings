@@ -3,9 +3,14 @@ package org.openhab.binding.ebus.parser;
 import java.nio.ByteBuffer;
 
 import org.openhab.binding.ebus.EbusTelegram;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EBusUtils {
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(EBusUtils.class);
+	
 	/** calculated crc values */
 	final static private byte CRC_TAB_8_VALUE[] = {
 		(byte) 0x00, (byte) 0x9B, (byte) 0xAD, (byte) 0x36, (byte) 0xC1, (byte) 0x5A, 
@@ -216,8 +221,9 @@ public class EBusUtils {
 		
 		// check calculted crc with received crc
 		if(crc != uc_crc) {
-			System.err.println("Wrong CRC!");
 			
+			logger.warn("EBus telegram sender-crc invalid, skip data! Data: {}", toHexDumpString(data));
+
 			// invalid, return null
 			return null;
 		}
@@ -240,7 +246,7 @@ public class EBusUtils {
 		
 		if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
 			// Unexpected value on this position
-			System.err.println("Error: Unexcepted value!");
+			logger.warn("Unexpect ack value in EBus telegram, skip data!");
 			return null;
 		}
 		
@@ -268,13 +274,13 @@ public class EBusUtils {
 		buffer.put(data, data.length-3, 3);
 		
 		// check calculted crc with received crc
-		if(crc == uc_crc) {
-			// return valid telegram
-			return new EbusTelegram(buffer);
+		if(crc != uc_crc) {
+			logger.warn("EBus telegram answer-crc invalid, skip data!");
+			return null;
 		}
 
-		// end reached, than return null
-		return null;
+		// return valid telegram
+		return new EbusTelegram(buffer);
 	}
 
 	/**
@@ -323,6 +329,10 @@ public class EBusUtils {
 //		} else {
 //			return (h*16) + (l & 0x0F) + ((float)(l >> 4) / 16);
 //		}
+	}
+	
+	public static int decodeWORD(byte highData, byte lowData) {
+		return ((highData & 0xFF)<<8) + (lowData & 0xFF);
 	}
 	
 	/**
