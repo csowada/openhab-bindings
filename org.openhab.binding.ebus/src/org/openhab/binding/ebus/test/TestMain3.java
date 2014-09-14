@@ -14,10 +14,11 @@ public class TestMain3 {
 
 	public static void go(String data, EBusTelegramParser parser) {
 		byte[] buffer = convertString(data);
-		EbusTelegram telegram = EBusUtils.convertData2(buffer);
+		EbusTelegram telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 	}
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		
 		final EBusTelegramParser parser = new EBusTelegramParser();
@@ -103,40 +104,40 @@ unknown 41 Value
 		
 		// 0503
 		buffer = convertString("03 FE 05 03 08 01 00 00 FF 51 2F 44 13 96 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 		// 0800
 		buffer = convertString("03 F1 08 00 08 00 80 99 13 80 00 00 05 F6 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 
 
 		// 0514
 		buffer = convertString("30 50 50 14 07 20 80 21 00 00 00 64 05 00 09 00 00 00 80 00 80 00 B4 05 3C 00 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 		// 5017
 		buffer = convertString("71 FE 50 17 10 41 B5 2A 05 85 03 00 80 00 80 00 80 00 80 00 80 05 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 
 		// 5018
 		buffer = convertString("71 FE 50 18 0E 1E 00 65 02 00 00 2B 03 77 03 01 00 00 00 A9 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 		// 5022
 		buffer = convertString("30 08 50 22 03 CC 6F 01 BB 00 02 00 00 2C 00 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 		// 5023
 		buffer = convertString("71 30 50 23 09 B0 F4 02 00 04 5D 01 00 00 80 AA");
-		telegram = EBusUtils.convertData2(buffer);
+		telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 
 

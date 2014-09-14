@@ -123,7 +123,7 @@ public class EBusTelegramParser {
 	public Map<String, Object> parse(EbusTelegram telegram) {
 
 		if(telegramRegistry == null) {
-			logger.error("sf  s sfs");
+			logger.error("Configuration not loaded, can't parse telegram!");
 			return null;
 		}
 		
@@ -135,8 +135,6 @@ public class EBusTelegramParser {
 		
 		ByteBuffer byteBuffer = telegram.getBuffer();
 		int matchCount = 0;
-
-
 
 		String bufferString = null;
 

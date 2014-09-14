@@ -18,25 +18,38 @@ public abstract class EbusSerialPortEvent implements SerialPortEventListener {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EbusSerialPortEvent.class);
 
+	/** serial receive buffer */
 	private ByteBuffer dataBuffer = ByteBuffer.allocate(50);
 	
+	/**
+	 * Process an ebus telegram after successful receiving (crc checks).
+	 * @param telegram The correct received ebus telegram
+	 */
 	public abstract void onEBusTelegramAvailable(EbusTelegram telegram);
 	
+	/* (non-Javadoc)
+	 * @see gnu.io.SerialPortEventListener#serialEvent(gnu.io.SerialPortEvent)
+	 */
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		if(event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				onDataAvailable(event);
 			} catch (IOException e) {
-				logger.error("", e);
+				logger.error(e.toString(), e);
 			}
 		}
 	}
 	
+	/**
+	 * Process serial onDataAvailable event.
+	 * @param event The event
+	 * @throws IOException
+	 */
 	private void onDataAvailable(SerialPortEvent event) throws IOException {
 
-		SerialPort port = (SerialPort) event.getSource();
-		InputStream is = port.getInputStream();
+		final SerialPort port = (SerialPort) event.getSource();
+		final InputStream is = port.getInputStream();
 
 		byte[] buffer = new byte[50];
 		int bufLen = is.read(buffer);
@@ -56,9 +69,8 @@ public abstract class EbusSerialPortEvent implements SerialPortEventListener {
 					byte[] b = new byte[dataBuffer.position()];
 					System.arraycopy(dataBuffer.array(), 0, b, 0, dataBuffer.position());
 					
-					EbusTelegram telegram = EBusUtils.convertData2(b);
+					EbusTelegram telegram = EBusUtils.processEBusData(b);
 					onEBusTelegramAvailable(telegram);
-//					parser.parse(telegram);
 				}
 
 				dataBuffer.clear();

@@ -18,8 +18,8 @@ import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.serial.EbusSerialPortEvent;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.PrimitiveType;
 import org.openhab.core.types.State;
+import org.osgi.service.cm.ConfigurationException;
 //import org.openhab.core.library.types.DecimalType;
 //import org.openhab.core.types.PrimitiveType;
 import org.slf4j.Logger;
@@ -30,12 +30,34 @@ public class EBusConnector {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusConnector.class);
 	
+	/** serial connection if open */
 	private SerialPort serialPort;
 	
-	public void open(final EBusBinding eBusBinding, Dictionary<String, ?> properties) throws NoSuchPortException, PortInUseException, IOException, ParseException {
+	/**
+	 * Open a connection to listen on the ebus (serial) for telegrams. A separate 
+	 * event thread processes the received telegrams.
+	 * @param eBusBinding
+	 * @param properties The properties with information for serial port etc.
+	 * @throws NoSuchPortException
+	 * @throws PortInUseException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws ConfigurationException
+	 */
+	public void open(final EBusBinding eBusBinding, Dictionary<String, ?> properties) throws NoSuchPortException, PortInUseException, IOException, ParseException, ConfigurationException {
 
+		
+		if(properties == null) {
+			throw new ConfigurationException("global", "No properties in openhab.cfg defined!");
+		}
+		
+		String port = (String) properties.get("serialPort");
+		if(port == null || port.equals("")) {
+			throw new ConfigurationException("serialPort", "sadasd");
+		}
+		
 		try {
-			CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier("COM6");
+			CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 			
 			serialPort = (SerialPort) portIdentifier.open("openhab-ebus", 3000);
 			serialPort.setSerialPortParams(2400, SerialPort.DATABITS_8,
@@ -55,9 +77,6 @@ public class EBusConnector {
 			}
 			
 			parser.loadConfigurationFile(configurationUrl);
-			
-			String parserDebug = (String) properties.get("parser.debug");
-			
 			parser.setDebugLevel(EBusTelegramParser.DEBUG_UNKNOWN);
 			
 			EbusSerialPortEvent event = new EbusSerialPortEvent() {
@@ -67,7 +86,6 @@ public class EBusConnector {
 					if(results != null) {
 						for (Entry<String, Object> entry : results.entrySet()) {
 							
-//							DecimalType decimalType = new DecimalType();
 							State state = null;
 							if(entry.getValue() instanceof Float) {
 								state = new DecimalType((Float)entry.getValue());
@@ -99,12 +117,19 @@ public class EBusConnector {
 		}
 	}
 
+	/**
+	 * Closes the connector
+	 */
 	public void close() {
 		if(serialPort != null) {
 			serialPort.close();
 		}
 	}
 
+	/**
+	 * Check if the connector is open
+	 * @return true if the connector is open
+	 */
 	public boolean isOpen() {
 		return serialPort != null;
 	}

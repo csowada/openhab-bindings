@@ -20,8 +20,12 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusBinding.class);
 
-	EBusConnector connector;
+	/** the connector, it handles the serial communication */
+	private EBusConnector connector;
 
+	/* (non-Javadoc)
+	 * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)
+	 */
 	@Override
 	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
 		logger.debug("Update EBusBinding Binding ...");
@@ -45,6 +49,10 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
+	/**
+	 * @param id
+	 * @param newState
+	 */
 	public void postUpdate(String id, State newState) {
 		for (EBusBindingProvider provider : providers) {
 			String itemName = provider.getItemName(id);
@@ -54,14 +62,14 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
-	/**
-	 * @{inheritDoc
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractBinding#activate()
 	 */
 	public void activate() {
 	}
 
-	/**
-	 * @{inheritDoc
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractBinding#deactivate()
 	 */
 	public void deactivate() {
 		System.out.println("EBusBinding.deactivate()");
@@ -71,16 +79,25 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractActiveBinding#execute()
+	 */
 	@Override
 	protected void execute() {
 		System.out.println("EBusBinding.execute()");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractActiveBinding#getRefreshInterval()
+	 */
 	@Override
 	protected long getRefreshInterval() {
 		return 10;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractActiveBinding#getName()
+	 */
 	@Override
 	protected String getName() {
 		return "EBus";

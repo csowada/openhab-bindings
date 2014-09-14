@@ -6,9 +6,13 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.TooManyListenersException;
 
+import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.serial.EbusSerialPortEvent;
 
 public class TestMain2 {
@@ -26,33 +30,26 @@ public class TestMain2 {
 			serialPort.disableReceiveTimeout();
 			serialPort.enableReceiveThreshold(1);
 			
+			final URL configurationUrl = ClassLoader.getSystemResource("META-INF/ebus-configuration.json");
+			final EBusTelegramParser parser = new EBusTelegramParser();
+//			url = new URL("platform:/plugin/de.vogella.rcp.plugin.filereader/files/test.txt")
+			try {
+				parser.loadConfigurationFile(configurationUrl);
+			} catch (IOException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			EbusSerialPortEvent event = new EbusSerialPortEvent() {
 				@Override
 				public void onEBusTelegramAvailable(EbusTelegram telegram) {
-					
+					parser.parse(telegram);
 				}
 			};
 			
 			serialPort.addEventListener(event);
 			serialPort.notifyOnDataAvailable(true);
 			serialPort.notifyOnOutputEmpty(true);
-			
-			
-//			DataInputStream inputStream = new DataInputStream(
-//					new BufferedInputStream(serialPort.getInputStream()));
-//			OutputStream outputStream = serialPort.getOutputStream();
-//			byte[] buffer = new byte[50];
-//					
-//			while (inputStream.available() > 0) {
-//				
-//				int l = inputStream.read(buffer);
-//				
-//				
-//				
-//				Thread.sleep(40);
-//			}
-			
-			
 			
 		} catch (NoSuchPortException e) {
 			// TODO Auto-generated catch block

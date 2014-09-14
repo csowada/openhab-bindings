@@ -6,10 +6,7 @@ import org.openhab.binding.ebus.EbusTelegram;
 
 public class EBusUtils {
 
-//	final static byte SYN = (byte)0xAA;
-//	final static byte ACK_OK = (byte)0x00;
-//	final static byte ACK_FAIL = (byte)0xFF;
-
+	/** calculated crc values */
 	final static private byte CRC_TAB_8_VALUE[] = {
 		(byte) 0x00, (byte) 0x9B, (byte) 0xAD, (byte) 0x36, (byte) 0xC1, (byte) 0x5A, 
 		(byte) 0x6C, (byte) 0xF7, (byte) 0x19, (byte) 0x82, (byte) 0xB4, (byte) 0x2F,
@@ -97,6 +94,11 @@ public class EBusUtils {
 		(byte) 0xE0, (byte) 0x7B
 	};
 
+	/**
+	 * Generates a string hex dump from a ByteBuffer
+	 * @param data The source
+	 * @return The StringBuilder with hex dump
+	 */
 	static public StringBuilder toHexDumpString(ByteBuffer data) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < data.position(); i++) {
@@ -107,6 +109,11 @@ public class EBusUtils {
 		return sb;
 	}
 	
+	/**
+	 * Generates a string hex dump from a byte array
+	 * @param data The source
+	 * @return The StringBuilder with hex dump
+	 */
 	static public StringBuilder toHexDumpString(byte[] data) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < data.length; i++) {
@@ -117,23 +124,43 @@ public class EBusUtils {
 		return sb;
 	}
 
+	/**
+	 * Generates a hex string representative of byte data
+	 * @param data The source
+	 * @return The hex string
+	 */
 	static public String toHexDumpString(byte data) {
 		return String.format("%02X", (0xFF & data));
 	}
 
-	/* ************************************************** */
-	/* Function for CRC-calculation with tab operations   */
-	/* ************************************************** */
+	/**
+	 * CRC calculation with tab operations
+	 * @param data The byte to crc check
+	 * @param crc_init The current crc result or another start value
+	 * @return The crc result
+	 */
 	static byte crc8_tab(byte data, byte crc_init) {
 		int ci = unsignedInt(crc_init);
 		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
 		return crc;
 	}
 
+	/**
+	 * Converts a signed int (java default) to a unsigned int
+	 * @param signedInt The signed int
+	 * @return The unsigned int
+	 */
 	static int unsignedInt(int signedInt) {
 		return (signedInt << 24) >>> 24;
 	}
 
+	/**
+	 * Expands ebus-data bytes 0xAA and 0xA9 from byte data. All other bytes
+	 * are unchanged.
+	 * @param data The received byte buffer
+	 * @param pos The position to check
+	 * @return The new value or the unchanged byte
+	 */
 	static private byte expandByte(byte[] data, int pos) {
 		if(data[pos-1] == (byte)0xA9) {
 			if(data[pos] == (byte)0x00) {
@@ -145,7 +172,12 @@ public class EBusUtils {
 		return data[pos];
 	}
 	
-	static public EbusTelegram convertData2(byte[] data) {
+	/**
+	 * Processes a EBus received byte array, crc check, expand special bytes.
+	 * @param data The received raw byte data
+	 * @return A valid object or null if the data was incorrect
+	 */
+	static public EbusTelegram processEBusData(byte[] data) {
 
 		ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
 
@@ -155,11 +187,14 @@ public class EBusUtils {
 		
 		byte uc_crc = 0;
 		
+		// crc-check first bytes
 		for (int i = 0; i < 5; i++) {
 			byte b = data[i];
 			uc_crc = crc8_tab(b, uc_crc);
 		}
 		
+		// process sender data and find data end pos.
+		// (may moved because expanded bytes)
 		for (int i = 5; i < data.length; i++) {
 			byte b = data[i];
 			
@@ -179,32 +214,37 @@ public class EBusUtils {
 		int crcPos = nnPos+1;
 		byte crc = data[crcPos];
 		
+		// check calculted crc with received crc
 		if(crc != uc_crc) {
 			System.err.println("Wrong CRC!");
+			
+			// invalid, return null
 			return null;
 		}
 		
 		buffer.put(crc);
 		buffer.put(data[crcPos+1]);
 		
-//		System.out.println("--x->        " + toHexDumpString(buffer.array()));
-		
 		if(data[crcPos+1] == EbusTelegram.SYN) {
-//			System.out.println("TYPE: Broadcast Telegram");
+			// Broadcast Telegram, end
 			return new EbusTelegram(buffer);
 		}
 		
 		if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
 				&& data[crcPos+2] == EbusTelegram.SYN) {
-//			System.out.println("TYPE: Master-Master Telegram");
+
+			// Master-Master Telegram, add ack value and end
 			buffer.put(data[crcPos+2]);
 			return new EbusTelegram(buffer);
 		}
 		
 		if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
+			// Unexpected value on this position
 			System.err.println("Error: Unexcepted value!");
 			return null;
 		}
+		
+		// ok, read slave answer
 		
 		int nn2Pos = crcPos+2;
 		byte nn2 = data[nn2Pos];
@@ -212,39 +252,48 @@ public class EBusUtils {
 		buffer.put(nn2);
 		uc_crc = crc8_tab(nn2, (byte)0);
 
+		// process answer data and find data end pos.
+		// (may moved because expanded bytes)
 		for (int i = nn2Pos+1; i < data.length-3; i++) {
 			byte b = data[i];
 			
 			uc_crc = crc8_tab(b, uc_crc);
 
 			if(b != (byte)0xA9) {
-//				nn2Pos++;
 				buffer.put(expandByte(data, i));
 			}
 		}
 		
 		crc = data[data.length-3];
-		
 		buffer.put(data, data.length-3, 3);
 		
+		// check calculted crc with received crc
 		if(crc == uc_crc) {
-//			System.out.println("TYPE: Master-Slave Telegram");
-//			System.out.println("Alles klar!");
+			// return valid telegram
 			return new EbusTelegram(buffer);
 		}
-		
-//		buffer.limit(buffer.position());
-		
-		
-		
+
+		// end reached, than return null
 		return null;
 	}
 
+	/**
+	 * Convert EBus Type DATA1C
+	 * @param data The encoded value
+	 * @return The decoded value
+	 */
 	public static float decodeDATA1c(int data) {
 		int psuedoUnsigned = (data << 24) >>> 24;
 		return (psuedoUnsigned / 2);
 	}
 
+	/**
+	 * Convert EBus Type DATA2c
+	 * FIXME: Badly programmed, can't process negativ values
+	 * @param highData The encoded high byte
+	 * @param lowData The encoded low byte
+	 * @return The decoded value
+	 */
 	public static Float decodeDATA2c(byte highData, byte lowData) {
 
 		int h = unsignedInt(highData);
@@ -276,6 +325,13 @@ public class EBusUtils {
 //		}
 	}
 	
+	/**
+	 * Convert EBus Type DATA2b
+	 * FIXME: Badly programmed, can't process negativ values
+	 * @param highData The encoded high byte
+	 * @param lowData The encoded low byte
+	 * @return The decoded value
+	 */
 	public static Float decodeDATA2b(byte highData, byte lowData) {
 		float h = unsignedInt(highData);
 		float l = unsignedInt(lowData);
@@ -287,6 +343,11 @@ public class EBusUtils {
 		}
 	}
 	
+	/**
+	 * Convert the value to a bcd value
+	 * @param data The encoded value
+	 * @return The bcd value
+	 */
 	public static int decodeBCD(byte data) {
 		return (data >> 4)*10 + (data & (byte) 0x0F);
 	}

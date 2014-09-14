@@ -7,6 +7,10 @@ public class Activator implements BundleActivator {
 
 	private static BundleContext context;
 
+	/**
+	 * Returns the bundle context
+	 * @return bundle context
+	 */
 	static BundleContext getContext() {
 		return context;
 	}
