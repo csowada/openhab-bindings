@@ -4,6 +4,11 @@ openhab-bindings
 ## EBus Binding
 Das EBus Binding ist in der Lage die Kommunikation über den EBus einer Heizungsanlage direkt auszulesen.
 
+### Vorraussetzung
+
+1. Java 1.7 oder höher (JavaScript Engine wird verwendet!)
+2. EBus Adapter
+
 ### Installation
 
 - Die Datei _org.openhab.binding.ebus_1.x.x.xxxxxxxxx.jar_ in das Openhab _addons_ Verzeichnis kopieren.
