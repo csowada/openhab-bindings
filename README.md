@@ -10,7 +10,7 @@ Das EBus Binding ist in der Lage die Kommunikation über den EBus einer Heizungs
 ### Installation
 
 - Die Datei _org.openhab.binding.ebus_1.x.x.xxxxxxxxx.jar_ in das Openhab _addons_ Verzeichnis kopieren.
-- Die Openhab Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Fügen Sie dies der Datei hinzu und passen es entsprechen an.
+- Die Openhab Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an.
 ```
 ebus:serialPort=/dev/ttyUSB0
 #ebus:parserUrl=platform:/base/../configurations/ebus-config.json
@@ -42,3 +42,12 @@ Number Yield_Solar_Yield_Sum	"Sol. Gesamtertrag [%.1f kW/h]"	<chart> 		(HeatingU
 Number Yield_Solar_Yield_Day	"Sol. Tagesertrag [%.2f kW/h]"	<chart> 		(HeatingUnit) 	{ ebus="id:yield_day"}
 Number Yield_Solar_Current		"Aktueller Ertrag[%.2f kW]"	<chart> 		(HeatingUnit,Solar_Chart) 	{ ebus="id:solar_current"}
 ```
+
+### Logging
+---Fehlt noch---
+
+### Customizing
+Um das Binding an deine Heizung anzupassen, kann eine eigene Konfigurationsdatei erstellt werden. Das Format der Datei ist JSON und lässt sich einfach anpassen.
+Hier die aktuelle [ebus-configuration.json](https://github.com/csowada/openhab-bindings/blob/master/org.openhab.binding.ebus/src/META-INF/ebus-configuration.json) Version.
+
+Zum laden deiner eigenen Konfiguration einfach den Eintrag ``ebus:parserUrl=platform:/base/../configurations/ebus-config.json`` in der _openhab.cfg_ hinzufügen. Dann kann deine eigene Konfiguration im Verzeichnis _openhab/configurations/ebus-configuration.json_ abgelegt werden.
