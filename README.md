@@ -6,14 +6,14 @@ Das eBus Binding ist in der Lage die Kommunikation über den eBus einer Heizungs
 
 ### Vorraussetzung
 
-1. Openhab 1.5 (Ältere Versionen sollten aber laufen)
+1. openHAB 1.5 (Ältere Versionen sollten aber laufen)
 2. Java 1.7 oder höher (JavaScript Engine wird verwendet! [Link](http://www.oracle.com/technetwork/articles/java/jf14-nashorn-2126515.html))
-2. eBus Adapter
+2. eBus Adapter ([Beispiele](http://ebus.webhop.org/twiki/bin/view.pl/EBus/EBusKonverter) - Seite langsam!)
 
 ### Installation
 
 - Die Datei _org.openhab.binding.ebus_1.x.x.xxxxxxxxx.jar_ in das Openhab _addons_ Verzeichnis kopieren.
-- Die Openhab Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an.
+- Die openHAB Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an.
 ```
 ebus:serialPort=/dev/ttyUSB0
 #ebus:parserUrl=platform:/base/../configurations/ebus-config.json
