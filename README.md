@@ -1,14 +1,14 @@
 # Informationen
 - [eBus Binding](./documents/EBus-Binding.md)
 
-## EBus Binding
-Das EBus Binding ist in der Lage die Kommunikation über den EBus einer Heizungsanlage direkt auszulesen.
+## eBus Binding
+Das eBus Binding ist in der Lage die Kommunikation über den eBus einer Heizungsanlage direkt auszulesen.
 
 ### Vorraussetzung
 
 1. Openhab 1.5 (Ältere Versionen sollten aber laufen)
 2. Java 1.7 oder höher (JavaScript Engine wird verwendet! [Link](http://www.oracle.com/technetwork/articles/java/jf14-nashorn-2126515.html))
-2. EBus Adapter
+2. eBus Adapter
 
 ### Installation
 
