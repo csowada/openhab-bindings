@@ -15,7 +15,7 @@ Das eBus Binding ist in der Lage die Kommunikation über den eBus einer Heizungs
 - Die Datei _org.openhab.binding.ebus_1.x.x.xxxxxxxxx.jar_ in das Openhab _addons_ Verzeichnis kopieren.
 - Die openHAB Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an.
 ```
-ebus:serialPort=/dev/ttyUSB0
+ebus:serialPort=COM2
 #ebus:parserUrl=platform:/base/../configurations/ebus-config.json
 ```
 - Die eigene _.items_ Datei um die gewüschten Einträge erweitern. Hier ein Beispiel.
