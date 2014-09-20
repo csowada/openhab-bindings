@@ -9,6 +9,7 @@ import java.util.Dictionary;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.parser.ParseException;
 import org.openhab.core.binding.AbstractActiveBinding;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -22,6 +23,12 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 
 	/** the connector, it handles the serial communication */
 	private EBusConnector connector;
+
+	@Override
+	protected void internalReceiveCommand(String itemName, Command command) {
+		System.out.println("EBusBinding.internalReceiveCommand()");
+		super.internalReceiveCommand(itemName, command);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)

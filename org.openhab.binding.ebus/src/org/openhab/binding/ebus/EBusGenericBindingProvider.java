@@ -35,14 +35,14 @@ public class EBusGenericBindingProvider extends
 		
 		String[] configParts = bindingConfig.trim().split(":");
 		if (configParts.length > 2) {
-			throw new BindingConfigParseException("WX binding configuration must not contain more than two parts");
+			throw new BindingConfigParseException("eBus binding configuration must not contain more than two parts");
 		}
 		
 		EBusBindingConfig config = new EBusBindingConfig();
 		if(configParts[0].equals("id")) {
 			config.id = configParts[1];
 		} else {
-			throw new BindingConfigParseException("EBus binding configuration must contain id");
+			throw new BindingConfigParseException("eBus binding configuration must contain id");
 		}
 		
 		

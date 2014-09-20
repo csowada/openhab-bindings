@@ -144,7 +144,7 @@ public class EBusUtils {
 	 * @param crc_init The current crc result or another start value
 	 * @return The crc result
 	 */
-	static byte crc8_tab(byte data, byte crc_init) {
+	public static byte crc8_tab(byte data, byte crc_init) {
 		int ci = unsignedInt(crc_init);
 		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
 		return crc;

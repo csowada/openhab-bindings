@@ -7,15 +7,18 @@ import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.TooManyListenersException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
-import org.openhab.binding.ebus.serial.EbusSerialPortEvent;
+import org.openhab.binding.ebus.serial.EBusSerialPortEvent;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -30,6 +33,8 @@ public class EBusConnector {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusConnector.class);
+	
+	private Queue<EbusTelegram> outputQueue = new LinkedBlockingQueue<EbusTelegram>(20);
 	
 	/** serial connection if open */
 	private SerialPort serialPort;
@@ -66,9 +71,7 @@ public class EBusConnector {
 
 			serialPort.disableReceiveTimeout();
 			serialPort.enableReceiveThreshold(1);
-			
-			
-			
+
 			final EBusTelegramParser parser = new EBusTelegramParser();
 			URL configurationUrl = this.getClass().getResource("/META-INF/ebus-configuration.json");
 
@@ -81,7 +84,7 @@ public class EBusConnector {
 			
 			parser.loadConfigurationFile(configurationUrl);
 			
-			EbusSerialPortEvent event = new EbusSerialPortEvent() {
+			EBusSerialPortEvent event = new EBusSerialPortEvent(serialPort) {
 				@Override
 				public void onEBusTelegramAvailable(EbusTelegram telegram) {
 					Map<String, Object> results = parser.parse(telegram);
@@ -119,6 +122,7 @@ public class EBusConnector {
 			// setz events
 			serialPort.addEventListener(event);
 			serialPort.notifyOnDataAvailable(true);
+			serialPort.notifyOnOutputEmpty(true);
 			
 			logger.debug("EBus Connector communication running ...");
 			
@@ -129,6 +133,22 @@ public class EBusConnector {
 		}
 	}
 
+	public void send(EbusTelegram telegram) {
+		try {
+			outputQueue.add(telegram);
+			try {
+				OutputStream outputStream = serialPort.getOutputStream();
+				outputStream.write(null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			serialPort.getOutputStream().
+		} catch (IllegalStateException e) {
+			throw new IllegalStateException("Unable to send more telegram, send queue is full");
+		}
+	}
+	
 	/**
 	 * Closes the connector
 	 */
