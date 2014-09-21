@@ -26,16 +26,24 @@ public class EBusThread extends Thread {
 	/** serial receive buffer */
 	private final ByteBuffer inputBuffer = ByteBuffer.allocate(50);
 	
-	private InputStream inputStream;
-	private OutputStream outputStream;
+	protected InputStream inputStream;
+	protected OutputStream outputStream;
 
 	private int collisionCounter;
 
-	public EBusThread(InputStream inputStream, OutputStream outputStream) {
+	public EBusThread() {
 		super("eBus Connection Thread");
-		this.inputStream = inputStream;
-		this.outputStream = outputStream;
+//		this.inputStream = inputStream;
+//		this.outputStream = outputStream;
 		this.setDaemon(true);
+	}
+	
+	protected void connect() {
+		
+	}
+	
+	protected void disconnect() {
+		
 	}
 	
 	/**
@@ -58,6 +66,9 @@ public class EBusThread extends Thread {
 	 */
 	@Override
 	public void run() {
+		
+		connect();
+		
 		while (!isInterrupted()) {
 			try {
 				int read = inputStream.read();
@@ -74,6 +85,8 @@ public class EBusThread extends Thread {
 				logger.error(e.toString(), e);
 			}
 		}
+		
+		disconnect();
 	}
 	
 	/**
