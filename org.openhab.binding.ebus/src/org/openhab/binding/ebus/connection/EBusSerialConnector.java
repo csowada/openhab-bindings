@@ -1,4 +1,4 @@
-package org.openhab.binding.ebus.serial;
+package org.openhab.binding.ebus.connection;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -8,17 +8,23 @@ import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
 
-public class EBusSerialThread extends EBusThread {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class EBusSerialConnector extends AbstractEBusConnector {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(EBusSerialConnector.class);
+	
 	private SerialPort serialPort;
 	private String port;
 
-	public EBusSerialThread(String port) {
+	public EBusSerialConnector(String port) {
 		this.port = port;
 	}
 
 	@Override
-	protected void connect() {
+	public boolean connect() throws IOException {
 		try {
 			final CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 			
@@ -32,23 +38,23 @@ public class EBusSerialThread extends EBusThread {
 			outputStream = serialPort.getOutputStream();
 			inputStream = serialPort.getInputStream();
 			
+			return true;
+			
 		} catch (NoSuchPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.toString(), e);
 		} catch (PortInUseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.toString(), e);
 		} catch (UnsupportedCommOperationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.toString(), e);
 		}
+		
+		return false;
 	}
 
 	@Override
-	protected void disconnect() {
+	public boolean disconnect() throws IOException  {
 		serialPort.close();
+		serialPort = null;
+		return true;
 	}
 }

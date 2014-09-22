@@ -10,4 +10,6 @@ public interface EBusBindingProvider extends BindingProvider {
 	 * @return The openhab item name
 	 */
 	public String getItemName(String id);
+
+	public byte[] getCommandData(String itemName);
 }

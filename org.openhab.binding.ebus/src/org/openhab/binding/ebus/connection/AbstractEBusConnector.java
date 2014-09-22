@@ -1,4 +1,4 @@
-package org.openhab.binding.ebus.serial;
+package org.openhab.binding.ebus.connection;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,13 +15,13 @@ import org.openhab.binding.ebus.parser.EBusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EBusThread extends Thread {
+public abstract class AbstractEBusConnector extends Thread {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(EBusThread.class);
+			.getLogger(AbstractEBusConnector.class);
 	
 	private final Queue<byte[]> outputQueue = new LinkedBlockingQueue<byte[]>(20);
-	private final List<IEBusEventListener> listeners = new ArrayList<IEBusEventListener>();
+	private final List<EBusConnectorEventListener> listeners = new ArrayList<EBusConnectorEventListener>();
 	
 	/** serial receive buffer */
 	private final ByteBuffer inputBuffer = ByteBuffer.allocate(50);
@@ -31,25 +31,23 @@ public class EBusThread extends Thread {
 
 	private int collisionCounter;
 
-	public EBusThread() {
+	public AbstractEBusConnector() {
 		super("eBus Connection Thread");
-//		this.inputStream = inputStream;
-//		this.outputStream = outputStream;
 		this.setDaemon(true);
 	}
 	
-	protected void connect() {
-		
+	public boolean connect() throws IOException {
+		return true;
 	}
 	
-	protected void disconnect() {
-		
+	public boolean disconnect() throws IOException {
+		return true;
 	}
 	
 	/**
 	 * @param listener
 	 */
-	public void addEBusEventListener(IEBusEventListener listener) {
+	public void addEBusEventListener(EBusConnectorEventListener listener) {
 		listeners.add(listener);
 	}
 	
@@ -57,7 +55,7 @@ public class EBusThread extends Thread {
 	 * @param listener
 	 * @return
 	 */
-	public boolean removeEBusEventListener(IEBusEventListener listener) {
+	public boolean removeEBusEventListener(EBusConnectorEventListener listener) {
 		return listeners.remove(listener);
 	}
 	
@@ -67,26 +65,31 @@ public class EBusThread extends Thread {
 	@Override
 	public void run() {
 		
-		connect();
-		
-		while (!isInterrupted()) {
-			try {
-				int read = inputStream.read();
-				if(read != -1) {
-					byte receivedByte = (byte)(read & 0xFF);
-					
-					inputBuffer.put(receivedByte);
-					if(receivedByte == EbusTelegram.SYN) {
-						onEBusSyncReceived();
+//		if(connect()) {
+			while (!isInterrupted()) {
+				try {
+					int read = inputStream.read();
+					if(read != -1) {
+						byte receivedByte = (byte)(read & 0xFF);
+						
+						inputBuffer.put(receivedByte);
+						if(receivedByte == EbusTelegram.SYN) {
+							onEBusSyncReceived();
+						}
 					}
+					
+				} catch (IOException e) {
+					logger.error(e.toString(), e);
 				}
-				
-			} catch (IOException e) {
-				logger.error(e.toString(), e);
 			}
-		}
-		
-		disconnect();
+			
+			try {
+				disconnect();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//		}
 	}
 	
 	/**
@@ -95,19 +98,20 @@ public class EBusThread extends Thread {
 	protected void onEBusSyncReceived() throws IOException {
 
 		if(inputBuffer.position() == 1 && inputBuffer.get(0) == EbusTelegram.SYN) {
-			// auto sync byte
+			logger.trace("Auto-SYN byte received");
+
 		}else if(inputBuffer.position() < 5) {
-			System.out.println("EBusThread.onEBusSyncReceived() - Telegram to small");
+			logger.trace("Telegram to small, skip!");
+			
 		} else {
 			byte[] copyOf = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
 			EbusTelegram telegram = EBusUtils.processEBusData(copyOf);
 			
 			if(telegram != null) {
 				onEBusTelegramReceived(telegram);
-//				System.out.println(EBusUtils.toHexDumpString(telegram.getBuffer()));
-				
+
 			} else {
-				System.out.println("EBusThread.onEBusTelegramReceived() - UPS");
+				logger.debug("Received telegram was invalid, skip!");
 			}
 			
 		}
@@ -126,7 +130,7 @@ public class EBusThread extends Thread {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				for (IEBusEventListener listener : listeners) {
+				for (EBusConnectorEventListener listener : listeners) {
 					listener.onTelegramReceived(telegram);
 				}
 			}
@@ -138,7 +142,7 @@ public class EBusThread extends Thread {
 	 * @return
 	 */
 	public boolean send(byte[] data) {
-		logger.debug("Add to send queue: " + EBusUtils.toHexDumpString(data));
+		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
 	
@@ -172,6 +176,7 @@ public class EBusThread extends Thread {
 					if(collisionCounter++ > 10) {
 						logger.error("More than 10 bus conflicts has ocoured, there is something wrong!");
 						outputQueue.clear();
+						collisionCounter = 0;
 						
 					} else {
 						logger.warn("eBus Send Collision!");

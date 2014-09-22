@@ -28,8 +28,6 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		System.out.println("Activator.stop()");
 		Activator.context = null;
 	}
-
 }

@@ -1,10 +1,10 @@
 package org.openhab.binding.ebus.test;
 
 import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.connection.EBusSerialConnector;
+import org.openhab.binding.ebus.connection.AbstractEBusConnector;
+import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
 import org.openhab.binding.ebus.parser.EBusUtils;
-import org.openhab.binding.ebus.serial.EBusSerialThread;
-import org.openhab.binding.ebus.serial.EBusThread;
-import org.openhab.binding.ebus.serial.IEBusEventListener;
 
 public class TestMain5 {
 
@@ -13,9 +13,9 @@ public class TestMain5 {
 
 		System.out.println("TestMain5.main()");
 		
-		EBusThread t = new EBusSerialThread("COM6");
+		AbstractEBusConnector t = new EBusSerialConnector("COM6");
 		
-		t.addEBusEventListener(new IEBusEventListener() {
+		t.addEBusEventListener(new EBusConnectorEventListener() {
 			@Override
 			public void onTelegramReceived(EbusTelegram telegram) {
 				System.err.println(EBusUtils.toHexDumpString(telegram.getBuffer()));

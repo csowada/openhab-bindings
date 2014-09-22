@@ -2,6 +2,9 @@ package org.openhab.binding.ebus;
 
 import java.util.Map.Entry;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.lang.StringUtils;
 import org.openhab.core.binding.BindingConfig;
 import org.openhab.core.items.Item;
 import org.openhab.model.item.binding.AbstractGenericBindingProvider;
@@ -19,7 +22,7 @@ public class EBusGenericBindingProvider extends
 	public String getItemName(String id) {
 		for (Entry<String, BindingConfig> entry : bindingConfigs.entrySet()) {
 			EBusBindingConfig cfg = (EBusBindingConfig) entry.getValue();
-			if(cfg.id.equals(id)) {
+			if(StringUtils.equals(cfg.id, id)) {
 				return entry.getKey();
 			}
 		}
@@ -31,27 +34,24 @@ public class EBusGenericBindingProvider extends
 	public void processBindingConfiguration(String context, Item item,
 			String bindingConfig) throws BindingConfigParseException {
 		super.processBindingConfiguration(context, item, bindingConfig);
-		
-		
-		String[] configParts = bindingConfig.trim().split(":");
-		if (configParts.length > 2) {
-			throw new BindingConfigParseException("eBus binding configuration must not contain more than two parts");
+
+		for (String set : bindingConfig.trim().split(",")) {
+			String[] configParts = set.split(":");
+			if (configParts.length > 2) {
+				throw new BindingConfigParseException("eBus binding configuration must not contain more than two parts");
+			}
+			
+			EBusBindingConfig config = new EBusBindingConfig();
+			if(configParts[0].equals("id")) {
+				config.id = configParts[1];
+			} else if(configParts[0].equals("data")) {
+				config.data = DatatypeConverter.parseHexBinary(configParts[1].trim().replaceAll(" ", ""));
+			} else {
+				throw new BindingConfigParseException("eBus binding configuration must contain id");
+			}
+			
+			addBindingConfig(item, config);
 		}
-		
-		EBusBindingConfig config = new EBusBindingConfig();
-		if(configParts[0].equals("id")) {
-			config.id = configParts[1];
-		} else {
-			throw new BindingConfigParseException("eBus binding configuration must contain id");
-		}
-		
-		
-		
-		
-//		System.out
-//				.println("EBusGenericBindingProvider.processBindingConfiguration()");
-//		EBusBindingConfig config = new EBusBindingConfig(bindingConfig);
-		addBindingConfig(item, config);
 	}
 
 	@Override
@@ -66,6 +66,16 @@ public class EBusGenericBindingProvider extends
 	 */
 	class EBusBindingConfig implements BindingConfig {
 		public String id;
+		public byte[] data;
+	}
+
+	@Override
+	public byte[] getCommandData(String itemName) {
+		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+		if(bindingConfig != null) {
+			return bindingConfig.data;
+		}
+		return null;
 	}
 	
 }
