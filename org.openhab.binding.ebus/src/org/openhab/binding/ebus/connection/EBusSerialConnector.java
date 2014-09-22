@@ -1,3 +1,11 @@
+/**
+* Copyright (c) 2010-2014, openHAB.org and others.
+*
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*/
 package org.openhab.binding.ebus.connection;
 
 import gnu.io.CommPortIdentifier;
@@ -11,18 +19,31 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+* @author Christian Sowada
+* @since 1.6.0
+*/
 public class EBusSerialConnector extends AbstractEBusConnector {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusSerialConnector.class);
 	
+	/** The serial object */
 	private SerialPort serialPort;
+	
+	/** The serial port name */
 	private String port;
 
+	/**
+	 * @param port
+	 */
 	public EBusSerialConnector(String port) {
 		this.port = port;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#connect()
+	 */
 	@Override
 	public boolean connect() throws IOException {
 		try {
@@ -51,6 +72,9 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#disconnect()
+	 */
 	@Override
 	public boolean disconnect() throws IOException  {
 		serialPort.close();

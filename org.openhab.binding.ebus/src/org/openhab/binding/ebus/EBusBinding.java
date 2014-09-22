@@ -1,3 +1,11 @@
+/**
+* Copyright (c) 2010-2014, openHAB.org and others.
+*
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*/
 package org.openhab.binding.ebus;
 
 import java.io.IOException;
@@ -25,6 +33,10 @@ import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+* @author Christian Sowada
+* @since 1.6.0
+*/
 public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> implements ManagedService, EBusConnectorEventListener {
 
 	private static final Logger logger = LoggerFactory
@@ -33,6 +45,9 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	private AbstractEBusConnector connector;
 	private EBusTelegramParser parser;
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
+	 */
 	@Override
 	protected void internalReceiveCommand(String itemName, Command command) {
 		logger.info("EBusBinding.internalReceiveCommand()");
@@ -166,6 +181,9 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		return "eBus";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.connection.EBusConnectorEventListener#onTelegramReceived(org.openhab.binding.ebus.EbusTelegram)
+	 */
 	@Override
 	public void onTelegramReceived(EbusTelegram telegram) {
 		Map<String, Object> results = parser.parse(telegram);
