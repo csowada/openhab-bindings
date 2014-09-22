@@ -13,9 +13,15 @@ Das eBus Binding ist in der Lage die Kommunikation über den eBus einer Heizungs
 ### Installation
 
 - Die Datei _org.openhab.binding.ebus_1.x.x.xxxxxxxxx.jar_ in das Openhab _addons_ Verzeichnis kopieren.
-- Die openHAB Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an.
+- Die openHAB Konfigurationsdatei _openhab.cfg_ muss angepasst werden. Füge dies der Datei hinzu und passe es entsprechen an. Entweder wir die Serielle Schnittstelle oder eine Hostname inkl. Port angegeben.
 ```
 ebus:serialPort=COM2
+
+oder
+
+#ebus:hostname=myhostname
+#ebus:port=22
+
 #ebus:parserUrl=platform:/base/../configurations/ebus-config.json
 ```
 - Die eigene _.items_ Datei um die gewüschten Einträge erweitern. Hier ein Beispiel.
@@ -44,6 +50,7 @@ Number Temperature_Solar_Reservoir	"Sol. Speicher Temp. [%.1f °C]"	<temperature
 Number Yield_Solar_Yield_Sum	"Sol. Gesamtertrag [%.1f kW/h]"	<chart> 		(HeatingUnit) 	{ ebus="id:yield_sum"}
 Number Yield_Solar_Yield_Day	"Sol. Tagesertrag [%.2f kW/h]"	<chart> 		(HeatingUnit) 	{ ebus="id:yield_day"}
 Number Yield_Solar_Current		"Aktueller Ertrag[%.2f kW]"	<chart> 		(HeatingUnit,Solar_Chart) 	{ ebus="id:solar_current"}
+Switch Send_Command					"Befehl senden"	<wind> 		(HeatingUnit,Solar_Chart) 	{ ebus="data:50 05 33 10 12"}
 ```
 
 ### Logging
