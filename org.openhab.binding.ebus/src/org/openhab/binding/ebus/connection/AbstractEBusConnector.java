@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractEBusConnector extends Thread {
 
-	private static final java.util.logging.Logger logger = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractEBusConnector.class);
 
 	private final Queue<byte[]> outputQueue = new LinkedBlockingQueue<byte[]>(20);
@@ -47,9 +47,9 @@ public abstract class AbstractEBusConnector extends Thread {
 	private int lockCounter = 0;
 
 	private boolean blockNextSend;
-	
+	private boolean lastSendCollisionDetected = false;
 	private static int LOCKOUT_COUNTER_MAX = 3;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -134,19 +134,32 @@ public abstract class AbstractEBusConnector extends Thread {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Auto-SYN byte received");
 
+			// jetzt senden, wenn was da ist
+			send(false);
+			
 		} else if(inputBuffer.position() == 2 && inputBuffer.get(0) == EbusTelegram.SYN) {
-			logger.warning("Collision on eBus detected (SYN DATA SYNC Sequence) ...");
+			logger.warn("Collision on eBus detected (SYN DATA SYNC Sequence) ...");
 			blockNextSend = true;
 			
+			// jetzt senden, wenn was da ist
+			send(false);
+
 		}else if(inputBuffer.position() < 5) {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Telegram to small, skip!");
+			
+			// jetzt senden, wenn was da ist
+			send(false);
 
 		} else {
 			if(lockCounter > 0) lockCounter--;
 			byte[] copyOf = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
-			EbusTelegram telegram = EBusUtils.processEBusData(copyOf);
-
+			
+			// erst senden, dass ist zeitkritisch
+			send(false);
+			
+			// Nach dem senden können wir uns um die empfangenen daten kümmern
+			final EbusTelegram telegram = EBusUtils.processEBusData(copyOf);
 			if(telegram != null) {
 				onEBusTelegramReceived(telegram);
 
@@ -158,10 +171,6 @@ public abstract class AbstractEBusConnector extends Thread {
 
 		// datenbuffer zurück setzen
 		inputBuffer.clear();
-
-		// jetzt senden, wenn was da ist
-		send(false);
-
 	}
 
 	/**
@@ -186,7 +195,7 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @return
 	 */
 	public boolean send(byte[] data) {
-		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
+		//		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
 
@@ -199,79 +208,99 @@ public abstract class AbstractEBusConnector extends Thread {
 
 		// Es gab eine Kollision, daher darf gerade nicht gesendet werden
 		if(blockNextSend) {
-			logger.trace("Sender was blocked for this SYN ...");
+			logger.debug("Sender was blocked for this SYN ...");
 			blockNextSend = false;
 			return;
 		}
-		
-		// Zähler noch nicht auf 0, daher darf aktuell nicht gesendet werden.
-		if(lockCounter > 0) {
-			logger.trace("No access to ebus because the lock counter ...");
-			return;
-		}
-		
+
 		// Es gibt keine Daten zum senden
 		if(outputQueue.isEmpty()) {
 			logger.trace("Send buffer is empty, nothing to send...");
 			return;
 		}
 
+		// Zähler noch nicht auf 0, daher darf aktuell nicht gesendet werden.
+		if(lockCounter > 0) {
+			logger.debug("No access to ebus because the lock counter ...");
+			return;
+		}
+
 		byte[] dataOutputBuffer = outputQueue.peek();
 		logger.debug("EBusSerialPortEvent.send()" + EBusUtils.toHexDumpString(dataOutputBuffer));
 
+		// erst mal bereinigen
+		inputBuffer.clear();
 
 		// befehl senden
 		for (int i = 0; i < dataOutputBuffer.length; i++) {
 			byte b = dataOutputBuffer[i];
 			outputStream.write(b);
+			inputBuffer.put(b);
 
 			// gerade geschriebenes wieder vom bus einlesen
 			int read = inputStream.read();
 			if(read != -1) {
-				
-				// geschriebenes byte und gelesenes byte nicht identisch,
-				// das ist dann eine kollision
-				logger.warn("eBus collision detected!");
-				
+
 				// arbitrierung nur beim ersten byte durchführen
 				if(i == 0) {
 					byte r = (byte) (read & 0xFF);
 					if(b != r) {
+
+						// geschriebenes byte und gelesenes byte nicht identisch,
+						// das ist dann eine kollision
+						logger.warn("eBus collision detected!");
+
+						// 
+						if(lastSendCollisionDetected) {
+							logger.warn("das wars, ende");
+							outputQueue.poll();
+
+							lastSendCollisionDetected = false;
+							blockNextSend = false;
+//							return;
+
 						// priority class identy
-						if((byte) (r & 0x0F) == (byte) (b & 0x0F)) {
+						} else if((byte) (r & 0x0F) == (byte) (b & 0x0F)) {
 							// nach dem nächsten syn wieder senden
 							logger.info("Priority class match, restart after next SYN ...");
-							
+							lastSendCollisionDetected = true;
+
 						} else {
 							// wir sind raus, die anderen senden erst mal
 							logger.info("Priority class doesn't match, blocked for next SYN ...");
 							blockNextSend = true;
+							lastSendCollisionDetected = true;
 						}
-						
+
+						// stop after a collision
+						return;
 					}
 				}
-				
-				// stop after a collision
-				return;
 			}
 		}
 
 		// hier angekommen? dann war das senden i.O.
-		inputBuffer.put(dataOutputBuffer);
 
-		// gffls. wartet auf antwort
-		if(dataOutputBuffer[dataOutputBuffer.length] != EbusTelegram.SYN) {
+		// ggfls. wartet auf antwort
+		if(dataOutputBuffer[dataOutputBuffer.length-1] != EbusTelegram.SYN) {
+
 			int read = inputStream.read();
 			if(read != -1) {
 				byte ack = (byte) (read & 0xFF);
 				inputBuffer.put(ack);
 
 				if(ack == EbusTelegram.ACK_OK) {
+					//logger.trace("Slave sagt OK");
 					// Slave sagt ok
 
 					// länge der antwort
 					byte nn2 = (byte) (inputStream.read() & 0xFF);
 					inputBuffer.put(nn2);
+
+					if(nn2 > 16) {
+						logger.warn("slave data to lang, invalid!");
+						return;
+					}
 
 					while(nn2 > 0) {
 						byte d = (byte) (inputStream.read() & 0xFF);
@@ -285,7 +314,10 @@ public abstract class AbstractEBusConnector extends Thread {
 					byte crc2 = (byte) (inputStream.read() & 0xFF);
 					inputBuffer.put(crc2);
 
+					// sende master sync
+					outputStream.write(EbusTelegram.ACK_OK);
 					outputStream.write(EbusTelegram.SYN);
+					inputBuffer.put(EbusTelegram.ACK_OK);
 					inputBuffer.put(EbusTelegram.SYN);
 
 				} else if(ack == EbusTelegram.ACK_FAIL) {
@@ -301,6 +333,22 @@ public abstract class AbstractEBusConnector extends Thread {
 
 				} else {
 					// Falsche Daten, keine Antwort vom Slave ?
+					logger.debug("Falsche Antwort vom SLAVE -> " + EBusUtils.toHexDumpString(ack));
+					logger.debug("Received telegram {}", EBusUtils.toHexDumpString(inputBuffer));
+					
+					// trotzdem syn senden, um fehlerhafte übertragung sauber abzuschließen
+					outputStream.write(EbusTelegram.SYN);
+
+					for (int i = 0; i < 16; i++) {
+						byte d = (byte) (inputStream.read() & 0xFF);
+						logger.debug("-->" + EBusUtils.toHexDumpString(d));
+					}
+					
+					// Nochmal senden (max. 1x)
+					if(!secondTry)
+						send(true);
+					else
+						logger.warn("Das war nichts, senden einstellen");
 
 				}
 			}
@@ -308,5 +356,14 @@ public abstract class AbstractEBusConnector extends Thread {
 
 		// eBus lock counter zurücksetzen 
 		lockCounter = LOCKOUT_COUNTER_MAX;
+
+		// globale variablen zurücksetzen
+		lastSendCollisionDetected = false;
+		blockNextSend = false;
+
+		logger.debug("Received telegram {}", EBusUtils.toHexDumpString(inputBuffer));
+
+		// eintrag aus der queue entfernen
+		outputQueue.poll();
 	}
 }
