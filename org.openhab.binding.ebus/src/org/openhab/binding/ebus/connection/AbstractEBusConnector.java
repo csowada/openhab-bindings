@@ -195,6 +195,13 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @return
 	 */
 	public boolean send(byte[] data) {
+		byte crc = 0;
+		for (int i = 0; i < data.length-1; i++) {
+			byte b = data[i];
+			crc = EBusUtils.crc8_tab(b, crc);
+		}
+		data[data.length-1] = crc;
+		
 		//		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
@@ -230,17 +237,18 @@ public abstract class AbstractEBusConnector extends Thread {
 
 		// erst mal bereinigen
 		inputBuffer.clear();
-
+		
 		// befehl senden
 		for (int i = 0; i < dataOutputBuffer.length; i++) {
 			byte b = dataOutputBuffer[i];
 			outputStream.write(b);
-			inputBuffer.put(b);
-
+			
 			// gerade geschriebenes wieder vom bus einlesen
 			int read = inputStream.read();
 			if(read != -1) {
 
+				inputBuffer.put((byte) (read & 0xFF));
+				
 				// arbitrierung nur beim ersten byte durchführen
 				if(i == 0) {
 					byte r = (byte) (read & 0xFF);
@@ -282,7 +290,7 @@ public abstract class AbstractEBusConnector extends Thread {
 		// hier angekommen? dann war das senden i.O.
 
 		// ggfls. wartet auf antwort
-		if(dataOutputBuffer[dataOutputBuffer.length-1] != EbusTelegram.SYN) {
+		if(dataOutputBuffer[1] != (byte)0xFE) {
 
 			int read = inputStream.read();
 			if(read != -1) {
@@ -290,8 +298,6 @@ public abstract class AbstractEBusConnector extends Thread {
 				inputBuffer.put(ack);
 
 				if(ack == EbusTelegram.ACK_OK) {
-					//logger.trace("Slave sagt OK");
-					// Slave sagt ok
 
 					// länge der antwort
 					byte nn2 = (byte) (inputStream.read() & 0xFF);
@@ -330,7 +336,10 @@ public abstract class AbstractEBusConnector extends Thread {
 						send(true);
 					else
 						logger.warn("Das war nichts, senden einstellen");
-
+					
+				} else if(ack == EbusTelegram.SYN) {
+					logger.warn("Keine Antwort ...");
+					
 				} else {
 					// Falsche Daten, keine Antwort vom Slave ?
 					logger.debug("Falsche Antwort vom SLAVE -> " + EBusUtils.toHexDumpString(ack));

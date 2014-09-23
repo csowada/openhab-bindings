@@ -43,7 +43,7 @@ public class TestMain5 {
 		}
 		
 //		byte[] data = TestMain3.convertString("30 76 50 22 03 CC 2B 0A BF 00 02 14 01 DE 00 AA");
-		final byte[] data = TestMain3.convertString("30 76 50 22 03 CC 2B 0A BF");
+		final byte[] data = TestMain3.convertString("00 76 50 22 03 CC 2B 0A BF");
 		
 		
 		Runnable r = new Runnable() {
