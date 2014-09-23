@@ -1,4 +1,4 @@
-## Anschlussmöglichekeiten an den eBus
+## Anschlussmöglichkeiten an den eBus
 
 Bei der Heizung Wolf CSZ-2 kann man sich auf der Rückseite der Klappe die das Bedienmoduls BM2 trägt den eBus (X32) abgreifen.
 Um die Anschlüsse zu bestimmen, habe ich die Platine aus der Heizung ausgebaut und durchgemessen. So sieht die kleine Platine aus.
