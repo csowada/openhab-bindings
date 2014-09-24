@@ -18,7 +18,7 @@ public class TestMain5 {
 
 		System.out.println("TestMain5.main()");
 		
-		final AbstractEBusConnector t = new EBusSerialConnector("COM13");
+		final AbstractEBusConnector t = new EBusSerialConnector("COM6");
 		
 		t.addEBusEventListener(new EBusConnectorEventListener() {
 			@Override
