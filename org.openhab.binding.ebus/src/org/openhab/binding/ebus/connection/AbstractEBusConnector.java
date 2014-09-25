@@ -47,7 +47,9 @@ public abstract class AbstractEBusConnector extends Thread {
 	private int lockCounter = 0;
 
 	private boolean blockNextSend;
+
 	private boolean lastSendCollisionDetected = false;
+
 	private static int LOCKOUT_COUNTER_MAX = 3;
 
 	/**
@@ -136,28 +138,28 @@ public abstract class AbstractEBusConnector extends Thread {
 
 			// jetzt senden, wenn was da ist
 			send(false);
-			
+
 		} else if(inputBuffer.position() == 2 && inputBuffer.get(0) == EbusTelegram.SYN) {
 			logger.warn("Collision on eBus detected (SYN DATA SYNC Sequence) ...");
 			blockNextSend = true;
-			
+
 			// jetzt senden, wenn was da ist
 			send(false);
 
 		}else if(inputBuffer.position() < 5) {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Telegram to small, skip!");
-			
+
 			// jetzt senden, wenn was da ist
 			send(false);
 
 		} else {
 			if(lockCounter > 0) lockCounter--;
 			byte[] copyOf = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
-			
+
 			// erst senden, dass ist zeitkritisch
 			send(false);
-			
+
 			// Nach dem senden können wir uns um die empfangenen daten kümmern
 			final EbusTelegram telegram = EBusUtils.processEBusData(copyOf);
 			if(telegram != null) {
@@ -166,7 +168,6 @@ public abstract class AbstractEBusConnector extends Thread {
 			} else {
 				logger.debug("Received telegram was invalid, skip!");
 			}
-
 		}
 
 		// datenbuffer zurück setzen
@@ -201,7 +202,7 @@ public abstract class AbstractEBusConnector extends Thread {
 			crc = EBusUtils.crc8_tab(b, crc);
 		}
 		data[data.length-1] = crc;
-		
+
 		//		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
@@ -213,84 +214,90 @@ public abstract class AbstractEBusConnector extends Thread {
 	 */
 	protected void send(boolean secondTry) throws IOException {
 
-		// Es gab eine Kollision, daher darf gerade nicht gesendet werden
+		// blocked for this send slot because a collision
 		if(blockNextSend) {
-			logger.debug("Sender was blocked for this SYN ...");
+			logger.trace("Sender was blocked for this SYN ...");
 			blockNextSend = false;
 			return;
 		}
 
-		// Es gibt keine Daten zum senden
+		// currently no data to send
 		if(outputQueue.isEmpty()) {
 			logger.trace("Send buffer is empty, nothing to send...");
 			return;
 		}
 
-		// Zähler noch nicht auf 0, daher darf aktuell nicht gesendet werden.
+		// counter not zero, it's not allowed to send yet
 		if(lockCounter > 0) {
-			logger.debug("No access to ebus because the lock counter ...");
+			logger.trace("No access to ebus because the lock counter ...");
 			return;
 		}
 
 		byte[] dataOutputBuffer = outputQueue.peek();
-		logger.debug("EBusSerialPortEvent.send()" + EBusUtils.toHexDumpString(dataOutputBuffer));
+		logger.debug("EBusSerialPortEvent.send() data: {}", EBusUtils.toHexDumpString(dataOutputBuffer));
 
-		// erst mal bereinigen
+		// clear first
 		inputBuffer.clear();
-		
-		// befehl senden
+
+		boolean isMasterAddr = EBusUtils.isMasterAddress(dataOutputBuffer[1]);
+
+		// send command
 		for (int i = 0; i < dataOutputBuffer.length; i++) {
 			byte b = dataOutputBuffer[i];
 			outputStream.write(b);
-			
-			// gerade geschriebenes wieder vom bus einlesen
+
+			// directly read the current wrote byte from bus
 			int read = inputStream.read();
 			if(read != -1) {
 
-				inputBuffer.put((byte) (read & 0xFF));
-				
-				// arbitrierung nur beim ersten byte durchführen
-				if(i == 0) {
-					byte r = (byte) (read & 0xFF);
-					if(b != r) {
+				byte r = (byte) (read & 0xFF);
+				inputBuffer.put(r);
 
-						// geschriebenes byte und gelesenes byte nicht identisch,
-						// das ist dann eine kollision
-						logger.warn("eBus collision detected!");
+				// do arbitation on on first byte only
+				if(i == 0 && b != r) {
 
-						// 
-						if(lastSendCollisionDetected) {
-							logger.warn("das wars, ende");
-							outputQueue.poll();
+					// written and read byte not identical, that's
+					// a collision
+					logger.warn("eBus collision detected!");
 
-							lastSendCollisionDetected = false;
-							blockNextSend = false;
-//							return;
-
-						// priority class identy
-						} else if((byte) (r & 0x0F) == (byte) (b & 0x0F)) {
-							// nach dem nächsten syn wieder senden
-							logger.info("Priority class match, restart after next SYN ...");
-							lastSendCollisionDetected = true;
-
-						} else {
-							// wir sind raus, die anderen senden erst mal
-							logger.info("Priority class doesn't match, blocked for next SYN ...");
-							blockNextSend = true;
-							lastSendCollisionDetected = true;
-						}
-
-						// stop after a collision
+					// last send try was a collision
+					if(lastSendCollisionDetected) {
+						logger.warn("A second collision occured!");
+						resetSend();
 						return;
 					}
+					// priority class identical
+					else if((byte) (r & 0x0F) == (byte) (b & 0x0F)) {
+						logger.trace("Priority class match, restart after next SYN ...");
+						lastSendCollisionDetected = true;
+
+					} else {
+						logger.trace("Priority class doesn't match, blocked for next SYN ...");
+						blockNextSend = true;
+					}
+
+					// stop after a collision
+					return;
 				}
 			}
 		}
 
-		// hier angekommen? dann war das senden i.O.
+		// sending master data finish
 
-		// ggfls. wartet auf antwort
-		if(dataOutputBuffer[1] != (byte)0xFE) {
+		// reset global variables
+		lastSendCollisionDetected = false;
+		blockNextSend = false;
+
+
+		// if this telegram a broadcast?
+		if(dataOutputBuffer[1] == (byte)0xFE) {
+			logger.warn("Broadcast send ..............");
+
+			// sende master sync
+			outputStream.write(EbusTelegram.SYN);
+			inputBuffer.put(EbusTelegram.SYN);
+
+		} else {
 
 			int read = inputStream.read();
 			if(read != -1) {
@@ -299,80 +306,123 @@ public abstract class AbstractEBusConnector extends Thread {
 
 				if(ack == EbusTelegram.ACK_OK) {
 
-					// länge der antwort
-					byte nn2 = (byte) (inputStream.read() & 0xFF);
-					inputBuffer.put(nn2);
+					// if the telegram is a slave telegram we will
+					// get data from slave
+					if(!isMasterAddr) {
 
-					if(nn2 > 16) {
-						logger.warn("slave data to lang, invalid!");
-						return;
-					}
+						// len of answer
+						byte nn2 = (byte) (inputStream.read() & 0xFF);
+						inputBuffer.put(nn2);
 
-					while(nn2 > 0) {
-						byte d = (byte) (inputStream.read() & 0xFF);
-						inputBuffer.put(d);
+						byte crc = EBusUtils.crc8_tab(nn2, (byte) 0);
 
-						if(d != (byte)0xA) {
-							nn2--;
+						if(nn2 > 16) {
+							logger.warn("slave data to lang, invalid!");
+
+							// resend telegram (max. once)
+							if(!resend(secondTry))
+								return;
 						}
-					}
 
-					byte crc2 = (byte) (inputStream.read() & 0xFF);
-					inputBuffer.put(crc2);
+						// read slave data, be aware of 0x0A bytes
+						while(nn2 > 0) {
+							byte d = (byte) (inputStream.read() & 0xFF);
+							inputBuffer.put(d);
+							crc = EBusUtils.crc8_tab(d, crc);
 
-					// sende master sync
-					outputStream.write(EbusTelegram.ACK_OK);
+							if(d != (byte)0xA) {
+								nn2--;
+							}
+						}
+
+						// read slave crc
+						byte crc2 = (byte) (inputStream.read() & 0xFF);
+						inputBuffer.put(crc2);
+
+						// check slave crc
+						if(crc2 != crc) {
+							logger.warn("Slave CRC wrong, resend!");
+
+							// Resend telegram (max. once)
+							if(!resend(secondTry))
+								return;
+						}
+
+						// sende master sync
+						outputStream.write(EbusTelegram.ACK_OK);
+						inputBuffer.put(EbusTelegram.ACK_OK);
+					} // isMasterAddr check
+
+					// send SYN byte
 					outputStream.write(EbusTelegram.SYN);
-					inputBuffer.put(EbusTelegram.ACK_OK);
 					inputBuffer.put(EbusTelegram.SYN);
 
 				} else if(ack == EbusTelegram.ACK_FAIL) {
+					// resend telegram (max. once)
+					if(!resend(secondTry))
+						return;
 
-					// trotzdem syn senden, um fehlerhafte übertragung sauber abzuschließen
-					outputStream.write(EbusTelegram.SYN);
-
-					// Nochmal senden (max. 1x)
-					if(!secondTry)
-						send(true);
-					else
-						logger.warn("Das war nichts, senden einstellen");
-					
 				} else if(ack == EbusTelegram.SYN) {
-					logger.warn("Keine Antwort ...");
-					
+					logger.warn("No answer from slave, skip ...");
+					resetSend();
+					return;
+
 				} else {
-					// Falsche Daten, keine Antwort vom Slave ?
-					logger.debug("Falsche Antwort vom SLAVE -> " + EBusUtils.toHexDumpString(ack));
-					logger.debug("Received telegram {}", EBusUtils.toHexDumpString(inputBuffer));
-					
-					// trotzdem syn senden, um fehlerhafte übertragung sauber abzuschließen
-					outputStream.write(EbusTelegram.SYN);
+					// Wow, wrong answer, and now?
+					logger.warn("Received wrong telegram: {}", EBusUtils.toHexDumpString(inputBuffer));
 
-					for (int i = 0; i < 16; i++) {
-						byte d = (byte) (inputStream.read() & 0xFF);
-						logger.debug("-->" + EBusUtils.toHexDumpString(d));
-					}
-					
-					// Nochmal senden (max. 1x)
-					if(!secondTry)
-						send(true);
-					else
-						logger.warn("Das war nichts, senden einstellen");
-
+					// resend telegram (max. once)
+					if(!resend(secondTry))
+						return;
 				}
 			}
 		}
 
-		// eBus lock counter zurücksetzen 
+		// Nach dem senden können wir uns um die empfangenen daten kümmern
+		byte[] buffer = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
+		final EbusTelegram telegram = EBusUtils.processEBusData(buffer);
+		if(telegram != null) {
+			onEBusTelegramReceived(telegram);
+
+		} else {
+			logger.debug("Received telegram was invalid, skip!");
+		}
+
+		// reset send module
+		resetSend();
+	}
+
+	/**
+	 * Resend data if it's the first try or call resetSend()
+	 * @param secondTry
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean resend(boolean secondTry) throws IOException {
+		if(!secondTry) {
+			send(true);
+			return true;
+
+		} else {
+			logger.warn("Resend failed, remove data from sending queue ...");
+			resetSend();
+			return false;
+		}
+	}
+
+	/**
+	 * Reset the send routine
+	 */
+	private void resetSend() {
+		
+		// reset ebus counter
 		lockCounter = LOCKOUT_COUNTER_MAX;
 
-		// globale variablen zurücksetzen
+		// reset global variables
 		lastSendCollisionDetected = false;
 		blockNextSend = false;
 
-		logger.debug("Received telegram {}", EBusUtils.toHexDumpString(inputBuffer));
-
-		// eintrag aus der queue entfernen
+		// remove entry from sending queue
 		outputQueue.poll();
 	}
 }

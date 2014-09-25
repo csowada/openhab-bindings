@@ -25,130 +25,71 @@ public class EBusUtils {
 	
 	/** calculated crc values */
 	final static private byte CRC_TAB_8_VALUE[] = {
-		(byte) 0x00, (byte) 0x9B, (byte) 0xAD, (byte) 0x36, (byte) 0xC1, (byte) 0x5A, 
-		(byte) 0x6C, (byte) 0xF7, (byte) 0x19, (byte) 0x82, (byte) 0xB4, (byte) 0x2F,
-		(byte) 0xD8, (byte) 0x43, (byte) 0x75, (byte) 0xEE,	(byte) 0x32, (byte) 0xA9, 
-		(byte) 0x9F, (byte) 0x04, (byte) 0xF3, (byte) 0x68, (byte) 0x5E, (byte) 0xC5,
-		(byte) 0x2B, (byte) 0xB0, (byte) 0x86, (byte) 0x1D, (byte) 0xEA, (byte) 0x71, 
-		(byte) 0x47, (byte) 0xDC, (byte) 0x64, (byte) 0xFF, (byte) 0xC9, (byte) 0x52,
-		(byte) 0xA5, (byte) 0x3E, (byte) 0x08, (byte) 0x93,	(byte) 0x7D, (byte) 0xE6,
-		(byte) 0xD0, (byte) 0x4B, (byte) 0xBC, (byte) 0x27, (byte) 0x11, (byte) 0x8A,
-		(byte) 0x56, (byte) 0xCD, (byte) 0xFB, (byte) 0x60, (byte) 0x97, (byte) 0x0C, 
-		(byte) 0x3A, (byte) 0xA1,
-		(byte) 0x4F, (byte) 0xD4, (byte) 0xE2, (byte) 0x79, (byte) 0x8E, (byte) 0x15, 
-		(byte) 0x23, (byte) 0xB8,
-		(byte) 0xC8, (byte) 0x53, (byte) 0x65, 
-		(byte) 0xFE, (byte) 0x09, (byte) 0x92, 
-		(byte) 0xA4, (byte) 0x3F,
-		(byte) 0xD1, (byte) 0x4A, (byte) 0x7C, 
-		(byte) 0xE7, (byte) 0x10, (byte) 0x8B, 
-		(byte) 0xBD, (byte) 0x26,
-		(byte) 0xFA, (byte) 0x61, (byte) 0x57, 
-		(byte) 0xCC, (byte) 0x3B, (byte) 0xA0, 
-		(byte) 0x96, (byte) 0x0D,
-		(byte) 0xE3, (byte) 0x78, (byte) 0x4E, 
-		(byte) 0xD5, (byte) 0x22, (byte) 0xB9, 
-		(byte) 0x8F, (byte) 0x14,
-		(byte) 0xAC, (byte) 0x37, (byte) 0x01, 
-		(byte) 0x9A, (byte) 0x6D, (byte) 0xF6, 
-		(byte) 0xC0, (byte) 0x5B,
-		(byte) 0xB5, (byte) 0x2E, (byte) 0x18, 
-		(byte) 0x83, (byte) 0x74, (byte) 0xEF, 
-		(byte) 0xD9, (byte) 0x42,
-		(byte) 0x9E, (byte) 0x05, (byte) 0x33, 
-		(byte) 0xA8, (byte) 0x5F, (byte) 0xC4, 
-		(byte) 0xF2, (byte) 0x69,
-		(byte) 0x87, (byte) 0x1C, (byte) 0x2A, 
-		(byte) 0xB1, (byte) 0x46, (byte) 0xDD, 
-		(byte) 0xEB, (byte) 0x70,
-		(byte) 0x0B, (byte) 0x90, (byte) 0xA6, 
-		(byte) 0x3D, (byte) 0xCA, (byte) 0x51, 
-		(byte) 0x67, (byte) 0xFC,
-		(byte) 0x12, (byte) 0x89, (byte) 0xBF, 
-		(byte) 0x24, (byte) 0xD3, (byte) 0x48, 
-		(byte) 0x7E, (byte) 0xE5,
-		(byte) 0x39, (byte) 0xA2, (byte) 0x94, 
-		(byte) 0x0F, (byte) 0xF8, (byte) 0x63, 
-		(byte) 0x55, (byte) 0xCE,
-		(byte) 0x20, (byte) 0xBB, (byte) 0x8D, 
-		(byte) 0x16, (byte) 0xE1, (byte) 0x7A, 
-		(byte) 0x4C, (byte) 0xD7,
-		(byte) 0x6F, (byte) 0xF4, (byte) 0xC2, 
-		(byte) 0x59, (byte) 0xAE, (byte) 0x35, 
-		(byte) 0x03, (byte) 0x98,
-		(byte) 0x76, (byte) 0xED, (byte) 0xDB, 
-		(byte) 0x40, (byte) 0xB7, (byte) 0x2C, 
-		(byte) 0x1A, (byte) 0x81,
-		(byte) 0x5D, (byte) 0xC6, (byte) 0xF0, 
-		(byte) 0x6B, (byte) 0x9C, (byte) 0x07, 
-		(byte) 0x31, (byte) 0xAA,
-		(byte) 0x44, (byte) 0xDF, (byte) 0xE9, 
-		(byte) 0x72, (byte) 0x85, (byte) 0x1E, 
-		(byte) 0x28, (byte) 0xB3,
-		(byte) 0xC3, (byte) 0x58, (byte) 0x6E, 
-		(byte) 0xF5, (byte) 0x02, (byte) 0x99, 
-		(byte) 0xAF, (byte) 0x34,
-		(byte) 0xDA, (byte) 0x41, (byte) 0x77, 
-		(byte) 0xEC, (byte) 0x1B, (byte) 0x80, 
-		(byte) 0xB6, (byte) 0x2D,
-		(byte) 0xF1, (byte) 0x6A, (byte) 0x5C, 
-		(byte) 0xC7, (byte) 0x30, (byte) 0xAB, 
-		(byte) 0x9D, (byte) 0x06,
-		(byte) 0xE8, (byte) 0x73, (byte) 0x45, 
-		(byte) 0xDE, (byte) 0x29, (byte) 0xB2, 
-		(byte) 0x84, (byte) 0x1F,
-		(byte) 0xA7, (byte) 0x3C, (byte) 0x0A, 
-		(byte) 0x91, (byte) 0x66, (byte) 0xFD, 
-		(byte) 0xCB, (byte) 0x50,
-		(byte) 0xBE, (byte) 0x25, (byte) 0x13, 
-		(byte) 0x88, (byte) 0x7F, (byte) 0xE4, 
-		(byte) 0xD2, (byte) 0x49,
-		(byte) 0x95, (byte) 0x0E, (byte) 0x38, 
-		(byte) 0xA3, (byte) 0x54, (byte) 0xCF, 
-		(byte) 0xF9, (byte) 0x62,
-		(byte) 0x8C, (byte) 0x17, (byte) 0x21, 
-		(byte) 0xBA, (byte) 0x4D, (byte) 0xD6, 
-		(byte) 0xE0, (byte) 0x7B
+		(byte) 0x00, (byte) 0x9B, (byte) 0xAD, (byte) 0x36,
+		(byte) 0xC1, (byte) 0x5A, (byte) 0x6C, (byte) 0xF7,
+		(byte) 0x19, (byte) 0x82, (byte) 0xB4, (byte) 0x2F,
+		(byte) 0xD8, (byte) 0x43, (byte) 0x75, (byte) 0xEE,
+		(byte) 0x32, (byte) 0xA9, (byte) 0x9F, (byte) 0x04,
+		(byte) 0xF3, (byte) 0x68, (byte) 0x5E, (byte) 0xC5,
+		(byte) 0x2B, (byte) 0xB0, (byte) 0x86, (byte) 0x1D,
+		(byte) 0xEA, (byte) 0x71, (byte) 0x47, (byte) 0xDC,
+		(byte) 0x64, (byte) 0xFF, (byte) 0xC9, (byte) 0x52,
+		(byte) 0xA5, (byte) 0x3E, (byte) 0x08, (byte) 0x93,
+		(byte) 0x7D, (byte) 0xE6, (byte) 0xD0, (byte) 0x4B,
+		(byte) 0xBC, (byte) 0x27, (byte) 0x11, (byte) 0x8A,
+		(byte) 0x56, (byte) 0xCD, (byte) 0xFB, (byte) 0x60,
+		(byte) 0x97, (byte) 0x0C, (byte) 0x3A, (byte) 0xA1,
+		(byte) 0x4F, (byte) 0xD4, (byte) 0xE2, (byte) 0x79,
+		(byte) 0x8E, (byte) 0x15, (byte) 0x23, (byte) 0xB8,
+		(byte) 0xC8, (byte) 0x53, (byte) 0x65, (byte) 0xFE,
+		(byte) 0x09, (byte) 0x92, (byte) 0xA4, (byte) 0x3F,
+		(byte) 0xD1, (byte) 0x4A, (byte) 0x7C, (byte) 0xE7,
+		(byte) 0x10, (byte) 0x8B, (byte) 0xBD, (byte) 0x26,
+		(byte) 0xFA, (byte) 0x61, (byte) 0x57, (byte) 0xCC,
+		(byte) 0x3B, (byte) 0xA0, (byte) 0x96, (byte) 0x0D,
+		(byte) 0xE3, (byte) 0x78, (byte) 0x4E, (byte) 0xD5,
+		(byte) 0x22, (byte) 0xB9, (byte) 0x8F, (byte) 0x14,
+		(byte) 0xAC, (byte) 0x37, (byte) 0x01, (byte) 0x9A,
+		(byte) 0x6D, (byte) 0xF6, (byte) 0xC0, (byte) 0x5B,
+		(byte) 0xB5, (byte) 0x2E, (byte) 0x18, (byte) 0x83,
+		(byte) 0x74, (byte) 0xEF, (byte) 0xD9, (byte) 0x42,
+		(byte) 0x9E, (byte) 0x05, (byte) 0x33, (byte) 0xA8,
+		(byte) 0x5F, (byte) 0xC4, (byte) 0xF2, (byte) 0x69,
+		(byte) 0x87, (byte) 0x1C, (byte) 0x2A, (byte) 0xB1,
+		(byte) 0x46, (byte) 0xDD, (byte) 0xEB, (byte) 0x70,
+		(byte) 0x0B, (byte) 0x90, (byte) 0xA6, (byte) 0x3D,
+		(byte) 0xCA, (byte) 0x51, (byte) 0x67, (byte) 0xFC,
+		(byte) 0x12, (byte) 0x89, (byte) 0xBF, (byte) 0x24,
+		(byte) 0xD3, (byte) 0x48, (byte) 0x7E, (byte) 0xE5,
+		(byte) 0x39, (byte) 0xA2, (byte) 0x94, (byte) 0x0F,
+		(byte) 0xF8, (byte) 0x63, (byte) 0x55, (byte) 0xCE,
+		(byte) 0x20, (byte) 0xBB, (byte) 0x8D, (byte) 0x16,
+		(byte) 0xE1, (byte) 0x7A, (byte) 0x4C, (byte) 0xD7,
+		(byte) 0x6F, (byte) 0xF4, (byte) 0xC2, (byte) 0x59,
+		(byte) 0xAE, (byte) 0x35, (byte) 0x03, (byte) 0x98,
+		(byte) 0x76, (byte) 0xED, (byte) 0xDB, (byte) 0x40,
+		(byte) 0xB7, (byte) 0x2C, (byte) 0x1A, (byte) 0x81,
+		(byte) 0x5D, (byte) 0xC6, (byte) 0xF0, (byte) 0x6B,
+		(byte) 0x9C, (byte) 0x07, (byte) 0x31, (byte) 0xAA,
+		(byte) 0x44, (byte) 0xDF, (byte) 0xE9, (byte) 0x72,
+		(byte) 0x85, (byte) 0x1E, (byte) 0x28, (byte) 0xB3,
+		(byte) 0xC3, (byte) 0x58, (byte) 0x6E, (byte) 0xF5,
+		(byte) 0x02, (byte) 0x99, (byte) 0xAF, (byte) 0x34,
+		(byte) 0xDA, (byte) 0x41, (byte) 0x77, (byte) 0xEC,
+		(byte) 0x1B, (byte) 0x80, (byte) 0xB6, (byte) 0x2D,
+		(byte) 0xF1, (byte) 0x6A, (byte) 0x5C, (byte) 0xC7,
+		(byte) 0x30, (byte) 0xAB, (byte) 0x9D, (byte) 0x06,
+		(byte) 0xE8, (byte) 0x73, (byte) 0x45, (byte) 0xDE,
+		(byte) 0x29, (byte) 0xB2, (byte) 0x84, (byte) 0x1F,
+		(byte) 0xA7, (byte) 0x3C, (byte) 0x0A, (byte) 0x91,
+		(byte) 0x66, (byte) 0xFD, (byte) 0xCB, (byte) 0x50,
+		(byte) 0xBE, (byte) 0x25, (byte) 0x13, (byte) 0x88,
+		(byte) 0x7F, (byte) 0xE4, (byte) 0xD2, (byte) 0x49,
+		(byte) 0x95, (byte) 0x0E, (byte) 0x38, (byte) 0xA3,
+		(byte) 0x54, (byte) 0xCF, (byte) 0xF9, (byte) 0x62,
+		(byte) 0x8C, (byte) 0x17, (byte) 0x21, (byte) 0xBA,
+		(byte) 0x4D, (byte) 0xD6, (byte) 0xE0, (byte) 0x7B
 	};
-
-	/**
-	 * Generates a string hex dump from a ByteBuffer
-	 * @param data The source
-	 * @return The StringBuilder with hex dump
-	 */
-	static public StringBuilder toHexDumpString(ByteBuffer data) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < data.position(); i++) {
-			byte c = data.get(i);
-			if(i > 0) sb.append(' ');
-			sb.append(toHexDumpString(c));
-		}
-		return sb;
-	}
-	
-	/**
-	 * Generates a string hex dump from a byte array
-	 * @param data The source
-	 * @return The StringBuilder with hex dump
-	 */
-	static public StringBuilder toHexDumpString(byte[] data) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < data.length; i++) {
-			byte c = data[i];
-			if(i > 0) sb.append(' ');
-			sb.append(toHexDumpString(c));
-		}
-		return sb;
-	}
-
-	/**
-	 * Generates a hex string representative of byte data
-	 * @param data The source
-	 * @return The hex string
-	 */
-	static public String toHexDumpString(byte data) {
-		return String.format("%02X", (0xFF & data));
-	}
 
 	/**
 	 * CRC calculation with tab operations
@@ -161,14 +102,89 @@ public class EBusUtils {
 		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
 		return crc;
 	}
+	
+	/**
+	 * Convert the value to a bcd value
+	 * @param data The encoded value
+	 * @return The bcd value
+	 */
+	public static int decodeBCD(byte data) {
+		return (data >> 4)*10 + (data & (byte) 0x0F);
+	}
+	
+	/**
+	 * Convert EBus Type DATA1C
+	 * @param data The encoded value
+	 * @return The decoded value
+	 */
+	public static float decodeDATA1c(int data) {
+		int psuedoUnsigned = (data << 24) >>> 24;
+		return (psuedoUnsigned / 2);
+	}
 
 	/**
-	 * Converts a signed int (java default) to a unsigned int
-	 * @param signedInt The signed int
-	 * @return The unsigned int
+	 * Convert EBus Type DATA2b
+	 * FIXME: Badly programmed, can't process negativ values
+	 * @param highData The encoded high byte
+	 * @param lowData The encoded low byte
+	 * @return The decoded value
 	 */
-	static int unsignedInt(int signedInt) {
-		return (signedInt << 24) >>> 24;
+	public static Float decodeDATA2b(byte highData, byte lowData) {
+		float h = unsignedInt(highData);
+		float l = unsignedInt(lowData);
+		if((highData & (byte) 0x80) == (byte) 0x80) {
+			//return (1 - h) - (1- (l / 256));
+			return null;
+		} else {
+			return h + (l / 256);
+		}
+	}
+
+	/**
+	 * Convert EBus Type DATA2c
+	 * FIXME: Badly programmed, can't process negativ values
+	 * @param highData The encoded high byte
+	 * @param lowData The encoded low byte
+	 * @return The decoded value
+	 */
+	public static Float decodeDATA2c(byte highData, byte lowData) {
+
+		int h = unsignedInt(highData);
+		int l = unsignedInt(lowData);
+//		int h = highData;
+//		int l = lowData;
+		int x = (h<<8) + l;
+		int y = (x>>4);
+		int g = x & (byte)0x0F;
+		
+		float g2 = (float)g / 16;
+		
+		float z = y + g2;
+		
+		if((highData & (byte) 0x80) == (byte) 0x80) {
+			return null;
+		}
+		
+		return z;
+		
+//		if((highData & (byte) 0x80) == (byte) 0x80) {
+//			float a = 1- (h*16);
+//			float b = 1- (l & 0x0F);
+//			float c = 1- ((float)(l >> 4) / 16);
+//			
+//			return (1- (h*16)) - (1- (l & 0x0F)) - (1- ((float)(l >> 4) / 16));
+//		} else {
+//			return (h*16) + (l & 0x0F) + ((float)(l >> 4) / 16);
+//		}
+	}
+
+	/**
+	 * @param highData
+	 * @param lowData
+	 * @return
+	 */
+	public static int decodeWORD(byte highData, byte lowData) {
+		return ((highData & 0xFF)<<8) + (lowData & 0xFF);
 	}
 
 	/**
@@ -190,6 +206,31 @@ public class EBusUtils {
 	}
 	
 	/**
+	 * Check if the address is a valid master address.
+	 * @param address
+	 * @return
+	 */
+	public static boolean isMasterAddress(byte address) {
+		
+		byte addr = (byte) (address>>4);
+		byte prio = (byte) (address & (byte)0x0F);
+		
+		// check if it's a broadcast
+		if(address != (byte)0xFE) {
+			if(addr == (byte)0x00 || addr == (byte)0x01 || addr == (byte)0x03 || 
+					addr == (byte)0x07 || addr == (byte)0x15) {
+				if(prio == (byte)0x00 || prio == (byte)0x01 || prio == (byte)0x03 || 
+						prio == (byte)0x07 || prio == (byte)0x15) {
+
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	/**
 	 * Processes a EBus received byte array, crc check, expand special bytes.
 	 * @param data The received raw byte data
 	 * @return A valid object or null if the data was incorrect
@@ -199,9 +240,9 @@ public class EBusUtils {
 		ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
 
 		buffer.put(data, 0, 5);
-		int nn = data[4];
-		int nnPos = 0;
-		
+		int nnPos = 4;
+		int nn = data[nnPos];
+
 		byte uc_crc = 0;
 		
 		// crc-check first bytes
@@ -212,19 +253,23 @@ public class EBusUtils {
 		
 		// process sender data and find data end pos.
 		// (may moved because expanded bytes)
-		for (int i = 5; i < data.length; i++) {
-			byte b = data[i];
+		if(nn > 0) {
+			nnPos = 0;
 			
-			uc_crc = crc8_tab(b, uc_crc);
-
-			if(b != (byte)0xA9) {
-				nnPos++;
-				buffer.put(expandByte(data, i));
-			}
-			
-			if(nnPos == nn) {
-				nnPos = i;
-				break;
+			for (int i = 5; i < data.length; i++) {
+				byte b = data[i];
+				
+				uc_crc = crc8_tab(b, uc_crc);
+	
+				if(b != (byte)0xA9) {
+					nnPos++;
+					buffer.put(expandByte(data, i));
+				}
+				
+				if(nnPos == nn) {
+					nnPos = i;
+					break;
+				}
 			}
 		}
 		
@@ -272,13 +317,15 @@ public class EBusUtils {
 
 		// process answer data and find data end pos.
 		// (may moved because expanded bytes)
-		for (int i = nn2Pos+1; i < data.length-3; i++) {
-			byte b = data[i];
-			
-			uc_crc = crc8_tab(b, uc_crc);
-
-			if(b != (byte)0xA9) {
-				buffer.put(expandByte(data, i));
+		if(nn2 > 0) {
+			for (int i = nn2Pos+1; i < data.length-3; i++) {
+				byte b = data[i];
+				
+				uc_crc = crc8_tab(b, uc_crc);
+	
+				if(b != (byte)0xA9) {
+					buffer.put(expandByte(data, i));
+				}
 			}
 		}
 		
@@ -296,82 +343,51 @@ public class EBusUtils {
 	}
 
 	/**
-	 * Convert EBus Type DATA1C
-	 * @param data The encoded value
-	 * @return The decoded value
+	 * Generates a hex string representative of byte data
+	 * @param data The source
+	 * @return The hex string
 	 */
-	public static float decodeDATA1c(int data) {
-		int psuedoUnsigned = (data << 24) >>> 24;
-		return (psuedoUnsigned / 2);
+	static public String toHexDumpString(byte data) {
+		return String.format("%02X", (0xFF & data));
 	}
-
+	
 	/**
-	 * Convert EBus Type DATA2c
-	 * FIXME: Badly programmed, can't process negativ values
-	 * @param highData The encoded high byte
-	 * @param lowData The encoded low byte
-	 * @return The decoded value
+	 * Generates a string hex dump from a byte array
+	 * @param data The source
+	 * @return The StringBuilder with hex dump
 	 */
-	public static Float decodeDATA2c(byte highData, byte lowData) {
-
-		int h = unsignedInt(highData);
-		int l = unsignedInt(lowData);
-//		int h = highData;
-//		int l = lowData;
-		int x = (h<<8) + l;
-		int y = (x>>4);
-		int g = x & (byte)0x0F;
-		
-		float g2 = (float)g / 16;
-		
-		float z = y + g2;
-		
-		if((highData & (byte) 0x80) == (byte) 0x80) {
-			return null;
+	static public StringBuilder toHexDumpString(byte[] data) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < data.length; i++) {
+			byte c = data[i];
+			if(i > 0) sb.append(' ');
+			sb.append(toHexDumpString(c));
 		}
-		
-		return z;
-		
-//		if((highData & (byte) 0x80) == (byte) 0x80) {
-//			float a = 1- (h*16);
-//			float b = 1- (l & 0x0F);
-//			float c = 1- ((float)(l >> 4) / 16);
-//			
-//			return (1- (h*16)) - (1- (l & 0x0F)) - (1- ((float)(l >> 4) / 16));
-//		} else {
-//			return (h*16) + (l & 0x0F) + ((float)(l >> 4) / 16);
-//		}
-	}
-	
-	public static int decodeWORD(byte highData, byte lowData) {
-		return ((highData & 0xFF)<<8) + (lowData & 0xFF);
+		return sb;
 	}
 	
 	/**
-	 * Convert EBus Type DATA2b
-	 * FIXME: Badly programmed, can't process negativ values
-	 * @param highData The encoded high byte
-	 * @param lowData The encoded low byte
-	 * @return The decoded value
+	 * Generates a string hex dump from a ByteBuffer
+	 * @param data The source
+	 * @return The StringBuilder with hex dump
 	 */
-	public static Float decodeDATA2b(byte highData, byte lowData) {
-		float h = unsignedInt(highData);
-		float l = unsignedInt(lowData);
-		if((highData & (byte) 0x80) == (byte) 0x80) {
-			//return (1 - h) - (1- (l / 256));
-			return null;
-		} else {
-			return h + (l / 256);
+	static public StringBuilder toHexDumpString(ByteBuffer data) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < data.position(); i++) {
+			byte c = data.get(i);
+			if(i > 0) sb.append(' ');
+			sb.append(toHexDumpString(c));
 		}
+		return sb;
 	}
 	
 	/**
-	 * Convert the value to a bcd value
-	 * @param data The encoded value
-	 * @return The bcd value
+	 * Converts a signed int (java default) to a unsigned int
+	 * @param signedInt The signed int
+	 * @return The unsigned int
 	 */
-	public static int decodeBCD(byte data) {
-		return (data >> 4)*10 + (data & (byte) 0x0F);
+	static int unsignedInt(int signedInt) {
+		return (signedInt << 24) >>> 24;
 	}
 	
 }
