@@ -50,8 +50,6 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 */
 	@Override
 	protected void internalReceiveCommand(String itemName, Command command) {
-		logger.info("EBusBinding.internalReceiveCommand()");
-		
 		for (EBusBindingProvider provider : providers) {
 			byte[] data = provider.getCommandData(itemName);
 			if(data != null) {
