@@ -42,6 +42,8 @@
 		}
 	},
 	
+	
+	
 	{
 		"comment":	"[OK] Sollwertübertragung des Reglers an andere Regler",
 		"filter":	"?? ?? 08 00 .*",
@@ -53,6 +55,17 @@
 			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv (Wärmepumpen?)"},
 			"status_heat_circuit":	{"type": "bit", "pos":11, "bit": 1, "label": "Heizkreis aktiv"},
 			"temp_t_wather":		{"type": "data2b", "pos":12, "label": "Brauchwassersoll"}
+		}
+	},
+	
+	
+	{
+		"comment":	"Vaillant: Kollektor Vorlauf Temp.",
+		"filter":	"?? ED B5 09 ?? 0D 05 00 .*",
+		
+		"values": {
+			"temp_collector_flow":		{"type": "data2c", "pos": 6, "label": "Kollektor Vorauf"},
+			"available_collector_flow":	{"type": "byte", "pos":8, "label": "Sensor vorhanden"}
 		}
 	},
 	
@@ -86,7 +99,7 @@
 	{
 		"comment":	"[OK] <Brenner> Kromschröder/Wolf: Software Version Brenner",
 		"filter":	"?? 08 50 22 ?? CC 9A 01 .*",
-		
+
 		"values": {
 			"heat_unit_fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 100"}
 		}
