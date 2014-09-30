@@ -1,11 +1,11 @@
 /**
-* Copyright (c) 2010-2014, openHAB.org and others.
-*
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*/
+ * Copyright (c) 2010-2014, openHAB.org and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.ebus.parser;
 
 import java.nio.ByteBuffer;
@@ -15,14 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-* @author Christian Sowada
-* @since 1.6.0
-*/
+ * @author Christian Sowada
+ * @since 1.6.0
+ */
 public class EBusUtils {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusUtils.class);
-	
+
 	/** calculated crc values */
 	final static private byte CRC_TAB_8_VALUE[] = {
 		(byte) 0x00, (byte) 0x9B, (byte) 0xAD, (byte) 0x36,
@@ -102,7 +102,7 @@ public class EBusUtils {
 		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
 		return crc;
 	}
-	
+
 	/**
 	 * Convert the value to a bcd value
 	 * @param data The encoded value
@@ -111,7 +111,7 @@ public class EBusUtils {
 	public static int decodeBCD(byte data) {
 		return (data >> 4)*10 + (data & (byte) 0x0F);
 	}
-	
+
 	/**
 	 * Convert EBus Type DATA1C
 	 * @param data The encoded value
@@ -124,19 +124,20 @@ public class EBusUtils {
 
 	/**
 	 * Convert EBus Type DATA2b
-	 * FIXME: Badly programmed, can't process negativ values
 	 * @param highData The encoded high byte
 	 * @param lowData The encoded low byte
 	 * @return The decoded value
 	 */
 	public static Float decodeDATA2b(byte highData, byte lowData) {
-		float h = unsignedInt(highData);
-		float l = unsignedInt(lowData);
 		if((highData & (byte) 0x80) == (byte) 0x80) {
-			//return (1 - h) - (1- (l / 256));
-			return null;
+			short hh = (short) ((highData^0xFF) & 0xFF);
+			short ll = (short) ((lowData^0xFF) & 0xFF);
+			return (float) (-1 * (hh + (ll + 1) / 256f));
+
 		} else {
-			return h + (l / 256);
+			short hh = (short) (highData & 0xFF);
+			short ll = (short) (lowData & 0xFF);
+			return (float) (hh + (ll / 256f));
 		}
 	}
 
@@ -148,34 +149,23 @@ public class EBusUtils {
 	 * @return The decoded value
 	 */
 	public static Float decodeDATA2c(byte highData, byte lowData) {
-
-		int h = unsignedInt(highData);
-		int l = unsignedInt(lowData);
-//		int h = highData;
-//		int l = lowData;
-		int x = (h<<8) + l;
-		int y = (x>>4);
-		int g = x & (byte)0x0F;
-		
-		float g2 = (float)g / 16;
-		
-		float z = y + g2;
-		
 		if((highData & (byte) 0x80) == (byte) 0x80) {
-			return null;
+
+			short hh = (short) ((highData^0xFF) & 0xFF);
+			short ll = (short) ((lowData^0xFF) & 0xFF);
+			short hn = (short) ((ll & 0xF0)>>4);
+			short ln = (short) (ll & 0x0F);
+
+			return -1 * ((hh * 16) + hn + ((ln+1)/16f));
+
+		} else {
+			short hh = (short) (highData & 0xFF);
+			short ll = (short) (lowData & 0xFF);
+			short hn = (short) ((ll & 0xF0)>>4);
+			short ln = (short) (ll & 0x0F);
+
+			return (hh * 16) + hn + (ln/16f);
 		}
-		
-		return z;
-		
-//		if((highData & (byte) 0x80) == (byte) 0x80) {
-//			float a = 1- (h*16);
-//			float b = 1- (l & 0x0F);
-//			float c = 1- ((float)(l >> 4) / 16);
-//			
-//			return (1- (h*16)) - (1- (l & 0x0F)) - (1- ((float)(l >> 4) / 16));
-//		} else {
-//			return (h*16) + (l & 0x0F) + ((float)(l >> 4) / 16);
-//		}
 	}
 
 	/**
@@ -204,17 +194,17 @@ public class EBusUtils {
 		}
 		return data[pos];
 	}
-	
+
 	/**
 	 * Check if the address is a valid master address.
 	 * @param address
 	 * @return
 	 */
 	public static boolean isMasterAddress(byte address) {
-		
+
 		byte addr = (byte) (address>>4);
 		byte prio = (byte) (address & (byte)0x0F);
-		
+
 		// check if it's a broadcast
 		if(address != (byte)0xFE) {
 			if(addr == (byte)0x00 || addr == (byte)0x01 || addr == (byte)0x03 || 
@@ -226,7 +216,7 @@ public class EBusUtils {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -244,55 +234,55 @@ public class EBusUtils {
 		int nn = data[nnPos];
 
 		byte uc_crc = 0;
-		
+
 		// crc-check first bytes
 		for (int i = 0; i < 5; i++) {
 			byte b = data[i];
 			uc_crc = crc8_tab(b, uc_crc);
 		}
-		
+
 		// process sender data and find data end pos.
 		// (may moved because expanded bytes)
 		if(nn > 0) {
 			nnPos = 0;
-			
+
 			for (int i = 5; i < data.length; i++) {
 				byte b = data[i];
-				
+
 				uc_crc = crc8_tab(b, uc_crc);
-	
+
 				if(b != (byte)0xA9) {
 					nnPos++;
 					buffer.put(expandByte(data, i));
 				}
-				
+
 				if(nnPos == nn) {
 					nnPos = i;
 					break;
 				}
 			}
 		}
-		
+
 		int crcPos = nnPos+1;
 		byte crc = data[crcPos];
-		
+
 		// check calculted crc with received crc
 		if(crc != uc_crc) {
-			
+
 			logger.warn("EBus telegram sender-crc invalid, skip data! Data: {}", toHexDumpString(data));
 
 			// invalid, return null
 			return null;
 		}
-		
+
 		buffer.put(crc);
 		buffer.put(data[crcPos+1]);
-		
+
 		if(data[crcPos+1] == EbusTelegram.SYN) {
 			// Broadcast Telegram, end
 			return new EbusTelegram(buffer);
 		}
-		
+
 		if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
 				&& data[crcPos+2] == EbusTelegram.SYN) {
 
@@ -300,18 +290,18 @@ public class EBusUtils {
 			buffer.put(data[crcPos+2]);
 			return new EbusTelegram(buffer);
 		}
-		
+
 		if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
 			// Unexpected value on this position
 			logger.warn("Unexpect ack value in EBus telegram, skip data!");
 			return null;
 		}
-		
+
 		// ok, read slave answer
-		
+
 		int nn2Pos = crcPos+2;
 		byte nn2 = data[nn2Pos];
-		
+
 		buffer.put(nn2);
 		uc_crc = crc8_tab(nn2, (byte)0);
 
@@ -320,18 +310,18 @@ public class EBusUtils {
 		if(nn2 > 0) {
 			for (int i = nn2Pos+1; i < data.length-3; i++) {
 				byte b = data[i];
-				
+
 				uc_crc = crc8_tab(b, uc_crc);
-	
+
 				if(b != (byte)0xA9) {
 					buffer.put(expandByte(data, i));
 				}
 			}
 		}
-		
+
 		crc = data[data.length-3];
 		buffer.put(data, data.length-3, 3);
-		
+
 		// check calculted crc with received crc
 		if(crc != uc_crc) {
 			logger.warn("EBus telegram answer-crc invalid, skip data!");
@@ -350,7 +340,7 @@ public class EBusUtils {
 	static public String toHexDumpString(byte data) {
 		return String.format("%02X", (0xFF & data));
 	}
-	
+
 	/**
 	 * Generates a string hex dump from a byte array
 	 * @param data The source
@@ -365,7 +355,7 @@ public class EBusUtils {
 		}
 		return sb;
 	}
-	
+
 	/**
 	 * Generates a string hex dump from a ByteBuffer
 	 * @param data The source
@@ -380,7 +370,7 @@ public class EBusUtils {
 		}
 		return sb;
 	}
-	
+
 	/**
 	 * Converts a signed int (java default) to a unsigned int
 	 * @param signedInt The signed int
@@ -389,5 +379,5 @@ public class EBusUtils {
 	static int unsignedInt(int signedInt) {
 		return (signedInt << 24) >>> 24;
 	}
-	
+
 }
