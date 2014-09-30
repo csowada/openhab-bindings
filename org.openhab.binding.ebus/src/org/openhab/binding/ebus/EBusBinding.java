@@ -12,8 +12,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.parser.ParseException;
@@ -23,6 +28,7 @@ import org.openhab.binding.ebus.connection.EBusSerialConnector;
 import org.openhab.binding.ebus.connection.EBusTCPConnector;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.core.binding.AbstractActiveBinding;
+import org.openhab.core.binding.BindingProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -44,6 +50,52 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	
 	private AbstractEBusConnector connector;
 	private EBusTelegramParser parser;
+
+	private ScheduledExecutorService scheduler;
+	private Map<String, ScheduledFuture<?>> futureMap = new HashMap<String, ScheduledFuture<?>>();
+	
+	@Override
+	public void bindingChanged(BindingProvider provider, String itemName) {
+
+		logger.trace("Binding changed for item {}", itemName);
+		
+		EBusBindingProvider eBusProvider = (EBusBindingProvider)provider;
+		int refreshRate = eBusProvider.getRefreshRate(itemName);
+		
+		if(refreshRate > 0) {
+			final byte[] commandData = eBusProvider.getCommandData(itemName);
+
+			Runnable r = new Runnable() {
+				@Override
+				public void run() {
+					connector.send(commandData);
+				}
+			};
+			
+			if(futureMap.containsKey(itemName)) {
+				logger.trace("Stopped old polling item ...");
+				futureMap.remove(itemName).cancel(true);
+			}
+			
+			logger.debug("Add polling item {} with refresh rate {} to scheduler ...", itemName, refreshRate);
+			futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, 3, refreshRate, TimeUnit.SECONDS));
+			
+		} else if(futureMap.containsKey(itemName)) {
+			logger.debug("Remove scheduled refresh for item {}", itemName);
+			futureMap.get(itemName).cancel(true);
+			futureMap.remove(itemName);
+		}
+	}
+
+	@Override
+	public void removeBindingProvider(EBusBindingProvider provider) {
+		logger.debug("Remove all polling items for this provider from scheduler ...");
+		for (String itemName : provider.getItemNames()) {
+			if(futureMap.containsKey(itemName)) {
+				futureMap.get(itemName).cancel(true);
+			}
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
@@ -105,11 +157,14 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			// add event listener
 			connector.addEBusEventListener(this);
 			
+			connector.setSenderId((byte) 0xFF);
+			
 			// connect the connector
 			if(connector.connect()) {
 				
 				// start thread
 				connector.start();
+				
 			} else {
 				throw new ConfigurationException("general", "Unable to connect with eBus connector ...");
 			}
@@ -142,6 +197,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 */
 	public void activate() {
 		logger.debug("eBus binding has been started.");
+		scheduler = Executors.newScheduledThreadPool(2);
 	}
 
 	/* (non-Javadoc)
@@ -153,6 +209,8 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			connector.interrupt();
 			connector = null;
 		}
+		
+		scheduler.shutdown();
 	}
 
 	/* (non-Javadoc)
@@ -168,7 +226,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 */
 	@Override
 	protected long getRefreshInterval() {
-		return 100;
+		return 0;
 	}
 
 	/* (non-Javadoc)

@@ -44,6 +44,8 @@ public abstract class AbstractEBusConnector extends Thread {
 	/** output stream for eBus communication*/
 	protected OutputStream outputStream;
 
+	protected byte senderId = (byte)0xFF;
+	
 	private int lockCounter = 0;
 
 	private boolean blockNextSend;
@@ -60,6 +62,10 @@ public abstract class AbstractEBusConnector extends Thread {
 		this.setDaemon(true);
 	}
 
+	public void setSenderId(byte senderId) {
+		senderId = this.senderId;
+	}
+	
 	/**
 	 * Connects the connector to it's backend system. It's important
 	 * to connect before start the thread.
@@ -206,7 +212,7 @@ public abstract class AbstractEBusConnector extends Thread {
 		//		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
-
+	
 	/**
 	 * Internal send function. Send and read to detect byte collisions.
 	 * @param secondTry

@@ -56,23 +56,33 @@ public class EBusGenericBindingProvider extends
 			String bindingConfig) throws BindingConfigParseException {
 		super.processBindingConfiguration(context, item, bindingConfig);
 
+//		System.out
+//				.println("EBusGenericBindingProvider.processBindingConfiguration()");
+		
+		EBusBindingConfig config = new EBusBindingConfig();
 		for (String set : bindingConfig.trim().split(",")) {
 			String[] configParts = set.split(":");
 			if (configParts.length > 2) {
 				throw new BindingConfigParseException("eBus binding configuration must not contain more than two parts");
 			}
 			
-			EBusBindingConfig config = new EBusBindingConfig();
+			configParts[0] = configParts[0].trim().toLowerCase();
+			configParts[1] = configParts[1].trim();
+
 			if(configParts[0].equals("id")) {
 				config.id = configParts[1];
 			} else if(configParts[0].equals("data")) {
-				config.data = DatatypeConverter.parseHexBinary(configParts[1].trim().replaceAll(" ", ""));
+				config.data = DatatypeConverter.parseHexBinary(configParts[1].replaceAll(" ", ""));
+			} else if(configParts[0].equals("cmd")) {
+				config.commandId = configParts[1];
+			} else if(configParts[0].equals("refresh")) {
+				config.refreshRate = Integer.parseInt(configParts[1]);
 			} else {
 				throw new BindingConfigParseException("eBus binding configuration must contain id");
 			}
-			
-			addBindingConfig(item, config);
 		}
+		
+		addBindingConfig(item, config);
 	}
 
 	/* (non-Javadoc)
@@ -90,6 +100,8 @@ public class EBusGenericBindingProvider extends
 	class EBusBindingConfig implements BindingConfig {
 		public String id;
 		public byte[] data;
+		public int refreshRate;
+		public String commandId;
 	}
 
 	/* (non-Javadoc)
@@ -103,5 +115,24 @@ public class EBusGenericBindingProvider extends
 		}
 		return null;
 	}
+
+	@Override
+	public String getCommand(String itemName) {
+		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+		if(bindingConfig != null) {
+			return bindingConfig.commandId;
+		}
+		return null;
+	}
+
+	@Override
+	public int getRefreshRate(String itemName) {
+		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+		if(bindingConfig != null) {
+			return bindingConfig.refreshRate;
+		}
+		return 0;
+	}
+
 	
 }

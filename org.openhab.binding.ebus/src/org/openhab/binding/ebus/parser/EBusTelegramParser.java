@@ -117,6 +117,10 @@ public class EBusTelegramParser {
 
 	}
 
+//	public Map<String, Object> getConfiguration() {
+//		return settings;
+//	}
+	
 	private Object getValue(ByteBuffer byteBuffer, String type, int pos) {
 		Object value = null;
 		byte hByte = 0;

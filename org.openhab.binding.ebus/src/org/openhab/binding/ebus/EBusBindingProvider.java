@@ -29,4 +29,7 @@ public interface EBusBindingProvider extends BindingProvider {
 	 * @return data or null
 	 */
 	public byte[] getCommandData(String itemName);
+	
+	public String getCommand(String itemName);
+	public int getRefreshRate(String itemName);
 }
