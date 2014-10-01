@@ -1,34 +1,29 @@
 /**
-* Copyright (c) 2010-2014, openHAB.org and others.
-*
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*/
+ * Copyright (c) 2010-2014, openHAB.org and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.ebus;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.connection.AbstractEBusConnector;
+import org.openhab.binding.ebus.connection.EBusCommandProcessor;
 import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
 import org.openhab.binding.ebus.connection.EBusSerialConnector;
 import org.openhab.binding.ebus.connection.EBusTCPConnector;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.core.binding.AbstractActiveBinding;
-import org.openhab.core.binding.BindingProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -40,76 +35,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-* @author Christian Sowada
-* @since 1.6.0
-*/
+ * @author Christian Sowada
+ * @since 1.6.0
+ */
 public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> implements ManagedService, EBusConnectorEventListener {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusBinding.class);
-	
+
+	private EBusCommandProcessor commandProcessor;
 	private AbstractEBusConnector connector;
 	private EBusTelegramParser parser;
 
-	private ScheduledExecutorService scheduler;
-	private Map<String, ScheduledFuture<?>> futureMap = new HashMap<String, ScheduledFuture<?>>();
-	
-	@Override
-	public void bindingChanged(BindingProvider provider, String itemName) {
-
-		logger.trace("Binding changed for item {}", itemName);
-		
-		EBusBindingProvider eBusProvider = (EBusBindingProvider)provider;
-		int refreshRate = eBusProvider.getRefreshRate(itemName);
-		
-		if(refreshRate > 0) {
-			final byte[] commandData = eBusProvider.getCommandData(itemName);
-
-			Runnable r = new Runnable() {
-				@Override
-				public void run() {
-					connector.send(commandData);
-				}
-			};
-			
-			if(futureMap.containsKey(itemName)) {
-				logger.trace("Stopped old polling item ...");
-				futureMap.remove(itemName).cancel(true);
-			}
-			
-			logger.debug("Add polling item {} with refresh rate {} to scheduler ...", itemName, refreshRate);
-			futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, 3, refreshRate, TimeUnit.SECONDS));
-			
-		} else if(futureMap.containsKey(itemName)) {
-			logger.debug("Remove scheduled refresh for item {}", itemName);
-			futureMap.get(itemName).cancel(true);
-			futureMap.remove(itemName);
-		}
-	}
-
-	@Override
-	public void removeBindingProvider(EBusBindingProvider provider) {
-		logger.debug("Remove all polling items for this provider from scheduler ...");
-		for (String itemName : provider.getItemNames()) {
-			if(futureMap.containsKey(itemName)) {
-				futureMap.get(itemName).cancel(true);
-			}
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
 	 */
 	@Override
 	protected void internalReceiveCommand(String itemName, Command command) {
+		super.internalReceiveCommand(itemName, command);
+		
+		String type = command.toString().toLowerCase();
+		
 		for (EBusBindingProvider provider : providers) {
-			byte[] data = provider.getCommandData(itemName);
+			
+			// first try, data-ON, data-OFF, etc.
+			byte[] data = provider.getCommandData(itemName, type);
+			
+			if(data == null) {
+				// ok, try data param
+				data = provider.getCommandData(itemName);
+			}
+
 			if(data != null) {
 				connector.send(data);
 			}
 		}
-
-		super.internalReceiveCommand(itemName, command);
 	}
 
 	/* (non-Javadoc)
@@ -125,26 +86,42 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			if(connector != null && connector.isAlive()) {
 				connector.interrupt();
 			}
-			
+
 			// load parser from default url
 			parser = new EBusTelegramParser();
-			URL configurationUrl = this.getClass().getResource("/META-INF/ebus-configuration.json");
 
-			// check customized parser url
-			String parserUrl = (String) properties.get("parserUrl");
-			if(parserUrl != null) {
-				logger.info("Use custom parser with url {}", parserUrl);
-				configurationUrl = new URL(parserUrl);
+			URL configurationUrl = null;
+			String parsers = (String) properties.get("parsers");
+			if(parsers != null) {
+				// set all known configurations as default
+				parsers = "common,wolf,vaillant,testing";
 			}
 			
-			// read configuration file
-			parser.loadConfigurationFile(configurationUrl);
-			
-			
+			for (String elem : parsers.split(",")) {
+				configurationUrl = null;
+				if(elem.trim().equals("custom")) {
+					String parserUrl = (String) properties.get("parserUrl");
+					if(parserUrl != null) {
+						logger.debug("Load custom eBus Parser with url {}", parserUrl);
+						configurationUrl = new URL(parserUrl);
+					}
+				} else {
+					logger.debug("Load eBus Parser Configuration \"{}\" ...", elem.trim());
+					configurationUrl = this.getClass().getResource(
+							"/META-INF/" + elem.trim() + "-configuration.json");
+				}
+
+				if(configurationUrl != null) {
+					parser.loadConfigurationFile(configurationUrl);
+				}
+			}
+
+
+			// check minimal config
 			if(properties.get("serialPort") != null && properties.get("hostname") != null) {
 				throw new ConfigurationException("hostname", "Set property serialPort or hostname, not both!");
 			}
-			
+
 			if(StringUtils.isNotEmpty((String) properties.get("serialPort"))) {
 				connector = new EBusSerialConnector(
 						(String) properties.get("serialPort"));
@@ -156,14 +133,15 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 
 			// add event listener
 			connector.addEBusEventListener(this);
-			
-			connector.setSenderId((byte) 0xFF);
-			
+
 			// connect the connector
 			if(connector.connect()) {
 				
 				// start thread
 				connector.start();
+
+				// set the new connector
+				commandProcessor.setConnector(connector);
 				
 			} else {
 				throw new ConfigurationException("general", "Unable to connect with eBus connector ...");
@@ -174,8 +152,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		} catch (ParseException e) {
 			logger.error(e.toString(), e);
 		} catch (IOException e) {
-			throw new ConfigurationException(
-					"general", e.toString(), e);
+			throw new ConfigurationException("general", e.toString(), e);
 		}
 	}
 
@@ -192,12 +169,27 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
+	@Override
+	public void addBindingProvider(EBusBindingProvider provider) {
+		super.addBindingProvider(provider);
+
+		if(commandProcessor == null) {
+			commandProcessor = new EBusCommandProcessor();
+		}
+		provider.addBindingChangeListener(commandProcessor);
+	}
+
+	@Override
+	public void removeBindingProvider(EBusBindingProvider provider) {
+		super.removeBindingProvider(provider);
+		provider.removeBindingChangeListener(commandProcessor);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#activate()
 	 */
 	public void activate() {
 		logger.debug("eBus binding has been started.");
-		scheduler = Executors.newScheduledThreadPool(2);
 	}
 
 	/* (non-Javadoc)
@@ -209,8 +201,11 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			connector.interrupt();
 			connector = null;
 		}
-		
-		scheduler.shutdown();
+
+		if(commandProcessor != null) {
+			commandProcessor.deactivate();
+			commandProcessor = null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -245,14 +240,14 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		Map<String, Object> results = parser.parse(telegram);
 		if(results != null) {
 			for (Entry<String, Object> entry : results.entrySet()) {
-				
+
 				State state = null;
 				if(entry.getValue() instanceof Float) {
 					state = new DecimalType((Float)entry.getValue());
 				} else if(entry.getValue() instanceof Double) {
 					state = new DecimalType((Double)entry.getValue());
 				} else if(entry.getValue() instanceof Integer) {
-						state = new DecimalType((Integer)entry.getValue());
+					state = new DecimalType((Integer)entry.getValue());
 				} else if(entry.getValue() instanceof Byte) {
 					state = new DecimalType((Byte)entry.getValue());
 				} else if(entry.getValue() instanceof Boolean) {
@@ -264,7 +259,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 				} else {
 					logger.error("Unknown data type!");
 				}
-				
+
 				if(state != null) {
 					EBusBinding.this.postUpdate(entry.getKey(), state);
 				}
