@@ -43,8 +43,6 @@ public abstract class AbstractEBusConnector extends Thread {
 
 	/** output stream for eBus communication*/
 	protected OutputStream outputStream;
-
-	protected byte senderId = (byte)0xFF;
 	
 	private int lockCounter = 0;
 
@@ -60,10 +58,6 @@ public abstract class AbstractEBusConnector extends Thread {
 	public AbstractEBusConnector() {
 		super("eBus Connection Thread");
 		this.setDaemon(true);
-	}
-
-	public void setSenderId(byte senderId) {
-		senderId = this.senderId;
 	}
 	
 	/**
