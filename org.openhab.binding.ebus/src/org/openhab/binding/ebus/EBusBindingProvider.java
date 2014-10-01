@@ -30,6 +30,25 @@ public interface EBusBindingProvider extends BindingProvider {
 	 */
 	public byte[] getCommandData(String itemName);
 	
-	public String getCommand(String itemName);
+	/**
+	 * Return the byte data to send for a type
+	 * @param itemName
+	 * @param type
+	 * @return
+	 */
+	public byte[] getCommandData(String itemName, String type);
+	
+//	/**
+//	 * Unused!
+//	 * @param itemName
+//	 * @return
+//	 */
+//	public String getCommand(String itemName);
+	
+	/**
+	 * Return the refresh rate for a polling commands
+	 * @param itemName
+	 * @return
+	 */
 	public int getRefreshRate(String itemName);
 }

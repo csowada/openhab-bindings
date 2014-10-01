@@ -8,6 +8,8 @@
 */
 package org.openhab.binding.ebus;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.DatatypeConverter;
@@ -54,11 +56,9 @@ public class EBusGenericBindingProvider extends
 	@Override
 	public void processBindingConfiguration(String context, Item item,
 			String bindingConfig) throws BindingConfigParseException {
+		
 		super.processBindingConfiguration(context, item, bindingConfig);
 
-//		System.out
-//				.println("EBusGenericBindingProvider.processBindingConfiguration()");
-		
 		EBusBindingConfig config = new EBusBindingConfig();
 		for (String set : bindingConfig.trim().split(",")) {
 			String[] configParts = set.split(":");
@@ -73,10 +73,17 @@ public class EBusGenericBindingProvider extends
 				config.id = configParts[1];
 			} else if(configParts[0].equals("data")) {
 				config.data = DatatypeConverter.parseHexBinary(configParts[1].replaceAll(" ", ""));
-			} else if(configParts[0].equals("cmd")) {
-				config.commandId = configParts[1];
+//			} else if(configParts[0].equals("cmd")) {
+//				config.commandId = configParts[1];
 			} else if(configParts[0].equals("refresh")) {
 				config.refreshRate = Integer.parseInt(configParts[1]);
+			} else if(configParts[0].startsWith("data-")) {
+				if(config.dataMap == null) {
+					config.dataMap = new HashMap<String, byte[]>();
+				}
+				String key = configParts[0].substring(5);
+				config.dataMap.put(key, DatatypeConverter.parseHexBinary(
+						configParts[1].replaceAll(" ", "")));
 			} else {
 				throw new BindingConfigParseException("eBus binding configuration must contain id");
 			}
@@ -101,7 +108,8 @@ public class EBusGenericBindingProvider extends
 		public String id;
 		public byte[] data;
 		public int refreshRate;
-		public String commandId;
+//		public String commandId;
+		public Map<String, byte[]> dataMap;
 	}
 
 	/* (non-Javadoc)
@@ -116,15 +124,21 @@ public class EBusGenericBindingProvider extends
 		return null;
 	}
 
-	@Override
-	public String getCommand(String itemName) {
-		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-		if(bindingConfig != null) {
-			return bindingConfig.commandId;
-		}
-		return null;
-	}
+//	/* (non-Javadoc)
+//	 * @see org.openhab.binding.ebus.EBusBindingProvider#getCommand(java.lang.String)
+//	 */
+//	@Override
+//	public String getCommand(String itemName) {
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null) {
+//			return bindingConfig.commandId;
+//		}
+//		return null;
+//	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.EBusBindingProvider#getRefreshRate(java.lang.String)
+	 */
 	@Override
 	public int getRefreshRate(String itemName) {
 		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
@@ -134,5 +148,15 @@ public class EBusGenericBindingProvider extends
 		return 0;
 	}
 
-	
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.EBusBindingProvider#getCommandData(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public byte[] getCommandData(String itemName, String type) {
+		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+		if(bindingConfig != null && bindingConfig.dataMap != null) {
+			return bindingConfig.dataMap.get(type);
+		}
+		return null;
+	}
 }
