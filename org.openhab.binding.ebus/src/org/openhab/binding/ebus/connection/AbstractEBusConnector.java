@@ -32,7 +32,10 @@ public abstract class AbstractEBusConnector extends Thread {
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractEBusConnector.class);
 
+	/** the send output queue */
 	private final Queue<byte[]> outputQueue = new LinkedBlockingQueue<byte[]>(20);
+	
+	/** the list for listeners */
 	private final List<EBusConnectorEventListener> listeners = new ArrayList<EBusConnectorEventListener>();
 
 	/** serial receive buffer */
@@ -44,12 +47,16 @@ public abstract class AbstractEBusConnector extends Thread {
 	/** output stream for eBus communication*/
 	protected OutputStream outputStream;
 	
+	/** current lockout counter */
 	private int lockCounter = 0;
 
+	/** next send try is blocked */
 	private boolean blockNextSend;
 
+	/** last send try caused a collision */
 	private boolean lastSendCollisionDetected = false;
 
+	/** eBus lockout */
 	private static int LOCKOUT_COUNTER_MAX = 3;
 
 	/**
@@ -102,13 +109,16 @@ public abstract class AbstractEBusConnector extends Thread {
 	@Override
 	public void run() {
 
+		// loop until interrupt
 		while (!isInterrupted()) {
 			try {
 				int read = inputStream.read();
 				if(read != -1) {
 					byte receivedByte = (byte)(read & 0xFF);
-
+					// write received byte to input buffer
 					inputBuffer.put(receivedByte);
+					
+					// the 0xAA byte is a end of a packet
 					if(receivedByte == EbusTelegram.SYN) {
 						onEBusSyncReceived();
 					}
@@ -120,6 +130,7 @@ public abstract class AbstractEBusConnector extends Thread {
 		}
 
 		try {
+			// disconnect the connector e.g. close serial port
 			disconnect();
 		} catch (IOException e) {
 			logger.error(e.toString(), e);
@@ -136,33 +147,35 @@ public abstract class AbstractEBusConnector extends Thread {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Auto-SYN byte received");
 
-			// jetzt senden, wenn was da ist
+			// send a telegram from queue if available
 			send(false);
 
 		} else if(inputBuffer.position() == 2 && inputBuffer.get(0) == EbusTelegram.SYN) {
 			logger.warn("Collision on eBus detected (SYN DATA SYNC Sequence) ...");
 			blockNextSend = true;
 
-			// jetzt senden, wenn was da ist
+			// send a telegram from queue if available
 			send(false);
 
 		}else if(inputBuffer.position() < 5) {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Telegram to small, skip!");
 
-			// jetzt senden, wenn was da ist
+			// send a telegram from queue if available
 			send(false);
 
 		} else {
 			if(lockCounter > 0) lockCounter--;
-			byte[] copyOf = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
+			byte[] receivedTelegram = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
 
-			// erst senden, dass ist zeitkritisch
+			// send a telegram from queue if available, time critical!
 			send(false);
 
-			// Nach dem senden können wir uns um die empfangenen daten kümmern
-			final EbusTelegram telegram = EBusUtils.processEBusData(copyOf);
+			// After senden we can process the last received telegram
+			final EbusTelegram telegram = EBusUtils.processEBusData(receivedTelegram);
 			if(telegram != null) {
+				
+				// execute event
 				onEBusTelegramReceived(telegram);
 
 			} else {
@@ -170,7 +183,7 @@ public abstract class AbstractEBusConnector extends Thread {
 			}
 		}
 
-		// datenbuffer zurück setzen
+		// reset receive buffer
 		inputBuffer.clear();
 	}
 
@@ -201,9 +214,10 @@ public abstract class AbstractEBusConnector extends Thread {
 			byte b = data[i];
 			crc = EBusUtils.crc8_tab(b, crc);
 		}
+		
+		// replace crc with calculated value
 		data[data.length-1] = crc;
 
-		//		logger.debug("Add to send queue: {}", EBusUtils.toHexDumpString(data));
 		return outputQueue.add(data);
 	}
 	
@@ -378,7 +392,7 @@ public abstract class AbstractEBusConnector extends Thread {
 			}
 		}
 
-		// Nach dem senden können wir uns um die empfangenen daten kümmern
+		// after send process the received telegram
 		byte[] buffer = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
 		final EbusTelegram telegram = EBusUtils.processEBusData(buffer);
 		if(telegram != null) {

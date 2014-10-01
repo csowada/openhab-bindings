@@ -1,2 +1,6 @@
 eclipse.preferences.version=1
+encoding//src/META-INF/common-configuration.json=UTF-8
 encoding//src/META-INF/ebus-configuration.json=UTF-8
+encoding//src/META-INF/testing-configuration.json=UTF-8
+encoding//src/META-INF/vaillant-configuration.json=UTF-8
+encoding//src/META-INF/wolf-configuration.json=UTF-8
