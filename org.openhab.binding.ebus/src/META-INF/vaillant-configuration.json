@@ -1,0 +1,11 @@
+[
+	{
+		"comment":	"Vaillant: Kollektor Vorlauf Temp.",
+		"filter":	"?? ED B5 09 ?? 0D 05 00 .*",
+		
+		"values": {
+			"temp_collector_flow":		{"type": "data2c", "pos": 6, "label": "Kollektor Vorauf"},
+			"available_collector_flow":	{"type": "byte", "pos":8, "label": "Sensor vorhanden"}
+		}
+	}
+]

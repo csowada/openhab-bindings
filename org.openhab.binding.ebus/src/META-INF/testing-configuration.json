@@ -1,0 +1,41 @@
+[
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: Kollektor 24H Max",
+		"filter":	"?? ?? 50 22 ?? A5 78 09 .*",
+		"debug": 1,
+		
+		"values": {
+			"col24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "Kollektor 24H Max"}
+		}
+	},
+	
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
+		"filter":	"?? ?? 50 22 ?? 41 7B 09 .*",
+		"debug": 1,
+		
+		"values": {
+			"wws24in":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Min"}
+		}
+	},
+	
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
+		"filter":	"?? ?? 50 22 ?? 89 7C 09 .*",
+		"debug": 1,
+		
+		"values": {
+			"wws24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Max * 10"}
+		}
+	},
+
+	{
+		"comment":	"[??] <???> Kromschröder/Wolf: Antilegionellen ",
+		"filter":	"?? ?? 50 22 ?? CE F7 02 .*",
+		"debug": 1,
+		
+		"values": {
+			"leg":			{"type": "word", "pos": 12, "label": "Antilegionellen"}
+		}
+	}
+]

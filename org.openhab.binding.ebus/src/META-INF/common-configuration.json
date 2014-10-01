@@ -1,0 +1,58 @@
+[
+	{
+		"comment":	"Betriebsdaten des Feuerungsautomaten an den Regler - Block 1",
+		"filter":	"?? ?? 05 03 08 01 .*",
+		"debug": 2,
+		
+		"values": {
+			"status_auto_stroker":	{"type": "byte", "pos":7, "label": "Statusanzeige"},
+			"state_ldw":			{"type": "bit", "pos":8, "bit": 0, "label": "LDW"},
+			"state_gdw":			{"type": "bit", "pos":8, "bit": 1, "label": "GDW"},
+			"state_ws":				{"type": "bit", "pos":8, "bit": 2, "label": "WS"},
+			"state_flame":			{"type": "bit", "pos":8, "bit": 3, "label": "Flame"},
+			"state_valve1":			{"type": "bit", "pos":8, "bit": 4, "label": "Valve1"},
+			"state_valve2":			{"type": "bit", "pos":8, "bit": 5, "label": "Valve2"},
+			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP"},
+			"state_alarm":			{"type": "bit", "pos":8, "bit": 7, "label": "Alarm"},
+			"adjusting_vessel":		{"type": "uchar", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
+			"temp_vessel": 			{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
+			"temp_return": 			{"type": "uchar", "pos":11, "label": "Rücklauftemperatur"},
+			"temp_boiler": 			{"type": "uchar", "pos":12, "label": "Boilertemperatur"},
+			"temp_outdoor": 		{"type": "char", "pos":13, "label": "Außentemperatur", "undefined":"0xF"}
+		}
+	},
+	
+	{
+		"comment":	"Datum/Zeitmeldung eines eBUS Masters",
+		"filter":	"?? ?? 07 00 09 .*",
+		
+		"values": {
+			"temp_outdoor":			{"type": "data2b", "pos":6, "label": "Außentemperatur"},
+			"time_sec":				{"type": "bcd", "pos":8, "label": "Zeit Sek."},
+			"time_min":				{"type": "bcd", "pos":9, "label": "Zeit Min"},
+			"time_hour":			{"type": "bcd", "pos":10, "label": "Zeit Stunde"},
+			
+			"date_day":				{"type": "bcd", "pos":11, "label": "Zeit Stunde"},
+			"date_month":			{"type": "bcd", "pos":12, "label": "Zeit Stunde"},
+			"date_year":			{"type": "bcd", "pos":14, "label": "Zeit Stunde", "debug": 1}
+		},
+		"computed_values": {
+			"time":					{"type": "script", "script": "time_hour + ':' + time_hour + ':' + time_sec", "label": "Aktuelle Zeit"},
+			"date":					{"type": "script", "script":	"date_year + '-' + date_month + '-' + date_year", "label": "Aktuelles Datum"}
+		}
+	},
+	
+	{
+		"comment":	"Sollwertübertragung des Reglers an andere Regler",
+		"filter":	"?? ?? 08 00 .*",
+		
+		"values": {
+			"temp_t_vessel":		{"type": "data2c", "pos": 6, "label": "Kesselsollwert"},
+			"temp_outside":			{"type": "data2b", "pos":8, "label": "Außentemperatur"},
+			"power_enforcement":	{"type": "data1b", "pos":10, "label": "Leistungszwang"},
+			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv (Wärmepumpen?)"},
+			"status_heat_circuit":	{"type": "bit", "pos":11, "bit": 1, "label": "Heizkreis aktiv"},
+			"temp_t_wather":		{"type": "data2b", "pos":12, "label": "Brauchwassersoll"}
+		}
+	}
+]
