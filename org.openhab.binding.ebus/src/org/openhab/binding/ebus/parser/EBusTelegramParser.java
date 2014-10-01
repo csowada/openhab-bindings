@@ -53,7 +53,7 @@ public class EBusTelegramParser {
 	private static final Logger logger3 = LoggerFactory
 			.getLogger(EBusTelegramParser.class.getPackage().getName() + ".BruteForce");
 
-	private ArrayList<Map<String, Object>> telegramRegistry;
+	private ArrayList<Map<String, Object>> telegramRegistry = new ArrayList<>();
 	private Map<String, Object> settings;
 	private Compilable compEngine; 
 
@@ -72,9 +72,9 @@ public class EBusTelegramParser {
 
 		InputStream inputStream = url.openConnection().getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-		telegramRegistry = (JSONArray)parser.parse(in);
+		ArrayList<Map<String, Object>> loadedTelegramRegistry = (JSONArray)parser.parse(in);
 
-		for (Iterator<Map<String, Object>> iterator = telegramRegistry.iterator(); iterator.hasNext();) {
+		for (Iterator<Map<String, Object>> iterator = loadedTelegramRegistry.iterator(); iterator.hasNext();) {
 			JSONObject object = (JSONObject) iterator.next();
 
 			if(object.get("filter") instanceof String) {
@@ -114,12 +114,11 @@ public class EBusTelegramParser {
 				}
 			}
 		}
-
+		
+		if(loadedTelegramRegistry != null && !loadedTelegramRegistry.isEmpty()) {
+			telegramRegistry.addAll(loadedTelegramRegistry);
+		}
 	}
-
-//	public Map<String, Object> getConfiguration() {
-//		return settings;
-//	}
 	
 	private Object getValue(ByteBuffer byteBuffer, String type, int pos) {
 		Object value = null;
