@@ -174,36 +174,6 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 		}
 	}
 
-	//	@Override
-	//	public void allBindingsChanged(BindingProvider provider) {
-	//		super.allBindingsChanged(provider);
-	//		if(commandProcessor == null) {
-	//			commandProcessor = new EBusCommandProcessor();
-	//		}
-	//		commandProcessor.allBindingsChanged(provider);
-	//	}
-
-
-
-	//	@Override
-	//	public void addBindingProvider(EBusBindingProvider provider) {
-	//		// TODO Auto-generated method stub
-	//		super.addBindingProvider(provider);
-	//		
-	//		
-	//		provider.
-	//		
-	//	}
-	//
-	//	@Override
-	//	public void bindingChanged(BindingProvider provider, String itemName) {
-	//		super.bindingChanged(provider, itemName);
-	//		if(commandProcessor == null) {
-	//			commandProcessor = new EBusCommandProcessor();
-	//		}
-	//		commandProcessor.bindingChanged(provider, itemName);
-	//	}
-
 	@Override
 	public void addBindingProvider(EBusBindingProvider provider) {
 		super.addBindingProvider(provider);
