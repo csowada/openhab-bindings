@@ -85,7 +85,9 @@ public class EBusCommandProcessor implements BindingChangeListener {
 			}
 			
 			logger.debug("Add polling item {} with refresh rate {} to scheduler ...", itemName, refreshRate);
-			futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, 3, refreshRate, TimeUnit.SECONDS));
+			
+			int randomInitDelay = (int) (Math.random() * (30 - 4) + 4);
+			futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, randomInitDelay, refreshRate, TimeUnit.SECONDS));
 
 		} else if(futureMap.containsKey(itemName)) {
 			logger.debug("Remove scheduled refresh for item {}", itemName);
