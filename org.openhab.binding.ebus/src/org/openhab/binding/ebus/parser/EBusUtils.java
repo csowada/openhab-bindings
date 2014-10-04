@@ -128,7 +128,7 @@ public class EBusUtils {
 	 * @param lowData The encoded low byte
 	 * @return The decoded value
 	 */
-	public static Float decodeDATA2b(byte highData, byte lowData) {
+	public static float decodeDATA2b(byte highData, byte lowData) {
 		if((highData & (byte) 0x80) == (byte) 0x80) {
 			short hh = (short) ((highData^0xFF) & 0xFF);
 			short ll = (short) ((lowData^0xFF) & 0xFF);
@@ -143,12 +143,11 @@ public class EBusUtils {
 
 	/**
 	 * Convert EBus Type DATA2c
-	 * FIXME: Badly programmed, can't process negativ values
 	 * @param highData The encoded high byte
 	 * @param lowData The encoded low byte
 	 * @return The decoded value
 	 */
-	public static Float decodeDATA2c(byte highData, byte lowData) {
+	public static float decodeDATA2c(byte highData, byte lowData) {
 		if((highData & (byte) 0x80) == (byte) 0x80) {
 
 			short hh = (short) ((highData^0xFF) & 0xFF);
@@ -227,109 +226,115 @@ public class EBusUtils {
 	 */
 	static public EbusTelegram processEBusData(byte[] data) {
 
-		ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
+		try {
+			ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
 
-		buffer.put(data, 0, 5);
-		int nnPos = 4;
-		int nn = data[nnPos];
+			buffer.put(data, 0, 5);
+			int nnPos = 4;
+			int nn = data[nnPos];
 
-		byte uc_crc = 0;
+			byte uc_crc = 0;
 
-		// crc-check first bytes
-		for (int i = 0; i < 5; i++) {
-			byte b = data[i];
-			uc_crc = crc8_tab(b, uc_crc);
-		}
-
-		// process sender data and find data end pos.
-		// (may moved because expanded bytes)
-		if(nn > 0) {
-			nnPos = 0;
-
-			for (int i = 5; i < data.length; i++) {
+			// crc-check first bytes
+			for (int i = 0; i < 5; i++) {
 				byte b = data[i];
-
 				uc_crc = crc8_tab(b, uc_crc);
+			}
 
-				if(b != (byte)0xA9) {
-					nnPos++;
-					buffer.put(expandByte(data, i));
-				}
+			// process sender data and find data end pos.
+			// (may moved because expanded bytes)
+			if(nn > 0) {
+				nnPos = 0;
 
-				if(nnPos == nn) {
-					nnPos = i;
-					break;
+				for (int i = 5; i < data.length; i++) {
+					byte b = data[i];
+
+					uc_crc = crc8_tab(b, uc_crc);
+
+					if(b != (byte)0xA9) {
+						nnPos++;
+						buffer.put(expandByte(data, i));
+					}
+
+					if(nnPos == nn) {
+						nnPos = i;
+						break;
+					}
 				}
 			}
-		}
 
-		int crcPos = nnPos+1;
-		byte crc = data[crcPos];
+			int crcPos = nnPos+1;
+			byte crc = data[crcPos];
 
-		// check calculted crc with received crc
-		if(crc != uc_crc) {
+			// check calculted crc with received crc
+			if(crc != uc_crc) {
 
-			logger.warn("EBus telegram sender-crc invalid, skip data! Data: {}", toHexDumpString(data));
+				logger.warn("EBus telegram sender-crc invalid, skip data! Data: {}", toHexDumpString(data));
 
-			// invalid, return null
-			return null;
-		}
+				// invalid, return null
+				return null;
+			}
 
-		buffer.put(crc);
-		buffer.put(data[crcPos+1]);
+			buffer.put(crc);
+			buffer.put(data[crcPos+1]);
 
-		if(data[crcPos+1] == EbusTelegram.SYN) {
-			// Broadcast Telegram, end
-			return new EbusTelegram(buffer);
-		}
+			if(data[crcPos+1] == EbusTelegram.SYN) {
+				// Broadcast Telegram, end
+				return new EbusTelegram(buffer);
+			}
 
-		if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
-				&& data[crcPos+2] == EbusTelegram.SYN) {
+			if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
+					&& data[crcPos+2] == EbusTelegram.SYN) {
 
-			// Master-Master Telegram, add ack value and end
-			buffer.put(data[crcPos+2]);
-			return new EbusTelegram(buffer);
-		}
+				// Master-Master Telegram, add ack value and end
+				buffer.put(data[crcPos+2]);
+				return new EbusTelegram(buffer);
+			}
 
-		if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
-			// Unexpected value on this position
-			logger.warn("Unexpect ack value in EBus telegram, skip data!");
-			return null;
-		}
+			if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
+				// Unexpected value on this position
+				logger.warn("Unexpect ack value in EBus telegram, skip data!");
+				return null;
+			}
 
-		// ok, read slave answer
+			// ok, read slave answer
 
-		int nn2Pos = crcPos+2;
-		byte nn2 = data[nn2Pos];
+			int nn2Pos = crcPos+2;
+			byte nn2 = data[nn2Pos];
 
-		buffer.put(nn2);
-		uc_crc = crc8_tab(nn2, (byte)0);
+			buffer.put(nn2);
+			uc_crc = crc8_tab(nn2, (byte)0);
 
-		// process answer data and find data end pos.
-		// (may moved because expanded bytes)
-		if(nn2 > 0) {
-			for (int i = nn2Pos+1; i < data.length-3; i++) {
-				byte b = data[i];
+			// process answer data and find data end pos.
+			// (may moved because expanded bytes)
+			if(nn2 > 0) {
+				for (int i = nn2Pos+1; i < data.length-3; i++) {
+					byte b = data[i];
 
-				uc_crc = crc8_tab(b, uc_crc);
+					uc_crc = crc8_tab(b, uc_crc);
 
-				if(b != (byte)0xA9) {
-					buffer.put(expandByte(data, i));
+					if(b != (byte)0xA9) {
+						buffer.put(expandByte(data, i));
+					}
 				}
 			}
-		}
 
-		crc = data[data.length-3];
-		buffer.put(data, data.length-3, 3);
+			crc = data[data.length-3];
+			buffer.put(data, data.length-3, 3);
 
-		// check calculted crc with received crc
-		if(crc != uc_crc) {
-			logger.warn("EBus telegram answer-crc invalid, skip data!");
+			// check calculted crc with received crc
+			if(crc != uc_crc) {
+				logger.warn("EBus telegram answer-crc invalid, skip data!");
+				return null;
+			}
+
+			// return valid telegram
+			return new EbusTelegram(buffer);
+			
+		} catch (Exception e) {
+			logger.error(e.toString(), e);
 			return null;
 		}
-
-		// return valid telegram
-		return new EbusTelegram(buffer);
 	}
 
 	/**
