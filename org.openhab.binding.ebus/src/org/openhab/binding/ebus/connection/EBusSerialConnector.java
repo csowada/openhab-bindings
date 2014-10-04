@@ -11,6 +11,7 @@ package org.openhab.binding.ebus.connection;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
+import gnu.io.RXTXVersion;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
@@ -44,27 +45,35 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 	/* (non-Javadoc)
 	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#connect()
 	 */
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#connect()
+	 */
 	@Override
 	public boolean connect() throws IOException {
 		try {
 			final CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
+			logger.debug("Use RXTX Version {}", RXTXVersion.getVersion());
 			
-			serialPort = (SerialPort) portIdentifier.open("openhab-ebus", 3000);
-			serialPort.setSerialPortParams(2400, SerialPort.DATABITS_8,
-					SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+			
+			if(portIdentifier != null) {
+				serialPort = (SerialPort) portIdentifier.open("openhab-ebus", 5000);
+				serialPort.setSerialPortParams(2400, SerialPort.DATABITS_8,
+						SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
-			serialPort.disableReceiveTimeout();
-			serialPort.enableReceiveThreshold(1);
-			
-			outputStream = serialPort.getOutputStream();
-			inputStream = serialPort.getInputStream();
-			
-			return true;
+				// set timeout 5 sec.
+				serialPort.enableReceiveTimeout(5000);
+				serialPort.disableReceiveThreshold();
+				
+				outputStream = serialPort.getOutputStream();
+				inputStream = serialPort.getInputStream();
+				
+				return true;
+			}
 			
 		} catch (NoSuchPortException e) {
-			logger.error(e.toString(), e);
+			logger.error("Unable to connect to serial port {}", port);
 		} catch (PortInUseException e) {
-			logger.error(e.toString(), e);
+			logger.error("Serial port {} is already in use", port);
 		} catch (UnsupportedCommOperationException e) {
 			logger.error(e.toString(), e);
 		}
@@ -77,8 +86,13 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 	 */
 	@Override
 	public boolean disconnect() throws IOException  {
-		serialPort.close();
-		serialPort = null;
+		super.disconnect();
+		
+		if(serialPort != null) {
+			serialPort.close();
+			serialPort = null;
+		}
+
 		return true;
 	}
 }

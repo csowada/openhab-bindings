@@ -34,7 +34,7 @@ public abstract class AbstractEBusConnector extends Thread {
 
 	/** the send output queue */
 	private final Queue<byte[]> outputQueue = new LinkedBlockingQueue<byte[]>(20);
-	
+
 	/** the list for listeners */
 	private final List<EBusConnectorEventListener> listeners = new ArrayList<EBusConnectorEventListener>();
 
@@ -46,7 +46,7 @@ public abstract class AbstractEBusConnector extends Thread {
 
 	/** output stream for eBus communication*/
 	protected OutputStream outputStream;
-	
+
 	/** current lockout counter */
 	private int lockCounter = 0;
 
@@ -59,6 +59,8 @@ public abstract class AbstractEBusConnector extends Thread {
 	/** eBus lockout */
 	private static int LOCKOUT_COUNTER_MAX = 3;
 
+	private int reConnectCounter = 0;
+	
 	/**
 	 * Constructor
 	 */
@@ -66,7 +68,7 @@ public abstract class AbstractEBusConnector extends Thread {
 		super("eBus Connection Thread");
 		this.setDaemon(true);
 	}
-	
+
 	/**
 	 * Connects the connector to it's backend system. It's important
 	 * to connect before start the thread.
@@ -83,6 +85,10 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @throws IOException
 	 */
 	public boolean disconnect() throws IOException {
+		if(inputStream != null)
+			inputStream.close();
+		if(outputStream != null)
+			outputStream.close();
 		return true;
 	}
 
@@ -103,6 +109,25 @@ public abstract class AbstractEBusConnector extends Thread {
 		return listeners.remove(listener);
 	}
 
+	protected void reconnect() throws IOException, InterruptedException {
+		if(disconnect()) {
+			if(!connect()) {
+				
+				if(reConnectCounter < 50) {
+					reConnectCounter++;
+				}
+				
+				int sleepTime = reConnectCounter > 24 ? 30 : 5;
+				
+				logger.warn("Unable to connector to eBus, retry in {} seconds ...", sleepTime);
+				Thread.sleep(sleepTime*1000);
+				
+			} else {
+				reConnectCounter = 0;
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
 	 */
@@ -112,30 +137,63 @@ public abstract class AbstractEBusConnector extends Thread {
 		// loop until interrupt
 		while (!isInterrupted()) {
 			try {
-				int read = inputStream.read();
-				if(read != -1) {
-					byte receivedByte = (byte)(read & 0xFF);
-					// write received byte to input buffer
-					inputBuffer.put(receivedByte);
-					
-					// the 0xAA byte is a end of a packet
-					if(receivedByte == EbusTelegram.SYN) {
-						onEBusSyncReceived();
+
+				if(inputStream == null) {
+					reconnect();
+
+				} else {
+					int read = inputStream.read();
+					if(read == -1) {
+						logger.error("eBus read timeout occured!");
+
+						// reconnect
+						reconnect();
+
+					} else {
+						byte receivedByte = (byte)(read & 0xFF);
+						// write received byte to input buffer
+						inputBuffer.put(receivedByte);
+
+						// the 0xAA byte is a end of a packet
+						if(receivedByte == EbusTelegram.SYN) {
+							onEBusSyncReceived();
+						}
 					}
 				}
 
 			} catch (IOException e) {
+				logger.error("An IO Exception has occured!", e);
+
+				try {
+					reconnect();
+				} catch (IOException | InterruptedException e1) {
+					logger.error(e.toString(), e);
+				}
+
+			} catch (Exception e) {
 				logger.error(e.toString(), e);
 			}
 		}
 
+		// disconnect the connector e.g. close serial port
 		try {
-			// disconnect the connector e.g. close serial port
 			disconnect();
 		} catch (IOException e) {
 			logger.error(e.toString(), e);
 		}
 	}
+
+	//	public boolean checkConnection() {
+	//		return true;
+	//	}
+	//	
+	//	public boolean testWatchDogTimer() {
+	//		if(System.currentTimeMillis() - watchDogTimer > 1000) {
+	//			return true;
+	//		}
+	//		
+	//		return false;
+	//	}
 
 	/**
 	 * Called if a SYN packet was received
@@ -174,7 +232,7 @@ public abstract class AbstractEBusConnector extends Thread {
 			// After senden we can process the last received telegram
 			final EbusTelegram telegram = EBusUtils.processEBusData(receivedTelegram);
 			if(telegram != null) {
-				
+
 				// execute event
 				onEBusTelegramReceived(telegram);
 
@@ -214,13 +272,13 @@ public abstract class AbstractEBusConnector extends Thread {
 			byte b = data[i];
 			crc = EBusUtils.crc8_tab(b, crc);
 		}
-		
+
 		// replace crc with calculated value
 		data[data.length-1] = crc;
 
 		return outputQueue.add(data);
 	}
-	
+
 	/**
 	 * Internal send function. Send and read to detect byte collisions.
 	 * @param secondTry
@@ -428,7 +486,7 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * Reset the send routine
 	 */
 	private void resetSend() {
-		
+
 		// reset ebus counter
 		lockCounter = LOCKOUT_COUNTER_MAX;
 
