@@ -52,11 +52,15 @@ public class EBusCommandProcessor implements BindingChangeListener {
 				futureMap.get(itemName).cancel(true);
 			}
 		}
+		
+		for (String itemName : provider.getItemNames()) {
+			bindingChanged(provider, itemName);
+		}
 	}
 
 	@Override
 	public void bindingChanged(BindingProvider provider, String itemName) {
-		logger.trace("Binding changed for item {}", itemName);
+		logger.debug("Binding changed for item {}", itemName);
 		
 		EBusBindingProvider eBusProvider = (EBusBindingProvider)provider;
 		int refreshRate = eBusProvider.getRefreshRate(itemName);
@@ -72,7 +76,7 @@ public class EBusCommandProcessor implements BindingChangeListener {
 			};
 
 			if(futureMap.containsKey(itemName)) {
-				logger.trace("Stopped old polling item ...");
+				logger.debug("Stopped old polling item ...");
 				futureMap.remove(itemName).cancel(true);
 			}
 
