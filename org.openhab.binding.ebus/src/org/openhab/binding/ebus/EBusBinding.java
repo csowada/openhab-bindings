@@ -23,12 +23,14 @@ import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
 import org.openhab.binding.ebus.connection.EBusSerialConnector;
 import org.openhab.binding.ebus.connection.EBusTCPConnector;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
-import org.openhab.core.binding.AbstractActiveBinding;
+import org.openhab.core.binding.AbstractBinding;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Sowada
  * @since 1.6.0
  */
-public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> implements ManagedService, EBusConnectorEventListener {
+public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements ManagedService, EBusConnectorEventListener {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusBinding.class);
@@ -47,6 +49,8 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	private AbstractEBusConnector connector;
 	private EBusTelegramParser parser;
 
+	private ConfigurationAdmin configurationAdminService;
+
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
@@ -54,14 +58,14 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	@Override
 	protected void internalReceiveCommand(String itemName, Command command) {
 		super.internalReceiveCommand(itemName, command);
-		
+
 		String type = command.toString().toLowerCase();
-		
+
 		for (EBusBindingProvider provider : providers) {
-			
+
 			// first try, data-ON, data-OFF, etc.
 			byte[] data = provider.getCommandData(itemName, type);
-			
+
 			if(data == null) {
 				// ok, try data param
 				data = provider.getCommandData(itemName);
@@ -73,13 +77,21 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
+	public void setConfigurationAdmin(ConfigurationAdmin configurationAdminService) {
+		this.configurationAdminService = configurationAdminService;
+	}
+
+	public void unsetConfigurationAdmin(ConfigurationAdmin cfg) {
+		this.configurationAdminService = null;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)
 	 */
 	@Override
 	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
 
-		logger.info("Update eBus Binding ...");
+		logger.info("Update eBus Binding configuration ...");
 
 		try {
 			// stop last thread if avctive
@@ -96,7 +108,7 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 				// set all known configurations as default
 				parsers = "common,wolf,vaillant,testing";
 			}
-			
+
 			for (String elem : parsers.split(",")) {
 				configurationUrl = null;
 				if(elem.trim().equals("custom")) {
@@ -134,18 +146,11 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			// add event listener
 			connector.addEBusEventListener(this);
 
-			// connect the connector
-			if(connector.connect()) {
-				
-				// start thread
-				connector.start();
+			// start thread
+			connector.start();
 
-				// set the new connector
-				commandProcessor.setConnector(connector);
-				
-			} else {
-				throw new ConfigurationException("general", "Unable to connect with eBus connector ...");
-			}
+			// set the new connector
+			commandProcessor.setConnector(connector);
 
 		} catch (MalformedURLException e) {
 			logger.error(e.toString(), e);
@@ -169,6 +174,36 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		}
 	}
 
+	//	@Override
+	//	public void allBindingsChanged(BindingProvider provider) {
+	//		super.allBindingsChanged(provider);
+	//		if(commandProcessor == null) {
+	//			commandProcessor = new EBusCommandProcessor();
+	//		}
+	//		commandProcessor.allBindingsChanged(provider);
+	//	}
+
+
+
+	//	@Override
+	//	public void addBindingProvider(EBusBindingProvider provider) {
+	//		// TODO Auto-generated method stub
+	//		super.addBindingProvider(provider);
+	//		
+	//		
+	//		provider.
+	//		
+	//	}
+	//
+	//	@Override
+	//	public void bindingChanged(BindingProvider provider, String itemName) {
+	//		super.bindingChanged(provider, itemName);
+	//		if(commandProcessor == null) {
+	//			commandProcessor = new EBusCommandProcessor();
+	//		}
+	//		commandProcessor.bindingChanged(provider, itemName);
+	//	}
+
 	@Override
 	public void addBindingProvider(EBusBindingProvider provider) {
 		super.addBindingProvider(provider);
@@ -176,6 +211,12 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 		if(commandProcessor == null) {
 			commandProcessor = new EBusCommandProcessor();
 		}
+
+		if(provider.providesBinding()) {
+			// items already processed, so to late for this listener. do it manually
+			commandProcessor.allBindingsChanged(provider);
+		}
+
 		provider.addBindingChangeListener(commandProcessor);
 	}
 
@@ -189,14 +230,49 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 	 * @see org.openhab.core.binding.AbstractBinding#activate()
 	 */
 	public void activate() {
+		super.activate();
 		logger.debug("eBus binding has been started.");
+
+		// observe connection, if not started 15 sec. later than start manually
+		// replaceing a bundle doesn't recall update function, more a bug in openhab
+		new Thread() {
+			@Override
+			public void run() {
+
+				try {
+					sleep(15000);
+
+					if(connector == null) {
+						logger.warn("eBus connector still not started, started it yet!");
+
+						Configuration configuration = configurationAdminService.getConfiguration("org.openhab.ebus", null);
+						if(configuration != null) {
+							updated(configuration.getProperties());
+
+							for (EBusBindingProvider provider : EBusBinding.this.providers) {
+								commandProcessor.allBindingsChanged(provider);
+							}
+						}
+					}
+
+				} catch (InterruptedException | ConfigurationException | 
+						IOException e) {
+					logger.error(e.toString(), e);
+				}
+
+			}
+		}.start();;
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#deactivate()
 	 */
 	public void deactivate() {
+		super.deactivate();
+		
 		logger.debug("eBus binding has been stopped.");
+		
 		if(connector != null && connector.isAlive()) {
 			connector.interrupt();
 			connector = null;
@@ -206,30 +282,6 @@ public class EBusBinding extends AbstractActiveBinding<EBusBindingProvider> impl
 			commandProcessor.deactivate();
 			commandProcessor = null;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openhab.core.binding.AbstractActiveBinding#execute()
-	 */
-	@Override
-	protected void execute() {
-		logger.debug("Execute ...");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openhab.core.binding.AbstractActiveBinding#getRefreshInterval()
-	 */
-	@Override
-	protected long getRefreshInterval() {
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openhab.core.binding.AbstractActiveBinding#getName()
-	 */
-	@Override
-	protected String getName() {
-		return "eBus";
 	}
 
 	/* (non-Javadoc)
