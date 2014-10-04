@@ -130,46 +130,50 @@ public class EBusTelegramParser {
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeDATA2b(hByte, lByte);
+			if((float)value == -128) value = null;
 			break;
 
 		case "data2c":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeDATA2c(hByte, lByte);
+			if((float)value == -2048) value = null;
 			break;
 
 
 		case "data1c":
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeDATA1c(lByte);
+			if((float)value == 255) value = null;
 			break;
 
 		case "bcd":
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeBCD(lByte);
+			if((int)value == 255) value = null;
 			break;
 
 		case "word":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeWORD(hByte, lByte);
+			if((int)value == 65535) value = null;
 			break;
 
 		case "uchar":
 		case "byte":
 			value = byteBuffer.get(pos-1) & 0xFF;
+			if((int)value == (byte)0xFF) value = null;
 			break;
 
 		case "char":
 			value = byteBuffer.get(pos-1);
-			if((byte)value == (byte)0xFF)
-				value = null;
+			if((byte)value == (byte)0xFF) value = null;
 			break;
 
 		case "data1b":
 			value = byteBuffer.get(pos-1);
-			if((byte)value == (byte)0x80)
-				value = null;
+			if((byte)value == (byte)0x80) value = null;
 			break;
 
 		case "bit":
