@@ -2,7 +2,6 @@
 	{
 		"comment":	"Betriebsdaten des Feuerungsautomaten an den Regler - Block 1",
 		"filter":	"?? ?? 05 03 08 01 .*",
-		"debug": 2,
 		
 		"values": {
 			"status_auto_stroker":	{"type": "byte", "pos":7, "label": "Statusanzeige"},

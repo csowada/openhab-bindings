@@ -137,7 +137,6 @@
 	{
 		"comment":	"[??] <Brenner?> Kromschröder/Wolf: Regler",
 		"filter":	"?? 50 50 14 .*",
-		"debug": 1,
 		
 		"values": {
 			"solar_status2":		{"type": "byte", "pos":6, "label": "Solarstatus (???)"},
@@ -152,7 +151,6 @@
 	{
 		"comment":	"<Solar> Kromschröder/Wolf: Solar",
 		"filter":	"?? ?? 50 17 .*",
-		"debug": 1,
 		
 		"values": {
 			"solar_status":			{"type": "byte", "pos":6, "label": "Solarstatus (Solarpumpe an?)"},
@@ -166,7 +164,6 @@
 	{
 		"comment":	"[??] <> Kromschröder/Wolf: Drehzahl Pumpe",
 		"filter":	"?? 08 50 22 ?? CC 57 27 .*",
-		"debug": 1,
 		
 		"values": {
 			"speed_pump":			{"type": "word", "pos": 12, "label": "Drehzahl Pumpe"}
@@ -176,7 +173,6 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Durchfluss ",
 		"filter":	"?? ?? 50 22 ?? 5E F8 02 .*",
-		"debug": 1,
 		
 		"values": {
 			"flow":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}

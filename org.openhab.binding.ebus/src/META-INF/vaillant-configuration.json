@@ -7,5 +7,19 @@
 			"temp_collector_flow":		{"type": "data2c", "pos": 6, "label": "Kollektor Vorauf"},
 			"available_collector_flow":	{"type": "byte", "pos":8, "label": "Sensor vorhanden"}
 		}
+	},
+	
+	{
+		"comment":	"Vaillant: Get Data Block Solar1",
+		"filter":	"?? ?? B5 04 01 12 .*",
+		
+		"values": {
+			"temp_collector_flow":		{"type": "data2c", "pos": 6, "label": "Kollektor KOL1"},
+			"solar_pump":				{"type": "byte", "pos":8, "label": "Solarpumpe"},
+			"op_hrs_solar_pump":		{"type": "word", "pos": 9, "label": "Pumpe Laufzeit"},
+			"temp_collector2_flow":		{"type": "data2c", "pos": 11, "label": "Kollektor KOL2"},
+			"solar2_pump":				{"type": "byte", "pos":12, "label": "Solarpumpe"},
+			"op_hrs_solar2_pump":		{"type": "word", "pos": 13, "label": "Pumpe Laufzeit"},
+		}
 	}
 ]
