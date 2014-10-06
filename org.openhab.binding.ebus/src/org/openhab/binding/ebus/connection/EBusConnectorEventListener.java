@@ -8,7 +8,7 @@
 */
 package org.openhab.binding.ebus.connection;
 
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 
 /**
 * @author Christian Sowada
@@ -20,6 +20,6 @@ public interface EBusConnectorEventListener {
 	 * A new valid telegram has been received.
 	 * @param telegram
 	 */
-	public void onTelegramReceived(EbusTelegram telegram);
+	public void onTelegramReceived(EBusTelegram telegram);
 	
 }

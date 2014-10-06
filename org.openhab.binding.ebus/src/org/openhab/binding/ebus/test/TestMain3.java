@@ -6,7 +6,7 @@ import java.net.URL;
 import javax.xml.bind.DatatypeConverter;
 
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 
@@ -14,7 +14,7 @@ public class TestMain3 {
 
 	public static void go(String data, EBusTelegramParser parser) {
 		byte[] buffer = convertString(data);
-		EbusTelegram telegram = EBusUtils.processEBusData(buffer);
+		EBusTelegram telegram = EBusUtils.processEBusData(buffer);
 		parser.parse(telegram);
 	}
 	
@@ -33,7 +33,7 @@ public class TestMain3 {
 		}
 
 		byte[] buffer = null;
-		EbusTelegram telegram = null;
+		EBusTelegram telegram = null;
 
 		
 		

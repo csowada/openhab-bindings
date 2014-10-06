@@ -10,7 +10,7 @@ package org.openhab.binding.ebus.parser;
 
 import java.nio.ByteBuffer;
 
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,7 +231,7 @@ public class EBusUtils {
 	 * @param data The received raw byte data
 	 * @return A valid object or null if the data was incorrect
 	 */
-	static public EbusTelegram processEBusData(byte[] data) {
+	static public EBusTelegram processEBusData(byte[] data) {
 
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(data.length+10);
@@ -285,20 +285,20 @@ public class EBusUtils {
 			buffer.put(crc);
 			buffer.put(data[crcPos+1]);
 
-			if(data[crcPos+1] == EbusTelegram.SYN) {
+			if(data[crcPos+1] == EBusTelegram.SYN) {
 				// Broadcast Telegram, end
-				return new EbusTelegram(buffer);
+				return new EBusTelegram(buffer);
 			}
 
-			if((data[crcPos+1] == EbusTelegram.ACK_OK || data[crcPos+1] == EbusTelegram.ACK_FAIL) 
-					&& data[crcPos+2] == EbusTelegram.SYN) {
+			if((data[crcPos+1] == EBusTelegram.ACK_OK || data[crcPos+1] == EBusTelegram.ACK_FAIL) 
+					&& data[crcPos+2] == EBusTelegram.SYN) {
 
 				// Master-Master Telegram, add ack value and end
 				buffer.put(data[crcPos+2]);
-				return new EbusTelegram(buffer);
+				return new EBusTelegram(buffer);
 			}
 
-			if(data[crcPos+1] != EbusTelegram.ACK_OK && data[crcPos+1] != EbusTelegram.ACK_FAIL) {
+			if(data[crcPos+1] != EBusTelegram.ACK_OK && data[crcPos+1] != EBusTelegram.ACK_FAIL) {
 				// Unexpected value on this position
 				logger.warn("Unexpect ack value in EBus telegram, skip data!");
 				return null;
@@ -336,7 +336,7 @@ public class EBusUtils {
 			}
 
 			// return valid telegram
-			return new EbusTelegram(buffer);
+			return new EBusTelegram(buffer);
 			
 		} catch (Exception e) {
 			logger.error(e.toString(), e);

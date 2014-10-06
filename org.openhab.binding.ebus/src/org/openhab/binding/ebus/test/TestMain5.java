@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.openhab.binding.ebus.connection.EBusSerialConnector;
 import org.openhab.binding.ebus.connection.AbstractEBusConnector;
 import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
@@ -22,7 +22,7 @@ public class TestMain5 {
 		
 		t.addEBusEventListener(new EBusConnectorEventListener() {
 			@Override
-			public void onTelegramReceived(EbusTelegram telegram) {
+			public void onTelegramReceived(EBusTelegram telegram) {
 				System.err.println(EBusUtils.toHexDumpString(telegram.getBuffer()));
 			}
 		});

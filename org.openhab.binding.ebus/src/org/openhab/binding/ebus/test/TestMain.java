@@ -2,7 +2,7 @@ package org.openhab.binding.ebus.test;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 
@@ -21,12 +21,12 @@ public class TestMain {
 //		byte[] a0 = convertString("71 FE 50 17 10 A9 00 B5 50 03 A3 02 00 80 00 80 00 80 00 80 00 80 0E AA");
 //		byte[] a0 = convertString("30 50 50 14 07 20 80 21 00 00 00 64 05 00 09 00 00 00 80 00 80 00 B4 05 3C 00 AA");
 		byte[] a0 = convertString("71 FE 50 17 10 41 B5 A9 01 03 05 03 00 80 00 80 00 80 00 80 00 80 C2 AA");
-		EbusTelegram convertData2 = EBusUtils.processEBusData(a0);
+		EBusTelegram convertData2 = EBusUtils.processEBusData(a0);
 		byte[] slaveData0 = convertData2.getSlaveData();
 		System.out.println(EBusUtils.toHexDumpString(convertData2.getCRC()));
 		
 		a0 = convertString("30 50 50 14 07 20 80 21 00 00 00 64 05 00 09 00 00 00 80 00 80 00 B4 05 3C 00 AA");
-		EbusTelegram ebusCmd = EBusUtils.processEBusData(a0);
+		EBusTelegram ebusCmd = EBusUtils.processEBusData(a0);
 		short command = ebusCmd.getCommand();
 		byte[] data2 = ebusCmd.getData();
 		byte[] slaveData = ebusCmd.getSlaveData();
@@ -39,7 +39,7 @@ public class TestMain {
 		//                          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 
 		byte[] a1 = convertString("71 FE 50 17 10 41 B5 2A 05 85 03 00 80 00 80 00 80 00 80 00 80 05 aa");
 //		byte[] a1 = convertString("71 FE 50 17 10 40 B5 E2 01 B3 02 00 80 00 80 00 80 00 80 00 80 A0 AA");
-		EbusTelegram convertData22 = EBusUtils.processEBusData(a1);
+		EBusTelegram convertData22 = EBusUtils.processEBusData(a1);
 		
 		parser.parse(convertData22);
 		

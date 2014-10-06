@@ -76,7 +76,7 @@ public class EBusCommandProcessor implements BindingChangeListener {
 			};
 
 			if(futureMap.containsKey(itemName)) {
-				logger.debug("Stopped old polling item ...");
+				logger.debug("Stopped old polling item {} ...", itemName);
 				futureMap.remove(itemName).cancel(true);
 			}
 

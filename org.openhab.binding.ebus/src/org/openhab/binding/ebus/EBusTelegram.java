@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 * @author Christian Sowada
 * @since 1.6.0
 */
-public class EbusTelegram {
+public class EBusTelegram {
 
 	/** The SYN byte */
 	public final static byte SYN = (byte)0xAA;
@@ -39,14 +39,14 @@ public class EbusTelegram {
 	/**
 	 * @param data
 	 */
-	public EbusTelegram(ByteBuffer data) {
+	public EBusTelegram(ByteBuffer data) {
 		this.data = data;
 	}
 	
 	/**
 	 * @param data
 	 */
-	public EbusTelegram(byte[] data) {
+	public EBusTelegram(byte[] data) {
 		this.data = ByteBuffer.wrap(data);
 	}
 	
@@ -94,9 +94,9 @@ public class EbusTelegram {
 	/**
 	 * Get the telegram type
 	 * @return
-	 * @see EbusTelegram.BROADCAST
-	 * @see EbusTelegram.MASTER_SLAVE
-	 * @see EbusTelegram.MASTER_MASTER
+	 * @see EBusTelegram.BROADCAST
+	 * @see EBusTelegram.MASTER_SLAVE
+	 * @see EBusTelegram.MASTER_MASTER
 	 */
 	public byte getType() {
 		int pos = getDataLen()+6;

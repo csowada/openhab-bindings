@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.openhab.binding.ebus.parser.EBusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +155,7 @@ public abstract class AbstractEBusConnector extends Thread {
 						inputBuffer.put(receivedByte);
 
 						// the 0xAA byte is a end of a packet
-						if(receivedByte == EbusTelegram.SYN) {
+						if(receivedByte == EBusTelegram.SYN) {
 							onEBusSyncReceived();
 						}
 					}
@@ -183,32 +183,20 @@ public abstract class AbstractEBusConnector extends Thread {
 		}
 	}
 
-	//	public boolean checkConnection() {
-	//		return true;
-	//	}
-	//	
-	//	public boolean testWatchDogTimer() {
-	//		if(System.currentTimeMillis() - watchDogTimer > 1000) {
-	//			return true;
-	//		}
-	//		
-	//		return false;
-	//	}
-
 	/**
 	 * Called if a SYN packet was received
 	 * @throws IOException
 	 */
 	protected void onEBusSyncReceived() throws IOException {
 
-		if(inputBuffer.position() == 1 && inputBuffer.get(0) == EbusTelegram.SYN) {
+		if(inputBuffer.position() == 1 && inputBuffer.get(0) == EBusTelegram.SYN) {
 			if(lockCounter > 0) lockCounter--;
 			logger.trace("Auto-SYN byte received");
 
 			// send a telegram from queue if available
 			send(false);
 
-		} else if(inputBuffer.position() == 2 && inputBuffer.get(0) == EbusTelegram.SYN) {
+		} else if(inputBuffer.position() == 2 && inputBuffer.get(0) == EBusTelegram.SYN) {
 			logger.warn("Collision on eBus detected (SYN DATA SYNC Sequence) ...");
 			blockNextSend = true;
 
@@ -230,7 +218,7 @@ public abstract class AbstractEBusConnector extends Thread {
 			send(false);
 
 			// After senden we can process the last received telegram
-			final EbusTelegram telegram = EBusUtils.processEBusData(receivedTelegram);
+			final EBusTelegram telegram = EBusUtils.processEBusData(receivedTelegram);
 			if(telegram != null) {
 
 				// execute event
@@ -250,7 +238,7 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * listeners in a seperate thread.
 	 * @param telegram
 	 */
-	protected void onEBusTelegramReceived(final EbusTelegram telegram) {
+	protected void onEBusTelegramReceived(final EBusTelegram telegram) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -366,8 +354,8 @@ public abstract class AbstractEBusConnector extends Thread {
 			logger.warn("Broadcast send ..............");
 
 			// sende master sync
-			outputStream.write(EbusTelegram.SYN);
-			inputBuffer.put(EbusTelegram.SYN);
+			outputStream.write(EBusTelegram.SYN);
+			inputBuffer.put(EBusTelegram.SYN);
 
 		} else {
 
@@ -376,7 +364,7 @@ public abstract class AbstractEBusConnector extends Thread {
 				byte ack = (byte) (read & 0xFF);
 				inputBuffer.put(ack);
 
-				if(ack == EbusTelegram.ACK_OK) {
+				if(ack == EBusTelegram.ACK_OK) {
 
 					// if the telegram is a slave telegram we will
 					// get data from slave
@@ -421,15 +409,15 @@ public abstract class AbstractEBusConnector extends Thread {
 						}
 
 						// sende master sync
-						outputStream.write(EbusTelegram.ACK_OK);
-						inputBuffer.put(EbusTelegram.ACK_OK);
+						outputStream.write(EBusTelegram.ACK_OK);
+						inputBuffer.put(EBusTelegram.ACK_OK);
 					} // isMasterAddr check
 
 					// send SYN byte
-					outputStream.write(EbusTelegram.SYN);
-					inputBuffer.put(EbusTelegram.SYN);
+					outputStream.write(EBusTelegram.SYN);
+					inputBuffer.put(EBusTelegram.SYN);
 
-				} else if(ack == EbusTelegram.ACK_FAIL) {
+				} else if(ack == EBusTelegram.ACK_FAIL) {
 					
 					// clear uncompleted telegram
 					inputBuffer.clear();
@@ -438,7 +426,7 @@ public abstract class AbstractEBusConnector extends Thread {
 					if(!resend(secondTry))
 						return;
 
-				} else if(ack == EbusTelegram.SYN) {
+				} else if(ack == EBusTelegram.SYN) {
 					logger.warn("No answer from slave, skip ...");
 					
 					// clear uncompleted telegram or it will result
@@ -464,7 +452,7 @@ public abstract class AbstractEBusConnector extends Thread {
 
 		// after send process the received telegram
 		byte[] buffer = Arrays.copyOf(inputBuffer.array(), inputBuffer.position());
-		final EbusTelegram telegram = EBusUtils.processEBusData(buffer);
+		final EBusTelegram telegram = EBusUtils.processEBusData(buffer);
 		if(telegram != null) {
 			onEBusTelegramReceived(telegram);
 

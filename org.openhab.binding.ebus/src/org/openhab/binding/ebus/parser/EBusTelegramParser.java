@@ -34,7 +34,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.ebus.EbusTelegram;
+import org.openhab.binding.ebus.EBusTelegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,7 +210,7 @@ public class EBusTelegramParser {
 		return value;
 	}
 	
-	private void bruteforceEBusTelegram(EbusTelegram telegram) {
+	private void bruteforceEBusTelegram(EBusTelegram telegram) {
 
 //		logger3.trace(telegram.getBuffer());
 		
@@ -233,7 +233,7 @@ public class EBusTelegramParser {
 			logger3.trace("    " + format);
 		}
 		
-		if(telegram.getType() == EbusTelegram.MASTER_SLAVE) {
+		if(telegram.getType() == EBusTelegram.MASTER_SLAVE) {
 			data = telegram.getSlaveData();
 			
 			logger3.trace("    ---------------------------------- Answer ----------------------------------");
@@ -254,7 +254,7 @@ public class EBusTelegramParser {
 		}
 	}
 	
-	public Map<String, Object> parse(EbusTelegram telegram) {
+	public Map<String, Object> parse(EBusTelegram telegram) {
 
 		if(telegramRegistry == null) {
 			logger.error("Configuration not loaded, can't parse telegram!");

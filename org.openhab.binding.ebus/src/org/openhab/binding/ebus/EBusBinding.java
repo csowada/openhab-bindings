@@ -203,8 +203,9 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 		super.activate();
 		logger.debug("eBus binding has been started.");
 
-		// observe connection, if not started 15 sec. later than start manually
-		// replaceing a bundle doesn't recall update function, more a bug in openhab
+		// observe connection, if not started 15 sec. later than start it manually
+		// replacing a bundle doesn't recall update function, more 
+		// a bug/enhancement in openhab
 		new Thread() {
 			@Override
 			public void run() {
@@ -258,7 +259,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	 * @see org.openhab.binding.ebus.connection.EBusConnectorEventListener#onTelegramReceived(org.openhab.binding.ebus.EbusTelegram)
 	 */
 	@Override
-	public void onTelegramReceived(EbusTelegram telegram) {
+	public void onTelegramReceived(EBusTelegram telegram) {
 		Map<String, Object> results = parser.parse(telegram);
 		if(results != null) {
 			for (Entry<String, Object> entry : results.entrySet()) {
