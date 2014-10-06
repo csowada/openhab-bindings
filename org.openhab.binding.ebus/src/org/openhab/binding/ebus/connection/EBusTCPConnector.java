@@ -59,8 +59,10 @@ public class EBusTCPConnector extends AbstractEBusConnector {
 	 */
 	@Override
 	public boolean disconnect() throws IOException  {
-		socket.close();
-		socket = null;
+		if(socket != null) {
+			socket.close();
+			socket = null;
+		}
 		return true;
 	}
 
