@@ -430,12 +430,21 @@ public abstract class AbstractEBusConnector extends Thread {
 					inputBuffer.put(EbusTelegram.SYN);
 
 				} else if(ack == EbusTelegram.ACK_FAIL) {
+					
+					// clear uncompleted telegram
+					inputBuffer.clear();
+					
 					// resend telegram (max. once)
 					if(!resend(secondTry))
 						return;
 
 				} else if(ack == EbusTelegram.SYN) {
 					logger.warn("No answer from slave, skip ...");
+					
+					// clear uncompleted telegram or it will result
+					// in uncomplete but valid telegram!
+					inputBuffer.clear();
+					
 					resetSend();
 					return;
 
@@ -443,6 +452,9 @@ public abstract class AbstractEBusConnector extends Thread {
 					// Wow, wrong answer, and now?
 					logger.warn("Received wrong telegram: {}", EBusUtils.toHexDumpString(inputBuffer));
 
+					// clear uncompleted telegram
+					inputBuffer.clear();
+					
 					// resend telegram (max. once)
 					if(!resend(secondTry))
 						return;
