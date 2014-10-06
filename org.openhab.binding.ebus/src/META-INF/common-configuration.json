@@ -13,7 +13,7 @@
 			"state_valve2":			{"type": "bit", "pos":8, "bit": 5, "label": "Valve2"},
 			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP"},
 			"state_alarm":			{"type": "bit", "pos":8, "bit": 7, "label": "Alarm"},
-			"adjusting_vessel":		{"type": "uchar", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
+			"adjusting_vessel":		{"type": "data1b", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
 			"temp_vessel": 			{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
 			"temp_return": 			{"type": "uchar", "pos":11, "label": "Rücklauftemperatur"},
 			"temp_boiler": 			{"type": "uchar", "pos":12, "label": "Boilertemperatur"},
