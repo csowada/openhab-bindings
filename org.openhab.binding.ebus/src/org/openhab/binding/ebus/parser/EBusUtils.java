@@ -112,14 +112,21 @@ public class EBusUtils {
 		return (data >> 4)*10 + (data & (byte) 0x0F);
 	}
 
+	public static int decodeDATA1b(byte data) {
+		if((data & (byte) 0x80) == (byte) 0x80) {
+			return -1 * ((short) ((data^0xFF) & 0xFF) + 1);
+		} else {
+			return (short) (data & 0xFF);
+		}
+	}
+	
 	/**
 	 * Convert EBus Type DATA1C
 	 * @param data The encoded value
 	 * @return The decoded value
 	 */
 	public static float decodeDATA1c(int data) {
-		int psuedoUnsigned = (data << 24) >>> 24;
-		return (psuedoUnsigned / 2);
+		return (((short)data & (byte)0xFF) / 2);
 	}
 
 	/**

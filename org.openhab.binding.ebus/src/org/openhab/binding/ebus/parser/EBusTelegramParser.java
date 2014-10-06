@@ -125,6 +125,10 @@ public class EBusTelegramParser {
 		byte hByte = 0;
 		byte lByte = 0;
 
+		if(pos > byteBuffer.position()) {
+			logger.warn("Wow, buffer pos error!");
+		}
+		
 		switch (type) {
 		case "data2b":
 			hByte = byteBuffer.get(pos);
@@ -140,13 +144,18 @@ public class EBusTelegramParser {
 			if((float)value == -2048) value = null;
 			break;
 
-
 		case "data1c":
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeDATA1c(lByte);
 			if((float)value == 255) value = null;
 			break;
 
+		case "data1b":
+			lByte = byteBuffer.get(pos-1);
+			value = EBusUtils.decodeDATA1b(lByte);
+			if((int)value == -128) value = null;
+			break;
+			
 		case "bcd":
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeBCD(lByte);
@@ -169,11 +178,6 @@ public class EBusTelegramParser {
 		case "char":
 			value = byteBuffer.get(pos-1);
 			if((byte)value == (byte)0xFF) value = null;
-			break;
-
-		case "data1b":
-			value = byteBuffer.get(pos-1);
-			if((byte)value == (byte)0x80) value = null;
 			break;
 
 		case "bit":
