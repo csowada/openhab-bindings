@@ -3,6 +3,7 @@ package org.openhab.binding.ebus.test;
 import javax.xml.bind.DatatypeConverter;
 
 import org.openhab.binding.ebus.EBusTelegram;
+import org.openhab.binding.ebus.parser.EBusConfigurationProvider;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 
@@ -15,7 +16,8 @@ public class TestMain {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
-		final EBusTelegramParser parser = new EBusTelegramParser();
+		final EBusConfigurationProvider configurationProvider = new EBusConfigurationProvider();
+		final EBusTelegramParser parser = new EBusTelegramParser(configurationProvider);
 //		parser.loadConfigurationFile("C:\\openhab\\MINIMAL\\workspace\\org.openhab.binding.ebus\\META-INF\\test.json");
 		
 //		byte[] a0 = convertString("71 FE 50 17 10 A9 00 B5 50 03 A3 02 00 80 00 80 00 80 00 80 00 80 0E AA");

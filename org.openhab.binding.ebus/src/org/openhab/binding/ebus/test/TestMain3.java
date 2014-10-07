@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.EBusTelegram;
+import org.openhab.binding.ebus.parser.EBusConfigurationProvider;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 
@@ -20,13 +21,14 @@ public class TestMain3 {
 	
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		
-		final EBusTelegramParser parser = new EBusTelegramParser();
+		final EBusConfigurationProvider configurationProvider = new EBusConfigurationProvider();
+
+		final EBusTelegramParser parser = new EBusTelegramParser(configurationProvider);
 		final URL configurationUrl = ClassLoader.getSystemResource("META-INF/ebus-configuration.json");
 		
 //		url = new URL("platform:/plugin/de.vogella.rcp.plugin.filereader/files/test.txt")
 		try {
-			parser.loadConfigurationFile(configurationUrl);
+			configurationProvider.loadConfigurationFile(configurationUrl);
 		} catch (IOException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -10,6 +10,8 @@ package org.openhab.binding.ebus.parser;
 
 import java.nio.ByteBuffer;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.openhab.binding.ebus.EBusTelegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,8 +100,10 @@ public class EBusUtils {
 	 * @return The crc result
 	 */
 	public static byte crc8_tab(byte data, byte crc_init) {
-		int ci = unsignedInt(crc_init);
-		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
+		//int ci = unsignedInt(crc_init);
+		//byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ unsignedInt(data));
+		short ci = (short) (crc_init & 0xFF);
+		byte crc = (byte) (CRC_TAB_8_VALUE[ci] ^ (data & 0xFF));
 		return crc;
 	}
 
@@ -125,7 +129,7 @@ public class EBusUtils {
 	 * @param data The encoded value
 	 * @return The decoded value
 	 */
-	public static float decodeDATA1c(int data) {
+	public static float decodeDATA1c(byte data) {
 		return (((short)data & (byte)0xFF) / 2);
 	}
 
@@ -183,6 +187,42 @@ public class EBusUtils {
 		return ((highData & 0xFF)<<8) + (lowData & 0xFF);
 	}
 
+	public static int decodeChar(byte data) {
+		return data;
+	}
+	
+	public static int decodeUChar(byte data) {
+		return data & 0xFF;
+	}
+	
+	public static int decodeByte(byte data) {
+		return data;
+	}
+	
+	public static boolean decodeBit(byte data, short bit) {
+		return ((byte)data >> bit& 0x1) == 1;
+	}
+	
+	public static int decodeInt(byte highData, byte lowData) {
+		return decodeWORD(highData, lowData);
+	}
+	
+	public static int decodeUInt(byte highData, byte lowData) {
+		int v = decodeInt(highData, lowData);
+		long unsignedValue = v & 0xffffffffl;
+		return (int) unsignedValue;
+	}
+	
+	public static int decodeLng(byte highData, byte lowData) {
+		return decodeWORD(highData, lowData);
+	}
+	
+	public static int decodeULng(byte highData, byte lowData) {
+		int v = decodeInt(highData, lowData);
+		long unsignedValue = v & 0xffffffffl;
+		return (int) unsignedValue;
+	}
+	
 	/**
 	 * Expands ebus-data bytes 0xAA and 0xA9 from byte data. All other bytes
 	 * are unchanged.
@@ -338,8 +378,8 @@ public class EBusUtils {
 			// return valid telegram
 			return new EBusTelegram(buffer);
 			
-		} catch (Exception e) {
-			logger.error(e.toString(), e);
+		} catch (IndexOutOfBoundsException e) {
+			// can happen, no problem
 			return null;
 		}
 	}
@@ -353,6 +393,20 @@ public class EBusUtils {
 		return String.format("%02X", (0xFF & data));
 	}
 
+	static public byte[] toByteArray(String hexDumpString) {
+		return DatatypeConverter.parseHexBinary(
+				hexDumpString.replaceAll(" ", ""));
+	}
+	
+	/**
+	 * FIXME: Badly programmed
+	 * @param hexDumpString
+	 * @return
+	 */
+	static public byte toByte(String hexDumpString) {
+		return toByteArray(hexDumpString)[0];
+	}
+	
 	/**
 	 * Generates a string hex dump from a byte array
 	 * @param data The source
@@ -383,13 +437,15 @@ public class EBusUtils {
 		return sb;
 	}
 
-	/**
-	 * Converts a signed int (java default) to a unsigned int
-	 * @param signedInt The signed int
-	 * @return The unsigned int
-	 */
-	static int unsignedInt(int signedInt) {
-		return (signedInt << 24) >>> 24;
-	}
+	
+	
+//	/**
+//	 * Converts a signed int (java default) to a unsigned int
+//	 * @param signedInt The signed int
+//	 * @return The unsigned int
+//	 */
+//	static int unsignedInt(int signedInt) {
+//		return (signedInt << 24) >>> 24;
+//	}
 
 }

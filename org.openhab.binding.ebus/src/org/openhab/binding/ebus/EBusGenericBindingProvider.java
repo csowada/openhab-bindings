@@ -8,13 +8,16 @@
 */
 package org.openhab.binding.ebus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.ebus.parser.EBusUtils;
 import org.openhab.core.binding.BindingConfig;
 import org.openhab.core.items.Item;
 import org.openhab.model.item.binding.AbstractGenericBindingProvider;
@@ -32,10 +35,6 @@ public class EBusGenericBindingProvider extends
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusGenericBindingProvider.class);
 	
-	public EBusGenericBindingProvider() {
-		logger.debug("EBusGenericBindingProvider instance constructed ...");
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.openhab.model.item.binding.BindingConfigReader#getBindingType()
 	 */
@@ -48,15 +47,31 @@ public class EBusGenericBindingProvider extends
 	 * @see org.openhab.binding.ebus.EBusBindingProvider#getItemName(java.lang.String)
 	 */
 	@Override
-	public String getItemName(String id) {
+	public List<String> getItemNames(String uniqueId) {
+		
+		ArrayList<String> list = new ArrayList<>();
+		
+		String id = uniqueId;
+		String className = null;
+		
+		if(uniqueId.contains(".")) {
+			String[] split = StringUtils.split(uniqueId, '.');
+			id = split[1];
+			className = split[0];
+		}
+		
 		for (Entry<String, BindingConfig> entry : bindingConfigs.entrySet()) {
 			EBusBindingConfig cfg = (EBusBindingConfig) entry.getValue();
-			if(StringUtils.equals(cfg.id, id)) {
-				return entry.getKey();
+			if(cfg.map.containsKey("id")) {
+				if(StringUtils.equals((String) cfg.map.get("id"), id)) {
+					if(className == null || StringUtils.equals((String) cfg.map.get("class"), className)) {
+						list.add(entry.getKey());
+					}
+				}
 			}
 		}
 		
-		return null;
+		return list;
 	}
 	
 	/* (non-Javadoc)
@@ -81,24 +96,32 @@ public class EBusGenericBindingProvider extends
 			configParts[0] = configParts[0].trim().toLowerCase();
 			configParts[1] = configParts[1].trim();
 
-			if(configParts[0].equals("id")) {
-				config.id = configParts[1];
-			} else if(configParts[0].equals("data")) {
-				config.data = DatatypeConverter.parseHexBinary(configParts[1].replaceAll(" ", ""));
+			if(configParts[0].equals("data")) {
+				config.map.put(configParts[0], EBusUtils.toByteArray(configParts[1]));
+
+			} else if(configParts[0].equals("src")) {
+				config.map.put(configParts[0], DatatypeConverter.parseHexBinary(configParts[1])[0]);
+				
+			} else if(configParts[0].equals("dst")) {
+				config.map.put(configParts[0], DatatypeConverter.parseHexBinary(configParts[1])[0]);
+			
 			} else if(configParts[0].equals("refresh")) {
-				config.refreshRate = Integer.parseInt(configParts[1]);
+				config.map.put(configParts[0], Integer.parseInt(configParts[1]));
+
 			} else if(configParts[0].startsWith("data-")) {
-				if(config.dataMap == null) {
-					config.dataMap = new HashMap<String, byte[]>();
+				if(!config.map.containsKey("data-map")) {
+					config.map.put("data-map", new HashMap<String, byte[]>());
 				}
+				
+				@SuppressWarnings("unchecked")
+				HashMap<String, byte[]> m = (HashMap<String, byte[]>) config.map.get("data-map");
 				String key = configParts[0].substring(5);
-				config.dataMap.put(key, DatatypeConverter.parseHexBinary(
-						configParts[1].replaceAll(" ", "")));
+				m.put(key, EBusUtils.toByteArray(configParts[1]));
+				
 			} else {
-				throw new BindingConfigParseException("eBus binding configuration must contain id");
+				config.map.put(configParts[0], configParts[1]);
 			}
 		}
-		
 		
 		addBindingConfig(item, config);
 	}
@@ -116,22 +139,45 @@ public class EBusGenericBindingProvider extends
 	 * config strings.
 	 */
 	class EBusBindingConfig implements BindingConfig {
-		public String id;
-		public byte[] data;
-		public int refreshRate;
-		public Map<String, byte[]> dataMap;
+		public HashMap<String, Object> map = new HashMap<>();
+//		public String id;
+//		public byte[] data;
+//		public int refreshRate;
+//		public Map<String, byte[]> dataMap;
+//		
+//		public String commandId;
+//		public String commandClass;
+		
 	}
 
+	/**
+	 * @param itemName
+	 * @param type
+	 * @param defaultValue
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected <T> T get(String itemName, String type, T defaultValue) {
+		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+		if(bindingConfig != null) {
+			if(bindingConfig.map.containsKey(type)) {
+				return (T) bindingConfig.map.get(type);
+			}
+		}
+		return defaultValue;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.openhab.binding.ebus.EBusBindingProvider#getCommandData(java.lang.String)
 	 */
 	@Override
-	public byte[] getCommandData(String itemName) {
-		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-		if(bindingConfig != null) {
-			return bindingConfig.data;
-		}
-		return null;
+	public byte[] getTelegramData(String itemName) {
+		return get(itemName, "data", null);
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null) {
+//			return bindingConfig.data;
+//		}
+//		return null;
 	}
 
 	/* (non-Javadoc)
@@ -139,22 +185,59 @@ public class EBusGenericBindingProvider extends
 	 */
 	@Override
 	public int getRefreshRate(String itemName) {
-		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-		if(bindingConfig != null) {
-			return bindingConfig.refreshRate;
-		}
-		return 0;
+		return get(itemName, "refresh", 0);
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null) {
+//			return bindingConfig.refreshRate;
+//		}
+//		return 0;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.binding.ebus.EBusBindingProvider#getCommandData(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public byte[] getCommandData(String itemName, String type) {
-		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-		if(bindingConfig != null && bindingConfig.dataMap != null) {
-			return bindingConfig.dataMap.get(type);
+	public byte[] getTelegramData(String itemName, String type) {
+		Map<String, Object> m = get(itemName, "refresh", null);
+		if(m != null && m.containsKey(type)) {
+			return (byte[]) m.get(type);
 		}
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null && bindingConfig.dataMap != null) {
+//			return bindingConfig.dataMap.get(type);
+//		}
 		return null;
 	}
+
+	@Override
+	public String getCommand(String itemName) {
+		return get(itemName, "cmd", null);
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null) {
+//			return bindingConfig.commandId;
+//		}
+//		return null;
+	}
+
+	@Override
+	public String getCommandClass(String itemName) {
+		return get(itemName, "class", null);
+//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
+//		if(bindingConfig != null) {
+//			return bindingConfig.commandClass;
+//		}
+//		return null;
+	}
+	
+	@Override
+	public Byte getTelegramSource(String itemName) {
+		return get(itemName, "src", null);
+	}
+
+	@Override
+	public Byte getTelegramDestination(String itemName) {
+		return get(itemName, "dst", null);
+	}
+	
+	
 }

@@ -22,7 +22,9 @@ import org.openhab.binding.ebus.connection.EBusCommandProcessor;
 import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
 import org.openhab.binding.ebus.connection.EBusSerialConnector;
 import org.openhab.binding.ebus.connection.EBusTCPConnector;
+import org.openhab.binding.ebus.parser.EBusConfigurationProvider;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
+import org.openhab.binding.ebus.parser.EBusUtils;
 import org.openhab.core.binding.AbstractBinding;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,7 +52,57 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	private EBusTelegramParser parser;
 
 	private ConfigurationAdmin configurationAdminService;
+	private EBusConfigurationProvider configurationProvider;
 
+	private byte senderId = (byte)0xFF;
+
+	public byte[] getSendData(EBusBindingProvider provider, String itemName, String type) {
+
+		byte[] data = null;
+		
+		String cmd = provider.getCommand(itemName);
+		String cmdClass = provider.getCommandClass(itemName);
+
+		Map<String, Object> command2 = configurationProvider.getCommandById(cmd, cmdClass);
+
+		if(command2 != null) {
+
+			byte[] b = EBusUtils.toByteArray((String) command2.get("data"));
+			byte[] b2 = EBusUtils.toByteArray((String) command2.get("command"));
+			
+			Byte dst = provider.getTelegramDestination(itemName);
+			Byte src = provider.getTelegramSource(itemName);
+
+			if(dst == null) {
+				throw new RuntimeException("no destination!");
+			}
+
+			if(src == null) {
+				src = senderId;
+			}
+
+			byte[] buffer = new byte[b.length+6];
+			buffer[0] = src;
+			buffer[1] = dst;
+			buffer[4] = (byte) b.length;
+			System.arraycopy(b2, 0, buffer, 2, b2.length);
+			System.arraycopy(b, 0, buffer, 5, b.length);
+
+			data = buffer;
+		}
+		
+		// first try, data-ON, data-OFF, etc.
+		if(data == null && StringUtils.isNotEmpty(type)) {
+			data = provider.getTelegramData(itemName, type);
+		}
+
+		if(data == null) {
+			// ok, try data param
+			data = provider.getTelegramData(itemName);
+		}
+		
+		return data;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
@@ -63,16 +115,12 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 
 		for (EBusBindingProvider provider : providers) {
 
-			// first try, data-ON, data-OFF, etc.
-			byte[] data = provider.getCommandData(itemName, type);
-
-			if(data == null) {
-				// ok, try data param
-				data = provider.getCommandData(itemName);
-			}
+			byte[] data = getSendData(provider, itemName, type);
 
 			if(data != null) {
 				connector.send(data);
+			} else {
+				logger.warn("Nothing to send, .......");
 			}
 		}
 	}
@@ -99,12 +147,14 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 				connector.interrupt();
 			}
 
+			configurationProvider = new EBusConfigurationProvider();
+
 			// load parser from default url
-			parser = new EBusTelegramParser();
+			parser = new EBusTelegramParser(configurationProvider);
 
 			URL configurationUrl = null;
 			String parsers = (String) properties.get("parsers");
-			if(parsers != null) {
+			if(parsers == null) {
 				// set all known configurations as default
 				parsers = "common,wolf,vaillant,testing";
 			}
@@ -124,7 +174,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 				}
 
 				if(configurationUrl != null) {
-					parser.loadConfigurationFile(configurationUrl);
+					configurationProvider.loadConfigurationFile(configurationUrl);
 				}
 			}
 
@@ -143,6 +193,10 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 						Integer.parseInt((String) properties.get("port")));
 			}
 
+			if(StringUtils.isNotEmpty((String)properties.get("senderId"))) {
+				senderId = EBusUtils.toByte((String) properties.get("senderId"));
+			}
+
 			// add event listener
 			connector.addEBusEventListener(this);
 
@@ -151,6 +205,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 
 			// set the new connector
 			commandProcessor.setConnector(connector);
+			commandProcessor.setBinding(this);
 
 		} catch (MalformedURLException e) {
 			logger.error(e.toString(), e);
@@ -167,8 +222,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	 */
 	public void postUpdate(String id, State newState) {
 		for (EBusBindingProvider provider : providers) {
-			String itemName = provider.getItemName(id);
-			if(StringUtils.isNotEmpty(itemName)) {
+			for (String itemName : provider.getItemNames(id)) {
 				eventPublisher.postUpdate(itemName, newState);
 			}
 		}
@@ -241,9 +295,9 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	 */
 	public void deactivate() {
 		super.deactivate();
-		
+
 		logger.debug("eBus binding has been stopped.");
-		
+
 		if(connector != null && connector.isAlive()) {
 			connector.interrupt();
 			connector = null;

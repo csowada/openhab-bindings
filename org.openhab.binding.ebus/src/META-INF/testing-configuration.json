@@ -1,5 +1,18 @@
 [
 	{
+		"comment":	"[TEST] <Brenner> Kromschröder/Wolf: Software Version Brenner",
+		"__filter":	"?? 08 50 22 ?? CC 9A 01 .*",
+		"id":		"version",
+		"class":	"burner",
+		"command":	"50 22",
+		"data": 	"CC 9A 01",
+
+		"values": {
+			"heat_unit_fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 100"}
+		}
+	},
+
+	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Kollektor 24H Max",
 		"filter":	"?? ?? 50 22 ?? A5 78 09 .*",
 		"debug": 1,
