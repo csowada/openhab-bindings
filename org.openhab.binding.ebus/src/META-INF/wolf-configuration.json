@@ -175,7 +175,7 @@
 		"filter":	"?? ?? 50 22 ?? 5E F8 02 .*",
 		
 		"values": {
-			"flow":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
+			"flow":			{"type": "word", "pos": 12, "script": "thisValue*10", "label": "Durchfluss"}
 		}
 	}
 ]
