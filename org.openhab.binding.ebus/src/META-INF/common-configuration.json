@@ -5,13 +5,13 @@
 		
 		"values": {
 			"status_auto_stroker":	{"type": "byte", "pos":7, "label": "Statusanzeige"},
-			"state_ldw":			{"type": "bit", "pos":8, "bit": 0, "label": "LDW"},
-			"state_gdw":			{"type": "bit", "pos":8, "bit": 1, "label": "GDW"},
+			"state_ldw":			{"type": "bit", "pos":8, "bit": 0, "label": "LDW (Luftdruckwächter?)"},
+			"state_gdw":			{"type": "bit", "pos":8, "bit": 1, "label": "GDW (Gasdruckwächter?)"},
 			"state_ws":				{"type": "bit", "pos":8, "bit": 2, "label": "WS"},
 			"state_flame":			{"type": "bit", "pos":8, "bit": 3, "label": "Flame"},
 			"state_valve1":			{"type": "bit", "pos":8, "bit": 4, "label": "Valve1"},
 			"state_valve2":			{"type": "bit", "pos":8, "bit": 5, "label": "Valve2"},
-			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP"},
+			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP (Umwälzpumpe?)"},
 			"state_alarm":			{"type": "bit", "pos":8, "bit": 7, "label": "Alarm"},
 			"adjusting_vessel":		{"type": "uchar", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
 			"temp_vessel0": 		{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
