@@ -49,7 +49,10 @@
 		"filter":	"?? 08 50 22 ?? CC 4F 27 .*",
 		
 		"values": {
-			"ionisation":			{"type": "word", "pos": 12, "label": "Ionisation"}
+			"ionisation":			{"type": "word", "pos": 12, "label": "Ionisation"},
+			"ionisation1":			{"type": "data2b", "pos": 12, "label": "??? 1"},
+			"ionisation2":			{"type": "data2c", "pos": 12, "label": "??? 2"},
+			"ionisation3":			{"type": "data1c", "pos": 12, "label": "Ionisation"}
 		}
 	},
 
@@ -175,7 +178,7 @@
 		"filter":	"?? ?? 50 22 ?? 5E F8 02 .*",
 		
 		"values": {
-			"flow":			{"type": "word", "pos": 12, "script": "durchfluss*10", "label": "Durchfluss"}
+			"flow":			{"type": "word", "pos": 12, "script": "thisValue*10", "label": "Durchfluss"}
 		}
 	}
 ]

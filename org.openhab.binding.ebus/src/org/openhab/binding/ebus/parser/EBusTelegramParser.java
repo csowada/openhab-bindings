@@ -45,6 +45,12 @@ public class EBusTelegramParser {
 		this.configurationProvider = configurationProvider;
 	}
 
+	/**
+	 * @param byteBuffer
+	 * @param type
+	 * @param pos
+	 * @return
+	 */
 	private Object getValue(ByteBuffer byteBuffer, String type, int pos) {
 		Object value = null;
 		byte hByte = 0;
@@ -121,6 +127,12 @@ public class EBusTelegramParser {
 		return value;
 	}
 
+	/**
+	 * @param entry
+	 * @param bindings2
+	 * @return
+	 * @throws ScriptException
+	 */
 	private Object evaluateScript(Entry<String, Map<String, Object>> entry, Map<String, Object> bindings2) throws ScriptException {
 		Object value = null;
 		if(entry.getValue().containsKey("cscript")) {
@@ -135,6 +147,9 @@ public class EBusTelegramParser {
 		return value;
 	}
 
+	/**
+	 * @param telegram
+	 */
 	private void bruteforceEBusTelegram(EBusTelegram telegram) {
 
 		byte[] data = telegram.getData();
@@ -178,6 +193,10 @@ public class EBusTelegramParser {
 		}
 	}
 
+	/**
+	 * @param telegram
+	 * @return
+	 */
 	public Map<String, Object> parse(EBusTelegram telegram) {
 
 		if(configurationProvider == null) {

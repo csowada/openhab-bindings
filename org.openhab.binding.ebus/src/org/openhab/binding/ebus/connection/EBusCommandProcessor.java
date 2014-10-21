@@ -37,16 +37,25 @@ public class EBusCommandProcessor implements BindingChangeListener {
 
 	private EBusBinding binding;
 
+	/**
+	 * @param connector
+	 */
 	public void setConnector(AbstractEBusConnector connector) {
 		this.connector = connector;
 	}
 
+	/**
+	 * 
+	 */
 	public void deactivate() {
 		if(scheduler != null) {
 			scheduler.shutdown();
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.BindingChangeListener#allBindingsChanged(org.openhab.core.binding.BindingProvider)
+	 */
 	@Override
 	public void allBindingsChanged(BindingProvider provider) {
 		logger.debug("Remove all polling items for this provider from scheduler ...");
@@ -61,6 +70,9 @@ public class EBusCommandProcessor implements BindingChangeListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.core.binding.BindingChangeListener#bindingChanged(org.openhab.core.binding.BindingProvider, java.lang.String)
+	 */
 	@Override
 	public void bindingChanged(BindingProvider provider, String itemName) {
 		logger.debug("Binding changed for item {}", itemName);
@@ -104,6 +116,9 @@ public class EBusCommandProcessor implements BindingChangeListener {
 		}
 	}
 
+	/**
+	 * @param binding
+	 */
 	public void setBinding(EBusBinding binding) {
 		this.binding = binding;
 	}

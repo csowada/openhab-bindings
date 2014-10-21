@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 */
 public class EBusTCPConnector extends AbstractEBusConnector {
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusTCPConnector.class);
 	
@@ -48,10 +47,18 @@ public class EBusTCPConnector extends AbstractEBusConnector {
 	 */
 	@Override
 	public boolean connect() throws IOException  {
-		socket = new Socket(hostname, port);
-		inputStream = socket.getInputStream();
-		outputStream = socket.getOutputStream();
-		return true;
+		try {
+			socket = new Socket(hostname, port);
+			inputStream = socket.getInputStream();
+			outputStream = socket.getOutputStream();
+			
+			logger.debug("TCP connection established ...");
+			
+			return true;
+		} catch (Exception e) {
+			logger.error(e.toString(), e);
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)
@@ -59,6 +66,9 @@ public class EBusTCPConnector extends AbstractEBusConnector {
 	 */
 	@Override
 	public boolean disconnect() throws IOException  {
+		
+		logger.debug("TCP connection disconnected ...");
+		
 		if(socket != null) {
 			socket.close();
 			socket = null;

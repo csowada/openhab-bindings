@@ -1,5 +1,80 @@
 [
 	{
+		"comment":	"[Analyse] <Brenner> Kromschröder/Wolf: Flags Status 4",
+		"class":	"burnerw",
+		"id":		"uflags4",
+		"filter":	"30 08 50 22 03 CC 16 00 .*",
+
+		"values": {
+			"_w_unknown4":	{"type": "word", "pos": 12, "label": "Flags 4"}
+		}
+	},
+
+
+
+
+
+
+
+
+
+	{
+		"comment":	"[Analyse] <Brenner> Common: Aussentemperatur ?",
+		"class":	"burner",
+		"filter":	"?? FE 03 01 0E .*",
+
+		"values": {
+			"temp_outside0":	{"type": "word", "pos": 6, "label": "Aussentemperatur", "script": "thisValue / 10"}
+		}
+	},
+
+	{
+		"comment":	"[Analyse] <Brenner> Kromschröder/Wolf: Flags Status 1",
+		"filter":	"?? ?? 50 22 03 CC 54 27 .*",
+		"id":		"uflags1",
+		"class":	"burnerw",
+		"command":	"50 22",
+		"data": 	"CC 54 27",
+
+		"values": {
+			"_w_unknown1":	{"type": "word", "pos": 12, "label": "Flags 1"}
+		}
+	},
+
+	{
+		"comment":	"[Analyse] <Brenner> Kromschröder/Wolf: Flags Status 2",
+		"filter":	"?? ?? 50 22 03 CC 6F 01 .*",
+		"id":		"uflags2",
+		"class":	"burnerw",
+		"command":	"50 22",
+		"data": 	"CC 6F 01",
+
+		"values": {
+			"_w_unknown2":	{"type": "word", "pos": 12, "label": "Flags 2"}
+		}
+	},
+	
+	{
+		"comment":	"[Analyse] <Brenner> Kromschröder/Wolf: Flags Status 3",
+		"filter":	"?? ?? 50 22 03 CC 53 27 .*",
+		"id":		"uflags3",
+		"class":	"burnerw",
+		"command":	"50 22",
+		"data": 	"CC 53 27",
+
+		"values": {
+			"_w_unknown3":	{"type": "word", "pos": 12, "label": "Flags 3"}
+		}
+	},
+	
+	
+	
+	
+	
+	
+	
+	
+	{
 		"comment":	"[TEST] <Brenner> Kromschröder/Wolf: Software Version Brenner",
 		"__filter":	"?? 08 50 22 ?? CC 9A 01 .*",
 		"id":		"version",
@@ -15,7 +90,6 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Kollektor 24H Max",
 		"filter":	"?? ?? 50 22 ?? A5 78 09 .*",
-		"debug": 1,
 		
 		"values": {
 			"col24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "Kollektor 24H Max"}
@@ -25,7 +99,6 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
 		"filter":	"?? ?? 50 22 ?? 41 7B 09 .*",
-		"debug": 1,
 		
 		"values": {
 			"wws24in":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Min"}
@@ -35,7 +108,6 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: WW Solar 24H Max",
 		"filter":	"?? ?? 50 22 ?? 89 7C 09 .*",
-		"debug": 1,
 		
 		"values": {
 			"wws24max":			{"type": "word", "pos": 12, "script": "thisValue * 10", "label": "WW Solar 24H Max * 10"}
@@ -45,7 +117,6 @@
 	{
 		"comment":	"[??] <???> Kromschröder/Wolf: Antilegionellen ",
 		"filter":	"?? ?? 50 22 ?? CE F7 02 .*",
-		"debug": 1,
 		
 		"values": {
 			"leg":			{"type": "word", "pos": 12, "label": "Antilegionellen"}

@@ -109,6 +109,10 @@ public abstract class AbstractEBusConnector extends Thread {
 		return listeners.remove(listener);
 	}
 
+	/**
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	protected void reconnect() throws IOException, InterruptedException {
 		if(disconnect()) {
 			if(!connect()) {
@@ -144,13 +148,17 @@ public abstract class AbstractEBusConnector extends Thread {
 				} else {
 					int read = inputStream.read();
 					if(read == -1) {
-						logger.error("eBus read timeout occured!");
+						logger.error("eBus read timeout occured, ignore it currently!");
 
 						// reconnect
-						reconnect();
+						//reconnect();
 
 					} else {
+						
 						byte receivedByte = (byte)(read & 0xFF);
+						
+						logger.trace("Byte received: " + EBusUtils.toHexDumpString(receivedByte));
+						
 						// write received byte to input buffer
 						inputBuffer.put(receivedByte);
 

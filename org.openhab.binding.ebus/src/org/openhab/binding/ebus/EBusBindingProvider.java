@@ -19,12 +19,31 @@ import org.openhab.core.binding.BindingProvider;
 public interface EBusBindingProvider extends BindingProvider {
 	
 	/**
+	 * @param itemName
+	 * @return
+	 */
+	public String getCommand(String itemName);
+
+	/**
+	 * @param itemName
+	 * @return
+	 */
+	public String getCommandClass(String itemName);
+	
+	/**
 	 * Return the item name for the ebus id
 	 * @param id The ebus id (see ebus-configuration.json)
 	 * @return The openhab item names
 	 */
 	public List<String> getItemNames(String id);
-
+	
+	/**
+	 * Return the refresh rate for a polling commands
+	 * @param itemName
+	 * @return
+	 */
+	public int getRefreshRate(String itemName);
+	
 	/**
 	 * Return the byte data to send
 	 * @param itemName The itemName
@@ -44,21 +63,11 @@ public interface EBusBindingProvider extends BindingProvider {
 	 * @param itemName
 	 * @return
 	 */
-	public String getCommand(String itemName);
-	
-	
-	/**
-	 * @param itemName
-	 * @return
-	 */
-	public String getCommandClass(String itemName);
-	/**
-	 * Return the refresh rate for a polling commands
-	 * @param itemName
-	 * @return
-	 */
-	public int getRefreshRate(String itemName);
-	
-	public Byte getTelegramSource(String itemName);
 	public Byte getTelegramDestination(String itemName);
+	
+	/**
+	 * @param itemName
+	 * @return
+	 */
+	public Byte getTelegramSource(String itemName);
 }

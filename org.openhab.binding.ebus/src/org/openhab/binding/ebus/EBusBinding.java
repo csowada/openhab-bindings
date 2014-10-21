@@ -54,6 +54,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	private ConfigurationAdmin configurationAdminService;
 	private EBusConfigurationProvider configurationProvider;
 
+	/** default sender id */
 	private byte senderId = (byte)0xFF;
 
 	public byte[] getSendData(EBusBindingProvider provider, String itemName, String type) {

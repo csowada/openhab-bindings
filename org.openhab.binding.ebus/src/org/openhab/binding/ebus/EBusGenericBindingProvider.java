@@ -140,14 +140,6 @@ public class EBusGenericBindingProvider extends
 	 */
 	class EBusBindingConfig implements BindingConfig {
 		public HashMap<String, Object> map = new HashMap<>();
-//		public String id;
-//		public byte[] data;
-//		public int refreshRate;
-//		public Map<String, byte[]> dataMap;
-//		
-//		public String commandId;
-//		public String commandClass;
-		
 	}
 
 	/**
@@ -173,11 +165,6 @@ public class EBusGenericBindingProvider extends
 	@Override
 	public byte[] getTelegramData(String itemName) {
 		return get(itemName, "data", null);
-//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-//		if(bindingConfig != null) {
-//			return bindingConfig.data;
-//		}
-//		return null;
 	}
 
 	/* (non-Javadoc)
@@ -186,11 +173,6 @@ public class EBusGenericBindingProvider extends
 	@Override
 	public int getRefreshRate(String itemName) {
 		return get(itemName, "refresh", 0);
-//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-//		if(bindingConfig != null) {
-//			return bindingConfig.refreshRate;
-//		}
-//		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -202,38 +184,30 @@ public class EBusGenericBindingProvider extends
 		if(m != null && m.containsKey(type)) {
 			return (byte[]) m.get(type);
 		}
-//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-//		if(bindingConfig != null && bindingConfig.dataMap != null) {
-//			return bindingConfig.dataMap.get(type);
-//		}
 		return null;
 	}
 
 	@Override
 	public String getCommand(String itemName) {
 		return get(itemName, "cmd", null);
-//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-//		if(bindingConfig != null) {
-//			return bindingConfig.commandId;
-//		}
-//		return null;
 	}
 
 	@Override
 	public String getCommandClass(String itemName) {
 		return get(itemName, "class", null);
-//		EBusBindingConfig bindingConfig = (EBusBindingConfig) bindingConfigs.get(itemName);
-//		if(bindingConfig != null) {
-//			return bindingConfig.commandClass;
-//		}
-//		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.EBusBindingProvider#getTelegramSource(java.lang.String)
+	 */
 	@Override
 	public Byte getTelegramSource(String itemName) {
 		return get(itemName, "src", null);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.ebus.EBusBindingProvider#getTelegramDestination(java.lang.String)
+	 */
 	@Override
 	public Byte getTelegramDestination(String itemName) {
 		return get(itemName, "dst", null);

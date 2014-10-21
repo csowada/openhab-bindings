@@ -13,11 +13,11 @@
 			"state_valve2":			{"type": "bit", "pos":8, "bit": 5, "label": "Valve2"},
 			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP"},
 			"state_alarm":			{"type": "bit", "pos":8, "bit": 7, "label": "Alarm"},
-			"adjusting_vessel":		{"type": "data1b", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
-			"temp_vessel": 			{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
-			"temp_return": 			{"type": "uchar", "pos":11, "label": "Rücklauftemperatur"},
+			"adjusting_vessel":		{"type": "uchar", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
+			"temp_vessel0": 		{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
+			"temp_return0": 		{"type": "uchar", "pos":11, "label": "Rücklauftemperatur"},
 			"temp_boiler": 			{"type": "uchar", "pos":12, "label": "Boilertemperatur"},
-			"temp_outdoor": 		{"type": "char", "pos":13, "label": "Außentemperatur", "undefined":"0xF"}
+			"temp_outdoor0": 		{"type": "char", "pos":13, "label": "Außentemperatur", "undefined":"0xF"}
 		}
 	},
 	
@@ -26,13 +26,13 @@
 		"filter":	"?? ?? 05 07 09 .*",
 		
 		"values": {
-			"status_warm_req1":		{"type": "byte", "pos":6, "label": "Statuswärmeanforderung1"},
-			"status_warm_req2": 	{"type": "byte", "pos":7, "label": "Statuswärmeanforderung2"},
-			"temp_t_vessel0": 		{"type": "data2c", "pos":8, "label": "Kesselsollwert-Temperatur"},
+			"status_warm_req":		{"type": "byte", "pos":6, "label": "Statuswärmeanforderung"},
+			"xxx0": 				{"type": "uchar", "pos":7, "label": "Statuswärmeanforderung2"},
+			"temp_t_vessel": 		{"type": "data2c", "pos":8, "label": "Kesselsollwert-Temperatur"},
 			"pressure_t_vessel": 	{"type": "data2b", "pos":10, "label": "Kesselsollwert-Druck"},
 			"xxx1": 				{"type": "data1c", "pos":12, "label": "Stellgrad"},
 			"xxx2": 				{"type": "data1c", "pos":13, "label": "Brauchwassersollwert"},
-			"xxx3": 				{"type": "byte", "pos":14, "label": "Brennstoffwert"},
+			"xxx3": 				{"type": "uchar", "pos":14, "label": "Brennstoffwert"},
 		}
 	},
 	
@@ -61,7 +61,7 @@
 		"filter":	"?? ?? 08 00 .*",
 		
 		"values": {
-			"temp_t_vessel":		{"type": "data2b", "pos": 6, "label": "Kesselsollwert"},
+			"temp_t_vessel0":		{"type": "data2b", "pos": 6, "label": "Kesselsollwert"},
 			"temp_outside":			{"type": "data2b", "pos":8, "label": "Außentemperatur"},
 			"power_enforcement":	{"type": "data1b", "pos":10, "label": "Leistungszwang"},
 			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv (Wärmepumpen?)"},

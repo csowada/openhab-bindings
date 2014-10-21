@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2014, openHAB.org and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.ebus.parser;
 
 import java.io.BufferedReader;
@@ -26,6 +34,10 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Christian Sowada
+ * @since 1.6.0
+ */
 public class EBusConfigurationProvider {
 
 	private static final Logger logger = LoggerFactory
@@ -35,6 +47,9 @@ public class EBusConfigurationProvider {
 
 	private Compilable compEngine; 
 
+	/**
+	 * Constructor
+	 */
 	public EBusConfigurationProvider() {
 		ScriptEngineManager mgr = new ScriptEngineManager();
 		ScriptEngine engine = mgr.getEngineByName("JavaScript");
@@ -44,6 +59,11 @@ public class EBusConfigurationProvider {
 		}
 	}
 
+	/**
+	 * @param url
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	@SuppressWarnings("unchecked")
 	public void loadConfigurationFile(URL url) throws IOException, ParseException {
 		final JSONParser parser = new JSONParser();
@@ -62,6 +82,9 @@ public class EBusConfigurationProvider {
 		}
 	}
 
+	/**
+	 * @param configurationEntry
+	 */
 	@SuppressWarnings("unchecked")
 	protected void transformDataTypes(JSONObject configurationEntry) {
 		
@@ -121,6 +144,10 @@ public class EBusConfigurationProvider {
 		
 	}
 	
+	/**
+	 * @param bufferString
+	 * @return
+	 */
 	public List<Map<String, Object>> getCommandsByFilter(String bufferString) {
 
 		final List<Map<String, Object>> matchedTelegramRegistry = new ArrayList<Map<String, Object>>();
@@ -137,6 +164,11 @@ public class EBusConfigurationProvider {
 		return matchedTelegramRegistry;
 	}
 
+	/**
+	 * @param commandId
+	 * @param commandClass
+	 * @return
+	 */
 	public Map<String, Object> getCommandById(String commandId, String commandClass) {
 		for (Map<String, Object> entry : telegramRegistry) {
 			if(entry.containsKey("id") && entry.get("id").equals(commandId) && 
