@@ -327,15 +327,15 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 				}
 
 				if(state != null) {
-//					EBusBinding.this.postUpdate(entry.getKey(), state);
-					
-					
+
+					// loop over all items to update the state
 					for (EBusBindingProvider provider : providers) {
 						for (String itemName : provider.getItemNames(entry.getKey())) {
 							
 							Byte telegramSource = provider.getTelegramSource(itemName);
 							Byte telegramDestination = provider.getTelegramDestination(itemName);
 							
+							// check if this item has a src or dst defined
 							if(telegramSource == null || telegram.getSource() == telegramSource) {
 								if(telegramDestination == null || telegram.getDestination() == telegramDestination) {
 									eventPublisher.postUpdate(itemName, state);

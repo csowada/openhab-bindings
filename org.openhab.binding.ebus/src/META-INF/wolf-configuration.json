@@ -7,7 +7,7 @@
 		"data": 	"CC 6F 01",
 
 		"values": {
-			"performance_burner":	{"type": "word", "pos": 12, "label": "Aktuelle Geräteleistung"}
+			"performance_burner":	{"type": "word", "pos": 12, "label": "Aktuelle Geräteleistung", "min":0, "max":100}
 		}
 	},
 	
@@ -21,8 +21,8 @@
 			"solar_status":			{"type": "byte", "pos":6, "label": "Solarstatus (Solarpumpe an?)"},
 			"solar_pump":			{"type": "bit", "pos":6, "bit": 0, "label": "Solarpumpe"},
 			"_unknown1":			{"type": "byte", "pos":7},
-			"temp_collector":		{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C"},
-			"temp_reservoir_1":		{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C"}
+			"temp_collector":		{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C", "min":0, "max":160},
+			"temp_reservoir_1":		{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C", "min":0, "max":100}
 		}
 	},
 	
@@ -55,7 +55,7 @@
 		"data": 	"CC 57 27",
 		
 		"values": {
-			"performance_pump":		{"type": "word", "pos": 12, "label": "Drehzahl Pumpe in %"}
+			"performance_pump":		{"type": "word", "pos": 12, "label": "Drehzahl Pumpe in %", "min":0, "max":100}
 		}
 	},
 	
@@ -68,7 +68,7 @@
 		"data": 	"CC 1A 27",
 		
 		"values": {
-			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100"}
+			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100", , "min":0, "max":10}
 		}
 	},
 
@@ -146,7 +146,7 @@
 		"data": 	"CC 1D 27",
 		
 		"values": {
-			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10"}
+			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10", "min":0, "max":100}
 		}
 	},
 
@@ -172,7 +172,7 @@
 		"data": 	"CC 0D 00",
 		
 		"values": {
-			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10"}
+			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10", "min":0, "max":100}
 		}
 	},
 
@@ -185,7 +185,7 @@
 		"data": 	"CC 0E 00",
 		
 		"values": {
-			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10"}
+			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10", "min":0, "max":100}
 		}
 	},
 
@@ -198,7 +198,7 @@
 		"data": 	"CC 16 00",
 		
 		"values": {
-			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10"}
+			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10", "min":0, "max":100}
 		}
 	},
 	
@@ -224,7 +224,7 @@
 		"data": 	"CC 2B 0A",
 		
 		"values": {
-			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10"}
+			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10", "min":0, "max":100}
 		}
 	}
 ]

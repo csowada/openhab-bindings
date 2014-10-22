@@ -51,7 +51,7 @@ public class EBusTelegramParser {
 	 * @param pos
 	 * @return
 	 */
-	private Object getValue(ByteBuffer byteBuffer, String type, int pos) {
+	private Object getValue(ByteBuffer byteBuffer, String type, int pos, Number min, Number max, Number replaceValue) {
 		Object value = null;
 		byte hByte = 0;
 		byte lByte = 0;
@@ -124,6 +124,30 @@ public class EBusTelegramParser {
 			break;
 		}
 
+		if(min != null) {
+			if(value instanceof Number) {
+				if(((Number)value).doubleValue() < min.doubleValue()) {
+					value = null;
+				}
+			}
+		}
+		
+		if(max != null) {
+			if(value instanceof Number) {
+				if(((Number)value).doubleValue() > max.doubleValue()) {
+					value = null;
+				}
+			}
+		}
+		
+		if(replaceValue != null) {
+			if(value instanceof Number) {
+				if(((Number)value).doubleValue() == replaceValue.doubleValue()) {
+					value = null;
+				}
+			}
+		}
+		
 		return value;
 	}
 
@@ -228,6 +252,7 @@ public class EBusTelegramParser {
 			return null;
 		}
 
+		// loop thru all matching telegrams from registry
 		for (Map<String, Object> registryEntry : matchedTelegramRegistry) {
 
 			String classKey = registryEntry.containsKey("class") ? (String) registryEntry.get("class") : "";
@@ -237,6 +262,7 @@ public class EBusTelegramParser {
 				debugLevel = ((Long)registryEntry.get("debug")).intValue();
 			}
 
+			// get values block
 			@SuppressWarnings("unchecked")
 			Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) registryEntry.get("values");
 
@@ -251,8 +277,13 @@ public class EBusTelegramParser {
 				String type = ((String) settings.get("type")).toLowerCase();
 				int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
 
-				Object value = getValue(byteBuffer, type, pos);
+				Number valueMin = settings.containsKey("min") ? ((Number) settings.get("min")).doubleValue() : null;
+				Number valueMax = settings.containsKey("max") ? ((Number) settings.get("max")).doubleValue() : null;
+				Number replaceValue = settings.containsKey("replaceValue") ? ((Number) settings.get("replaceValue")).doubleValue() : null;
+				
+				Object value = getValue(byteBuffer, type, pos, valueMin, valueMax, replaceValue);
 
+				
 				// Add global variables thisValue and keyName to JavaScript context
 				HashMap<String, Object> bindings = new HashMap<String, Object>();
 				bindings.put(entry.getKey(), value);
@@ -269,7 +300,7 @@ public class EBusTelegramParser {
 				}
 
 				String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-				String format = String.format("%-22s%-10s%s", uniqueKey, value, label);
+				String format = String.format("%-35s%-10s%s", uniqueKey, value, label);
 				if(debugLevel >= 2) {
 					logger2.debug("    >>> " + format);
 				} else {
@@ -298,7 +329,7 @@ public class EBusTelegramParser {
 
 					if(debugLevel >= 2) {
 						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
-						String format = String.format("%-22s%-10s%s", uniqueKey, value, label);
+						String format = String.format("%-35s%-10s%s", uniqueKey, value, label);
 						logger2.debug("    >>> " + format);
 					}
 

@@ -2,7 +2,7 @@
 	{
 		"comment":	"Identifikation",
 		"filter":	"?? ?? 07 04 00 .*",
-		"_class":	"common"
+		"class":	"common"
 		
 		"values": {
 			"vendor":				{"type": "byte", "pos":10, "label": "Hersteller"},
@@ -27,7 +27,7 @@
 		"comment":	"Betriebsdaten des Feuerungsautomaten an den Regler - Block 1",
 		"filter":	"?? ?? 05 03 08 01 .*",
 		"_filter":	"03 FE 05 03 08 01 .*",
-		"_class":	"auto_stroker",
+		"class":	"auto_stroker",
 		
 		"values": {
 			"status_auto_stroker":	{"type": "byte", "pos":7, "label": "Statusanzeige"},
@@ -39,32 +39,34 @@
 			"state_valve2":			{"type": "bit", "pos":8, "bit": 5, "label": "Valve2"},
 			"state_uwp":			{"type": "bit", "pos":8, "bit": 6, "label": "UWP"},
 			"state_alarm":			{"type": "bit", "pos":8, "bit": 7, "label": "Alarm"},
-			"adjusting_vessel":		{"type": "data1b", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %"},
-			"temp_vessel0": 		{"type": "data1c", "pos":10, "label": "Kesseltemperatur"},
-			"temp_return0": 		{"type": "uchar", "pos":11, "label": "Rücklauftemperatur"},
-			"temp_boiler": 			{"type": "uchar", "pos":12, "label": "Boilertemperatur"},
-			"temp_outdoor0": 		{"type": "char", "pos":13, "label": "Außentemperatur", "undefined":"0xF"}
+			"performance_burner":	{"type": "uchar", "pos":9, "label": "Stellgrad MIN-MAX Kesselleistung in %","min":0.0, "max":100.0},
+			"temp_vessel": 			{"type": "data1c", "pos":10, "label": "Kesseltemperatur", "min":0, "max":100},
+			"temp_return": 			{"type": "uchar", "pos":11, "label": "Rücklauftemperatur", "min":0, "max":100},
+			"temp_boiler": 			{"type": "uchar", "pos":12, "label": "Boilertemperatur", "min":0, "max":100},
+			"temp_outdoor": 		{"type": "char", "pos":13, "label": "Außentemperatur", "min":-30, "max":50}
 		}
 	},
 	
 	{
 		"comment":	"Betriebsdaten des Reglers an den Feuerungsautomaten",
 		"filter":	"?? ?? 05 07 09 .*",
+		"class":	"controller",
 		
 		"values": {
 			"status_warm_req1":		{"type": "byte", "pos":6, "label": "Statuswärmeanforderung"},
 			"status_warm_req2": 	{"type": "byte", "pos":7, "label": "Statuswärmeanforderung2"},
-			"temp_t_vessel": 		{"type": "data2c", "pos":8, "label": "Kesselsollwert-Temperatur"},
-			"pressure_t_vessel": 	{"type": "data2b", "pos":10, "label": "Kesselsollwert-Druck"},
-			"xxx1": 				{"type": "data1c", "pos":12, "label": "Stellgrad"},
-			"temp_t_ww":			{"type": "data1c", "pos":13, "label": "Brauchwassersollwert"},
-			"xxx3": 				{"type": "byte", "pos":14, "label": "Brennstoffwert"},
+			"temp_t_vessel": 		{"type": "data2c", "pos":8, "label": "Kesselsollwert-Temperatur", "min":0, "max":100},
+			"pressure_t_vessel": 	{"type": "data2b", "pos":10, "label": "Kesselsollwert-Druck", "min":0, "max":100},
+			"performance_burner": 	{"type": "data1c", "pos":12, "label": "Stellgrad", "min":0, "max":100},
+			"temp_t_boiler":		{"type": "data1c", "pos":13, "label": "Brauchwassersollwert", "min":0, "max":100},
+			"value_fuel": 			{"type": "byte", "pos":14, "label": "Brennstoffwert", "replaceValue": 255},
 		}
 	},
 	
 	{
 		"comment":	"Datum/Zeitmeldung eines eBUS Masters",
 		"filter":	"?? ?? 07 00 09 .*",
+		"class":	"common",
 		
 		"values": {
 			"temp_outdoor":			{"type": "data2b", "pos":6, "label": "Außentemperatur"},
@@ -85,14 +87,15 @@
 	{
 		"comment":	"Sollwertübertragung des Reglers an andere Regler",
 		"filter":	"?? ?? 08 00 .*",
+		"class":	"controller2",
 		
 		"values": {
-			"temp_t_vessel0":		{"type": "data2b", "pos": 6, "label": "Kesselsollwert"},
-			"temp_outside":			{"type": "data2b", "pos":8, "label": "Außentemperatur"},
+			"temp_t_vessel":		{"type": "data2b", "pos": 6, "label": "Kesselsollwert", "min":0, "max":100},
+			"temp_outdoor":			{"type": "data2b", "pos":8, "label": "Außentemperatur", "min":-30, "max":50},
 			"power_enforcement":	{"type": "data1b", "pos":10, "label": "Leistungszwang"},
 			"status_bwr":			{"type": "bit", "pos":11, "bit": 0, "label": "BWR aktiv (Wärmepumpen?)"},
 			"status_heat_circuit":	{"type": "bit", "pos":11, "bit": 1, "label": "Heizkreis aktiv"},
-			"temp_t_wather":		{"type": "data2b", "pos":12, "label": "Brauchwassersoll"}
+			"temp_t_boiler":		{"type": "data2b", "pos":12, "label": "Brauchwassersoll", "min":0, "max":100}
 		}
 	}
 ]
