@@ -76,6 +76,17 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @throws IOException
 	 */
 	public boolean connect() throws IOException {
+		
+		// reset ebus counter
+		lockCounter = LOCKOUT_COUNTER_MAX;
+
+		// reset global variables
+		lastSendCollisionDetected = false;
+		blockNextSend = false;
+		
+		outputQueue.clear();
+		inputBuffer.clear();
+		
 		return true;
 	}
 

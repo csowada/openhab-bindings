@@ -60,8 +60,8 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 				serialPort.setSerialPortParams(2400, SerialPort.DATABITS_8,
 						SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
-				// set timeout 5 sec.
-				serialPort.enableReceiveTimeout(5000);
+				// set timeout 10 sec.
+				serialPort.enableReceiveTimeout(10000);
 				serialPort.disableReceiveThreshold();
 				
 				outputStream = serialPort.getOutputStream();

@@ -217,18 +217,6 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 		}
 	}
 
-	/**
-	 * @param id
-	 * @param newState
-	 */
-	public void postUpdate(String id, State newState) {
-		for (EBusBindingProvider provider : providers) {
-			for (String itemName : provider.getItemNames(id)) {
-				eventPublisher.postUpdate(itemName, newState);
-			}
-		}
-	}
-
 	@Override
 	public void addBindingProvider(EBusBindingProvider provider) {
 		super.addBindingProvider(provider);
@@ -339,7 +327,26 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 				}
 
 				if(state != null) {
-					EBusBinding.this.postUpdate(entry.getKey(), state);
+//					EBusBinding.this.postUpdate(entry.getKey(), state);
+					
+					
+					for (EBusBindingProvider provider : providers) {
+						for (String itemName : provider.getItemNames(entry.getKey())) {
+							
+							Byte telegramSource = provider.getTelegramSource(itemName);
+							Byte telegramDestination = provider.getTelegramDestination(itemName);
+							
+							if(telegramSource == null || telegram.getSource() == telegramSource) {
+								if(telegramDestination == null || telegram.getDestination() == telegramDestination) {
+									eventPublisher.postUpdate(itemName, state);
+								}
+							}
+							
+							
+						}
+					}
+					
+					
 				}
 			}
 		};

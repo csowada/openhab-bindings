@@ -205,7 +205,8 @@ public class EBusTelegramParser {
 		}
 
 		final Map<String, Object> valueRegistry = new HashMap<String, Object>();
-
+		final Map<String, Object> valueRegistry2 = new HashMap<String, Object>();
+		
 		if(telegram == null) {
 			return null;
 		}
@@ -276,6 +277,7 @@ public class EBusTelegramParser {
 				}
 
 				valueRegistry.put(uniqueKey, value);
+				valueRegistry2.put(entry.getKey(), value);
 			}
 
 			// computes values available? if not exit here
@@ -288,6 +290,7 @@ public class EBusTelegramParser {
 				String uniqueKey = (classKey != "" ? classKey + "." : "") + entry.getKey();
 				HashMap<String, Object> bindings = new HashMap<String, Object>();
 				bindings.putAll(valueRegistry);
+				bindings.putAll(valueRegistry2);
 				Object value;
 				try {
 					value = evaluateScript(entry, bindings);
