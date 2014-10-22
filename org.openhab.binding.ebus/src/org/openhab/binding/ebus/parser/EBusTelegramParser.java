@@ -216,12 +216,12 @@ public class EBusTelegramParser {
 
 		final List<Map<String, Object>> matchedTelegramRegistry = configurationProvider.getCommandsByFilter(bufferString);
 
-		logger2.info(bufferString);
+		logger2.debug(bufferString);
 
 		if(matchedTelegramRegistry.isEmpty()) {
 			logger2.debug("  >>> Unknown ----------------------------------------");
 			if(logger3.isTraceEnabled()) {
-				logger2.trace(bufferString);
+				logger3.trace(bufferString);
 				bruteforceEBusTelegram(telegram);
 			}
 
