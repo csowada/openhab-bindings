@@ -1,6 +1,6 @@
 ID's
-03      Feuerungsautomat
-08		Brenner
+03      Feuerungsautomat	(Master)
+08		Feuerungsautomat	(Slave)
 30  BM  Bedieneinheit
 50		Brenner Reglung
 71  SM  Solarmodus
