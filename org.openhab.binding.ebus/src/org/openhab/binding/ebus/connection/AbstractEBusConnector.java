@@ -131,6 +131,9 @@ public abstract class AbstractEBusConnector extends Thread {
 				
 				if(reConnectCounter < 50) {
 					reConnectCounter++;
+				} else {
+					logger.error("Stop eBus connector after 50 tries, please check eBus adapter and restart eBus binding.");
+					reConnectCounter = -1;
 				}
 				
 				int sleepTime = reConnectCounter > 24 ? 30 : 5;
@@ -150,8 +153,8 @@ public abstract class AbstractEBusConnector extends Thread {
 	@Override
 	public void run() {
 
-		// loop until interrupt
-		while (!isInterrupted()) {
+		// loop until interrupt or reconnector count is -1 (to many retries)
+		while (!isInterrupted() || reConnectCounter == -1) {
 			try {
 
 				if(inputStream == null) {
