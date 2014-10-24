@@ -171,9 +171,7 @@ public abstract class AbstractEBusConnector extends Thread {
 					} else {
 						
 						byte receivedByte = (byte)(read & 0xFF);
-						
-						logger.trace("Byte received: " + EBusUtils.toHexDumpString(receivedByte));
-						
+
 						// write received byte to input buffer
 						inputBuffer.put(receivedByte);
 
