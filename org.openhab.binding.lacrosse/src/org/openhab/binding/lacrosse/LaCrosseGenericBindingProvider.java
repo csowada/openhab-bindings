@@ -25,7 +25,6 @@ public class LaCrosseGenericBindingProvider extends
 		for (Entry<String, BindingConfig> entry : bindingConfigs.entrySet()) {
 			LaCrosseBindingConfig cfg = (LaCrosseBindingConfig) entry.getValue();
 			if(id.equals(cfg.id + "." + cfg.type)) {
-//			if(cfg.id.equals(id)) {
 				return entry.getKey();
 			}
 		}

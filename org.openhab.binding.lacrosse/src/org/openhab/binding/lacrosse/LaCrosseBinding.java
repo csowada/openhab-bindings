@@ -21,7 +21,7 @@ public class LaCrosseBinding extends AbstractActiveBinding<LaCrosseBindingProvid
 	
 	@Override
 	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-		logger.debug("Update LaCrosse Binding ...");
+		logger.info("Update LaCrosse Binding ...");
 		
 		if(connector != null && connector.isOpen()) {
 			connector.close();
@@ -39,10 +39,7 @@ public class LaCrosseBinding extends AbstractActiveBinding<LaCrosseBindingProvid
 		for (LaCrosseBindingProvider provider : providers) {
 			String itemName = provider.getItemName(id+"."+type);
 			if(StringUtils.isNotEmpty(itemName)) {
-//				String type0 = provider.getType(itemName);
-//				if(StringUtils.equals(type0, type)) {
-					eventPublisher.postUpdate(itemName, newState);
-//				}
+				eventPublisher.postUpdate(itemName, newState);
 			}
 		}
 	}
