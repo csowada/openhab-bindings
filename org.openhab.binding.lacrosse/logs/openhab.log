@@ -1,0 +1,402 @@
+19:40:52.026 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:41:23.749 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:42:33.535 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:43:03.596 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:43:38.637 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:43:49.205 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:43:53.686 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:02.471 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:12.134 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: 
+19:44:12.150 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: [LaCrosseITPlusReader.10.1c @17.241 kbps]
+19:44:20.039 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:28.806 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:37.591 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:46.374 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:44:55.159 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:03.949 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:12.727 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:21.494 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:30.279 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:39.062 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:47.847 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:45:56.630 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:46:05.399 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:46:14.183 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:46:22.967 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:46:31.750 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:46:49.584 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:47:14.706 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:47:22.844 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:47:41.562 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:48:11.393 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:48:32.673 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: 
+19:48:32.683 ERROR o.o.b.l.c.LaCrosseConnector[:126]- ui
+java.lang.StringIndexOutOfBoundsException: String index out of range: -5
+	at java.lang.String.substring(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:102)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+19:48:32.703 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: [LaCrosseITPlusReader.10.1c @17.241 kbps]
+19:48:32.704 ERROR o.o.b.l.c.LaCrosseConnector[:126]- ui
+java.lang.NumberFormatException: For input string: "osseITPlusReader.10.1c"
+	at java.lang.NumberFormatException.forInputString(Unknown Source)
+	at java.lang.Integer.parseInt(Unknown Source)
+	at java.lang.Integer.parseInt(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:104)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+19:48:52.055 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: 
+19:48:52.056 ERROR o.o.b.l.c.LaCrosseConnector[:126]- ui
+java.lang.StringIndexOutOfBoundsException: String index out of range: -5
+	at java.lang.String.substring(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:102)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+19:48:52.241 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: [LaCrosseITPlusReader.10.1c @17.241 kbps]
+19:48:52.242 ERROR o.o.b.l.c.LaCrosseConnector[:126]- ui
+java.lang.NumberFormatException: For input string: "osseITPlusReader.10.1c"
+	at java.lang.NumberFormatException.forInputString(Unknown Source)
+	at java.lang.Integer.parseInt(Unknown Source)
+	at java.lang.Integer.parseInt(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:104)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+19:49:14.508 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:49:18.598 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:49:18.598 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:49:27.380 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:49:27.380 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:49:36.149 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:49:36.149 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:49:44.933 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:49:44.933 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:49:53.717 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:49:53.718 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:02.501 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:02.501 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:11.285 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:11.285 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:20.069 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:20.069 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:28.837 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:28.837 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:37.621 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:37.621 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:46.405 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:46.405 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:50:55.189 INFO  o.o.b.l.c.LaCrosseConnector[:100]- Received data: OK 9 50 1 4 172 60
+19:50:55.200 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:03.973 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:12.741 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:12.788 ERROR o.o.b.l.c.LaCrosseConnector[:126]- ui
+java.io.IOException: Underlying input stream returned zero bytes
+	at sun.nio.cs.StreamDecoder.readBytes(Unknown Source)
+	at sun.nio.cs.StreamDecoder.implRead(Unknown Source)
+	at sun.nio.cs.StreamDecoder.read(Unknown Source)
+	at java.io.InputStreamReader.read(Unknown Source)
+	at java.io.BufferedReader.fill(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:92)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+19:51:21.525 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:30.443 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+19:51:39.098 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:47.880 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:51:56.648 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:05.432 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:14.216 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:23.000 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:31.784 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:40.568 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:49.336 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:52:58.120 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:06.905 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:15.688 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:24.473 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:33.256 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:43.177 DEBUG o.o.b.l.c.LaCrosseConnector[:95]- Use HW Version: [LaCrosseITPlusReader.10.1c @17.241 kbps]
+19:53:50.808 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:53:59.593 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:08.376 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:17.161 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:25.928 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:34.712 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:43.496 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:54:52.281 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:01.064 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:09.849 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:18.616 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:27.401 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:36.184 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:44.969 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:55:53.752 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:02.537 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:11.304 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:20.089 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:28.872 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:37.657 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:46.440 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:56:55.209 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:03.992 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:12.777 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:21.560 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:30.345 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:39.128 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:47.897 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:57:56.686 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:05.474 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:14.249 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:23.033 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:31.816 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:40.585 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:49.375 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:58:58.153 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:06.936 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:15.721 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:24.504 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:33.286 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:42.056 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:50.841 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+19:59:59.624 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:08.409 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:17.176 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:25.961 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:34.745 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:43.529 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:00:52.313 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:01.097 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:09.864 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:18.649 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:27.433 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:36.218 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:45.000 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:01:53.785 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:02.553 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:11.337 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:20.121 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:28.905 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:37.689 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:46.457 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:02:46.516 ERROR o.o.b.l.c.LaCrosseConnector[:128]- ui
+java.io.IOException: Underlying input stream returned zero bytes
+	at sun.nio.cs.StreamDecoder.readBytes(Unknown Source)
+	at sun.nio.cs.StreamDecoder.implRead(Unknown Source)
+	at sun.nio.cs.StreamDecoder.read(Unknown Source)
+	at java.io.InputStreamReader.read(Unknown Source)
+	at java.io.BufferedReader.fill(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:92)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+20:02:55.241 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:04.025 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:12.809 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:21.593 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:30.377 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:39.145 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:03:47.929 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:05.497 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:14.281 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:23.065 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:31.833 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:40.617 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:49.401 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:04:58.185 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:06.969 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:15.753 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:24.521 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:33.305 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:42.089 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:50.873 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:05:59.657 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:08.425 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:17.209 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:25.993 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:34.778 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:43.561 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:06:52.346 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:01.113 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:09.898 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:18.681 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:27.465 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:36.249 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:45.034 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:07:53.801 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:02.586 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:11.369 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:20.154 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:28.937 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:37.722 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:46.489 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:08:55.274 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:04.057 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:12.842 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:21.625 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:30.394 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:39.177 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:47.962 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:09:56.745 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:05.530 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:14.313 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:23.082 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:31.865 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:40.650 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:49.433 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:10:58.218 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:07.002 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:15.770 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:24.554 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:33.338 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:42.122 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:50.906 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:11:59.674 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:08.458 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:17.242 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:26.026 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:34.810 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:43.594 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:12:52.362 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:01.146 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:09.930 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:18.714 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:27.499 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:36.282 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:45.051 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:13:53.834 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:02.618 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:11.402 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:20.189 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:28.970 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:37.738 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:46.522 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:14:55.307 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:04.090 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:12.875 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:21.642 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:30.427 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:39.210 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:47.995 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:15:56.778 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:05.563 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:14.330 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:23.115 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:31.898 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:40.683 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:49.466 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:16:58.251 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:15.803 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:24.586 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:33.371 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:42.154 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:50.939 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:17:59.706 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:08.491 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:17.274 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:26.059 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:34.842 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:43.611 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:18:52.394 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:01.179 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:09.962 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:18.747 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:27.530 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:36.299 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:45.082 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:19:53.867 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:20:02.650 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:20:11.435 INFO  o.o.b.l.c.LaCrosseConnector[:121]- 19.6 -> 60
+20:24:25.083 INFO  o.o.b.l.c.LaCrosseConnector[:61]- Open LaCrosse connection
+20:24:50.768 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:24:51.947 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:24:55.109 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:24:55.129 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:25:01.210 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:25:09.994 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:25:18.778 INFO  o.o.b.l.c.LaCrosseConnector[:126]- 19.6 -> 60
+20:25:27.546 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:25:36.330 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:25:45.114 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:25:53.898 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:02.682 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:11.466 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:20.234 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:29.018 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:37.802 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:46.586 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:26:55.370 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:04.154 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:12.923 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:21.706 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:30.490 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:39.274 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:48.059 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:27:56.842 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:05.611 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:14.394 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:23.179 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:31.962 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:40.746 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:49.514 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:28:58.299 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:07.082 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:15.867 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:24.650 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:33.434 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:42.202 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:50.987 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:29:59.770 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:08.555 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:17.338 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:26.123 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:34.890 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:43.675 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:30:52.458 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:01.243 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:10.026 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:18.795 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:18.842 ERROR o.o.b.l.c.LaCrosseConnector[:131]- ui
+java.io.IOException: Underlying input stream returned zero bytes
+	at sun.nio.cs.StreamDecoder.readBytes(Unknown Source)
+	at sun.nio.cs.StreamDecoder.implRead(Unknown Source)
+	at sun.nio.cs.StreamDecoder.read(Unknown Source)
+	at java.io.InputStreamReader.read(Unknown Source)
+	at java.io.BufferedReader.fill(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at org.openhab.binding.lacrosse.connector.LaCrosseConnector$1.serialEvent(LaCrosseConnector.java:92)
+	at gnu.io.RXTXPort.sendEvent(RXTXPort.java:780)
+	at gnu.io.RXTXPort.eventLoop(Native Method)
+	at gnu.io.RXTXPort$MonitorThread.run(RXTXPort.java:1653)
+20:31:27.578 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:36.363 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:45.146 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:31:53.931 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:02.714 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:11.483 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:20.266 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:37.834 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:46.619 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:32:55.402 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:04.171 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:12.954 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:21.739 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:30.522 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:39.307 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:48.090 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:33:56.859 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:05.642 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:14.427 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:23.211 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:31.995 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:40.762 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:49.547 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
+20:34:58.332 INFO  o.o.b.l.c.LaCrosseConnector[:127]- 19.6 -> 60
