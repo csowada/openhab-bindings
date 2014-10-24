@@ -5,16 +5,16 @@
 		"class":	"common"
 		
 		"values": {
-			"vendor":				{"type": "byte", "pos":10, "label": "Hersteller"},
-			"_device_id0":			{"type": "byte", "pos":11, "label": "Geräte ID 0"},
-			"_device_id1":			{"type": "byte", "pos":12, "label": "Geräte ID 1"},
-			"_device_id2":			{"type": "byte", "pos":13, "label": "Geräte ID 2"},
-			"_device_id3":			{"type": "byte", "pos":14, "label": "Geräte ID 3"},
-			"_device_id4":			{"type": "byte", "pos":15, "label": "Geräte ID 4"},
-			"_software_ver":		{"type": "bcd", "pos":16, "label": "Software Version"},
-			"_software_rev":		{"type": "bcd", "pos":17, "label": "Software Revision"},
-			"_hardware_ver":		{"type": "bcd", "pos":18, "label": "Software Version"},
-			"_hardware_rev":		{"type": "bcd", "pos":19, "label": "Software Revision"}
+			"vendor":				{"type": "byte", "pos":9, "label": "Hersteller"},
+			"_device_id0":			{"type": "byte", "pos":10, "label": "Geräte ID 0"},
+			"_device_id1":			{"type": "byte", "pos":11, "label": "Geräte ID 1"},
+			"_device_id2":			{"type": "byte", "pos":12, "label": "Geräte ID 2"},
+			"_device_id3":			{"type": "byte", "pos":13, "label": "Geräte ID 3"},
+			"_device_id4":			{"type": "byte", "pos":14, "label": "Geräte ID 4"},
+			"_software_ver":		{"type": "bcd", "pos":15, "label": "Software Version"},
+			"_software_rev":		{"type": "bcd", "pos":16, "label": "Software Revision"},
+			"_hardware_ver":		{"type": "bcd", "pos":17, "label": "Software Version"},
+			"_hardware_rev":		{"type": "bcd", "pos":18, "label": "Software Revision"}
 		},
 		"computed_values": {
 			"device":					{"type": "script", "script": "String.fromCharCode(_device_id0, _device_id1, _device_id2, _device_id3, _device_id4)", "label": "Geräte ID"},

@@ -68,7 +68,7 @@
 		"data": 	"CC 1A 27",
 		
 		"values": {
-			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100", , "min":0, "max":10}
+			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100"}
 		}
 	},
 
@@ -146,7 +146,7 @@
 		"data": 	"CC 1D 27",
 		
 		"values": {
-			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10", "min":0, "max":100}
+			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10"}
 		}
 	},
 
@@ -172,7 +172,7 @@
 		"data": 	"CC 0D 00",
 		
 		"values": {
-			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10", "min":0, "max":100}
+			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10"}
 		}
 	},
 
@@ -185,7 +185,7 @@
 		"data": 	"CC 0E 00",
 		
 		"values": {
-			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10", "min":0, "max":100}
+			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10"}
 		}
 	},
 
@@ -198,7 +198,7 @@
 		"data": 	"CC 16 00",
 		
 		"values": {
-			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10", "min":0, "max":100}
+			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10"}
 		}
 	},
 	
@@ -224,7 +224,7 @@
 		"data": 	"CC 2B 0A",
 		
 		"values": {
-			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10", "min":0, "max":100}
+			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10"}
 		}
 	}
 ]
