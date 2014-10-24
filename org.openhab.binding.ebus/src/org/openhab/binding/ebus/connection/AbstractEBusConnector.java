@@ -11,6 +11,7 @@ package org.openhab.binding.ebus.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public abstract class AbstractEBusConnector extends Thread {
 	private final List<EBusConnectorEventListener> listeners = new ArrayList<EBusConnectorEventListener>();
 
 	/** serial receive buffer */
-	private final ByteBuffer inputBuffer = ByteBuffer.allocate(50);
+	private final ByteBuffer inputBuffer = ByteBuffer.allocate(100);
 
 	/** input stream for eBus communication*/
 	protected InputStream inputStream;
@@ -181,7 +182,7 @@ public abstract class AbstractEBusConnector extends Thread {
 				}
 
 			} catch (IOException e) {
-				logger.error("An IO Exception has occured!", e);
+				logger.error("An IO exception has occured! Try to reconnect eBus connector ...", e);
 
 				try {
 					reconnect();
@@ -189,8 +190,13 @@ public abstract class AbstractEBusConnector extends Thread {
 					logger.error(e.toString(), e);
 				}
 
+			} catch (BufferOverflowException e) {
+				logger.error("eBus telegram buffer overflow - not enough sync bytes received! Try to adjust eBus adapter.");
+				inputBuffer.clear();
+				
 			} catch (Exception e) {
 				logger.error(e.toString(), e);
+				inputBuffer.clear();
 			}
 		}
 
