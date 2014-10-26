@@ -63,8 +63,14 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 		
 		String cmd = provider.getCommand(itemName);
 		String cmdClass = provider.getCommandClass(itemName);
-
-		Map<String, Object> command2 = configurationProvider.getCommandById(cmd, cmdClass);
+		Map<String, Object> command2 = null;
+		
+		if(configurationProvider != null) {
+			command2 = configurationProvider.getCommandById(cmd, cmdClass);
+		} else {
+			// items processed before binding is configurated (function update(...)
+			logger.debug("eBus configuration provider not ready, can't get send data yet.");
+		}
 
 		if(command2 != null) {
 
@@ -223,6 +229,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 
 		if(commandProcessor == null) {
 			commandProcessor = new EBusCommandProcessor();
+			commandProcessor.setBinding(this);
 		}
 
 		if(provider.providesBinding()) {

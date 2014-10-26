@@ -74,41 +74,44 @@ public class EBusCommandProcessor implements BindingChangeListener {
 	 * @see org.openhab.core.binding.BindingChangeListener#bindingChanged(org.openhab.core.binding.BindingProvider, java.lang.String)
 	 */
 	@Override
-	public void bindingChanged(BindingProvider provider, String itemName) {
+	public void bindingChanged(BindingProvider provider, final String itemName) {
+
 		logger.debug("Binding changed for item {}", itemName);
 
-		EBusBindingProvider eBusProvider = (EBusBindingProvider)provider;
+		final EBusBindingProvider eBusProvider = (EBusBindingProvider)provider;
 		int refreshRate = eBusProvider.getRefreshRate(itemName);
 
-
 		if(refreshRate > 0) {
-
-			final byte[] data = binding.getSendData(eBusProvider, itemName, null);
-
-			Runnable r = new Runnable() {
+			
+			final Runnable r = new Runnable() {
 				@Override
 				public void run() {
-					connector.send(data);
+					byte[] data = binding.getSendData(eBusProvider, itemName, null);
+					if(data != null && data.length > 0) {
+						connector.send(data);
+					} else {
+						logger.warn("No data to send for item {}! Check your item configuration.", itemName);
+					}
 				}
 			};
 
-			if(data != null && data.length > 0) {
-				
-				if(futureMap.containsKey(itemName)) {
-					logger.debug("Stopped old polling item {} ...", itemName);
-					futureMap.remove(itemName).cancel(true);
-				}
-
-				if(scheduler == null) {
-					scheduler = Executors.newScheduledThreadPool(2);
-				}
-
-				logger.debug("Add polling item {} with refresh rate {} to scheduler ...", itemName, refreshRate);
-
-				int randomInitDelay = (int) (Math.random() * (30 - 4) + 4);
-				futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, randomInitDelay, refreshRate, TimeUnit.SECONDS));
+			if(futureMap.containsKey(itemName)) {
+				logger.debug("Stopped old polling item {} ...", itemName);
+				futureMap.remove(itemName).cancel(true);
 			}
-			
+
+			if(scheduler == null) {
+				scheduler = Executors.newScheduledThreadPool(2);
+			}
+
+			logger.debug("Add polling item {} with refresh rate {} to scheduler ...",
+					itemName, refreshRate);
+
+			// do not start all pollings at the same time
+			int randomInitDelay = (int) (Math.random() * (30 - 4) + 4);
+			futureMap.put(itemName, scheduler.scheduleWithFixedDelay(r, randomInitDelay, 
+					refreshRate, TimeUnit.SECONDS));
+
 		} else if(futureMap.containsKey(itemName)) {
 			logger.debug("Remove scheduled refresh for item {}", itemName);
 			futureMap.get(itemName).cancel(true);
