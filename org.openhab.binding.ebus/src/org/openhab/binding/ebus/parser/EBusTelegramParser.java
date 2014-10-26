@@ -124,29 +124,29 @@ public class EBusTelegramParser {
 			break;
 		}
 
-		if(min != null) {
-			if(value instanceof Number) {
-				if(((Number)value).doubleValue() < min.doubleValue()) {
-					value = null;
-				}
-			}
-		}
-		
-		if(max != null) {
-			if(value instanceof Number) {
-				if(((Number)value).doubleValue() > max.doubleValue()) {
-					value = null;
-				}
-			}
-		}
-		
-		if(replaceValue != null) {
-			if(value instanceof Number) {
-				if(((Number)value).doubleValue() == replaceValue.doubleValue()) {
-					value = null;
-				}
-			}
-		}
+//		if(min != null) {
+//			if(value instanceof Number) {
+//				if(((Number)value).doubleValue() < min.doubleValue()) {
+//					value = null;
+//				}
+//			}
+//		}
+//		
+//		if(max != null) {
+//			if(value instanceof Number) {
+//				if(((Number)value).doubleValue() > max.doubleValue()) {
+//					value = null;
+//				}
+//			}
+//		}
+//		
+//		if(replaceValue != null) {
+//			if(value instanceof Number) {
+//				if(((Number)value).doubleValue() == replaceValue.doubleValue()) {
+//					value = null;
+//				}
+//			}
+//		}
 		
 		return value;
 	}
