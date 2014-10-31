@@ -11,7 +11,10 @@ import gnu.io.UnsupportedCommOperationException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TooManyListenersException;
 
 import org.slf4j.Logger;
@@ -26,6 +29,8 @@ public class LaCrosseConnector {
 	private SerialPort serialPort;
 	private String port;
 
+	private Map<String, NumberAverage> avarage = new HashMap<String, NumberAverage>();
+	
 	public boolean isOpen() {
 		return (serialPort != null);
 	}
@@ -35,16 +40,6 @@ public class LaCrosseConnector {
 			serialPort.close();
 		}
 	}
-
-	//	public void open(Dictionary<String, ?> properties) {
-	//
-	//		if (properties != null) {
-	//			String newPort = (String) properties.get("port"); //$NON-NLS-1$
-	//			int baudRate = Integer.parseInt((String) properties.get("baudrate")); //$NON-NLS-1$
-	//			
-	//			open(newPort, baudRate);
-	//		}
-	//	}
 
 	/**
 	 * Open and initialize a serial port.
@@ -115,16 +110,13 @@ public class LaCrosseConnector {
 										boolean batteryLow = battery_low == 1;
 										boolean batteryNew = battery_new == 1;
 										
-										onDataReceived(addr, temperature, humidity, batteryNew, batteryLow);
-
-										//										 $addr = sprintf( "%02X", $bytes[0] );
-										//										 $battery_new = ($bytes[1] & 0x80) >> 7;
-										//										 $type = ($bytes[1] & 0x70) >> 4;
-										//										 $channel = $bytes[1] & 0x0F;
-										//										 $temperature = ($bytes[2]*256 + $bytes[3] - 1000)/10;
-										//										 $battery_low = ($bytes[4] & 0x80) >> 7;
-										//										 $humidity = $bytes[4] & 0x7f;
-										logger.info(temperature + " -> " + humidity);
+										BigDecimal temp = getAverage(addr + ".temp", 15, 2).
+												add(BigDecimal.valueOf(temperature));
+										
+										BigDecimal hum = getAverage(addr + ".hum", 15, 1).
+												add(BigDecimal.valueOf(humidity));
+										
+										onDataReceived(addr, temp, hum, batteryNew, batteryLow);
 									}
 								}
 							} catch (Exception e) {
@@ -183,7 +175,15 @@ public class LaCrosseConnector {
 										int battery_low = (Integer.parseInt(parts[4]) & 0x80) >> 7;
 	 */
 
-	public void onDataReceived(int address, float temperature, int humidity, boolean batteryNew, boolean batteryWeak) {
+	private NumberAverage getAverage(String key, int size, int scale) {
+		if(!avarage.containsKey(key)) {
+			avarage.put(key, new NumberAverage(3, scale));
+		}
+		
+		return avarage.get(key);
+	}
+	
+	public void onDataReceived(int address, BigDecimal temperature, BigDecimal humidity, boolean batteryNew, boolean batteryWeak) {
 
 	}
 
