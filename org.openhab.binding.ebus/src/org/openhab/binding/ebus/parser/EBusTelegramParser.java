@@ -79,32 +79,24 @@ public class EBusTelegramParser {
 		case "data2c":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
-			//			value = EBusUtils.decodeDATA2c(hByte, lByte);
-			//			if((float)value == -2048) value = null;
 			repVal = BigDecimal.valueOf(-2048);
 			value = new BigDecimal(EBusUtils.decodeDATA2c(hByte, lByte));
 			break;
 
 		case "data1c":
 			lByte = byteBuffer.get(pos-1);
-			//			value = EBusUtils.decodeDATA1c(lByte);
-			//			if((float)value == 255) value = null;
 			repVal = BigDecimal.valueOf(255);
 			value = new BigDecimal(EBusUtils.decodeDATA1c(lByte));
 			break;
 
 		case "data1b":
 			lByte = byteBuffer.get(pos-1);
-			//			value = EBusUtils.decodeDATA1b(lByte);
-			//			if((int)value == -128) value = null;
 			repVal = BigDecimal.valueOf(-128);
 			value = new BigDecimal(EBusUtils.decodeDATA1b(lByte));
 			break;
 
 		case "bcd":
 			lByte = byteBuffer.get(pos-1);
-			//			value = EBusUtils.decodeBCD(lByte);
-			//			if((int)value == 255) value = null;
 			repVal = BigDecimal.valueOf(266);
 			value = new BigDecimal(EBusUtils.decodeBCD(lByte));
 			break;
@@ -112,23 +104,17 @@ public class EBusTelegramParser {
 		case "word":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeWORD(hByte, lByte);
-			//			if((int)value == 65535) value = null;
 			repVal = BigDecimal.valueOf(65535);
 			value = new BigDecimal(EBusUtils.decodeWORD(hByte, lByte));
 			break;
 
 		case "uchar":
 		case "byte":
-			//			value = byteBuffer.get(pos-1) & 0xFF;
-			//			if((int)value == (byte)0xFF) value = null;
 			repVal = BigDecimal.valueOf(255);
 			value = new BigDecimal(byteBuffer.get(pos-1) & 0xFF);
 			break;
 
 		case "char":
-			//			value = byteBuffer.get(pos-1);
-			//			if((byte)value == (byte)0xFF) value = null;
 			repVal = BigDecimal.valueOf(255);
 			value = new BigDecimal(byteBuffer.get(pos-1));
 			break;
