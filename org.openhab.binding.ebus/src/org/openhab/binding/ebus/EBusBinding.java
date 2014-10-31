@@ -9,6 +9,7 @@
 package org.openhab.binding.ebus;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
@@ -315,14 +316,8 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 			for (Entry<String, Object> entry : results.entrySet()) {
 
 				State state = null;
-				if(entry.getValue() instanceof Float) {
-					state = new DecimalType((Float)entry.getValue());
-				} else if(entry.getValue() instanceof Double) {
-					state = new DecimalType((Double)entry.getValue());
-				} else if(entry.getValue() instanceof Integer) {
-					state = new DecimalType((Integer)entry.getValue());
-				} else if(entry.getValue() instanceof Byte) {
-					state = new DecimalType((Byte)entry.getValue());
+				if(entry.getValue() instanceof BigDecimal) {
+					state = new DecimalType((BigDecimal)entry.getValue());
 				} else if(entry.getValue() instanceof Boolean) {
 					state = (boolean)entry.getValue() ? OnOffType.ON : OnOffType.OFF;
 				} else if(entry.getValue() instanceof String) {

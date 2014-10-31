@@ -5,7 +5,7 @@
 		"filter":	"?? FE 03 01 0E .*",
 
 		"values": {
-			"temp_outside0":	{"type": "word", "pos": 6, "label": "Aussentemperatur", "script": "thisValue / 10"}
+			"temp_outside0":	{"type": "word", "pos": 6, "label": "Aussentemperatur", "factor": 0.1 }
 		}
 	},
 
@@ -58,7 +58,7 @@
 			"_unknown85":			{"type": "byte", "pos":11, "label": "Unknown 85, 11 bit warmwasser?"},
 			
 			"soll_vl":				{"type": "byte", "pos":8, "label": "Unknown 82 - 8-temp verlauf, Nachtabsenkung auf 5"},
-			"soll_ww":				{"type": "data1c", "pos":12, "label": "Warmwassertemperatur °C"}
+			"soll_ww":				{"type": "data1c", "pos":12, "label": "Warmwassertemperatur °C", "min": 1, "max": 100 }
 		}
 	}
 ]

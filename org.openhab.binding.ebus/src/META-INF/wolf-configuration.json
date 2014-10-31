@@ -21,8 +21,8 @@
 			"solar_status":			{"type": "byte", "pos":6, "label": "Solarstatus (Solarpumpe an?)"},
 			"solar_pump":			{"type": "bit", "pos":6, "bit": 0, "label": "Solarpumpe"},
 			"_unknown1":			{"type": "byte", "pos":7},
-			"temp_collector":		{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C", "min":0, "max":160},
-			"temp_reservoir_1":		{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C", "min":0, "max":100}
+			"temp_collector":		{"type": "data2c", "pos":8, "label": "Kollektortemperatur °C", "min":-20, "max":160},
+			"temp_reservoir_1":		{"type": "data2c", "pos":10, "label": "Warmwassertemperatur °C", "min":1, "max":100}
 		}
 	},
 	
@@ -68,7 +68,7 @@
 		"data": 	"CC 1A 27",
 		
 		"values": {
-			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "script": "thisValue / 100"}
+			"system_pressure":		{"type": "word", "pos": 12, "label": "Anlagedruck (bar)", "factor": 0.01 }
 		}
 	},
 
@@ -81,7 +81,7 @@
 		"data": 	"CC 9A 01",
 		
 		"values": {
-			"fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "script": "thisValue / 100"}
+			"fw_version":	{"type": "word", "pos": 12, "label": "Brenner Software Ver.", "factor": 0.01 }
 		}
 	},
 	
@@ -146,7 +146,7 @@
 		"data": 	"CC 1D 27",
 		
 		"values": {
-			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "script": "thisValue / 10"}
+			"temp_exhaust":			{"type": "word", "pos": 12, "label": "Abgas-Temperatur", "factor": 0.1 , "min": 1, "max":140 }
 		}
 	},
 
@@ -172,7 +172,7 @@
 		"data": 	"CC 0D 00",
 		
 		"values": {
-			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "script": "thisValue / 10"}
+			"temp_vessel":			{"type": "word", "pos": 12, "label": "Kessel Ist", "factor": 0.1, "min": 1, "max": 100 }
 		}
 	},
 
@@ -185,7 +185,7 @@
 		"data": 	"CC 0E 00",
 		
 		"values": {
-			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "script": "thisValue / 10"}
+			"temp_boiler":				{"type": "word", "pos": 12, "label": "Warmwasser-Temperatur", "factor": 0.1 , "min": 1, "max": 100}
 		}
 	},
 
@@ -198,7 +198,7 @@
 		"data": 	"CC 16 00",
 		
 		"values": {
-			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "script": "thisValue / 10"}
+			"temp_return":			{"type": "word", "pos": 12, "label": "Rücklauftemp", "factor":0.1, , "min": 1, "max": 100}
 		}
 	},
 	
@@ -224,7 +224,7 @@
 		"data": 	"CC 2B 0A",
 		
 		"values": {
-			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "script": "thisValue / 10"}
+			"e1":					{"type": "word", "pos": 12, "label": "Solar-Rücklauf-Temp.", "factor": 0.1, "min": 1, "max": 120}
 		}
 	}
 ]

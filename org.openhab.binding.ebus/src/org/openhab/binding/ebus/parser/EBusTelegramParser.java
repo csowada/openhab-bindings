@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.ebus.parser;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -51,10 +52,15 @@ public class EBusTelegramParser {
 	 * @param pos
 	 * @return
 	 */
-	private Object getValue(ByteBuffer byteBuffer, String type, int pos, Number min, Number max, Number replaceValue) {
+	private Object getValue(ByteBuffer byteBuffer, String type, int pos, 
+			BigDecimal min, BigDecimal max, BigDecimal replaceValue, BigDecimal factor) {
+
 		Object value = null;
+		//		BigDecimal b = null;
 		byte hByte = 0;
 		byte lByte = 0;
+
+		BigDecimal repVal = null;
 
 		if(pos > byteBuffer.position()) {
 			logger.warn("Wow, buffer pos error!");
@@ -64,51 +70,67 @@ public class EBusTelegramParser {
 		case "data2b":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeDATA2b(hByte, lByte);
-			if((float)value == -128) value = null;
+			//			value = EBusUtils.decodeDATA2b(hByte, lByte);
+			repVal = BigDecimal.valueOf(-128);
+			//			if((float)value == -128) value = null;
+			value = new BigDecimal(EBusUtils.decodeDATA2b(hByte, lByte));
 			break;
 
 		case "data2c":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeDATA2c(hByte, lByte);
-			if((float)value == -2048) value = null;
+			//			value = EBusUtils.decodeDATA2c(hByte, lByte);
+			//			if((float)value == -2048) value = null;
+			repVal = BigDecimal.valueOf(-2048);
+			value = new BigDecimal(EBusUtils.decodeDATA2c(hByte, lByte));
 			break;
 
 		case "data1c":
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeDATA1c(lByte);
-			if((float)value == 255) value = null;
+			//			value = EBusUtils.decodeDATA1c(lByte);
+			//			if((float)value == 255) value = null;
+			repVal = BigDecimal.valueOf(255);
+			value = new BigDecimal(EBusUtils.decodeDATA1c(lByte));
 			break;
 
 		case "data1b":
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeDATA1b(lByte);
-			if((int)value == -128) value = null;
+			//			value = EBusUtils.decodeDATA1b(lByte);
+			//			if((int)value == -128) value = null;
+			repVal = BigDecimal.valueOf(-128);
+			value = new BigDecimal(EBusUtils.decodeDATA1b(lByte));
 			break;
 
 		case "bcd":
 			lByte = byteBuffer.get(pos-1);
-			value = EBusUtils.decodeBCD(lByte);
-			if((int)value == 255) value = null;
+			//			value = EBusUtils.decodeBCD(lByte);
+			//			if((int)value == 255) value = null;
+			repVal = BigDecimal.valueOf(266);
+			value = new BigDecimal(EBusUtils.decodeBCD(lByte));
 			break;
 
 		case "word":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
 			value = EBusUtils.decodeWORD(hByte, lByte);
-			if((int)value == 65535) value = null;
+			//			if((int)value == 65535) value = null;
+			repVal = BigDecimal.valueOf(65535);
+			value = new BigDecimal(EBusUtils.decodeWORD(hByte, lByte));
 			break;
 
 		case "uchar":
 		case "byte":
-			value = byteBuffer.get(pos-1) & 0xFF;
-			if((int)value == (byte)0xFF) value = null;
+			//			value = byteBuffer.get(pos-1) & 0xFF;
+			//			if((int)value == (byte)0xFF) value = null;
+			repVal = BigDecimal.valueOf(255);
+			value = new BigDecimal(byteBuffer.get(pos-1) & 0xFF);
 			break;
 
 		case "char":
-			value = byteBuffer.get(pos-1);
-			if((byte)value == (byte)0xFF) value = null;
+			//			value = byteBuffer.get(pos-1);
+			//			if((byte)value == (byte)0xFF) value = null;
+			repVal = BigDecimal.valueOf(255);
+			value = new BigDecimal(byteBuffer.get(pos-1));
 			break;
 
 		case "bit":
@@ -124,30 +146,35 @@ public class EBusTelegramParser {
 			break;
 		}
 
-//		if(min != null) {
-//			if(value instanceof Number) {
-//				if(((Number)value).doubleValue() < min.doubleValue()) {
-//					value = null;
-//				}
-//			}
-//		}
-//		
-//		if(max != null) {
-//			if(value instanceof Number) {
-//				if(((Number)value).doubleValue() > max.doubleValue()) {
-//					value = null;
-//				}
-//			}
-//		}
-//		
-//		if(replaceValue != null) {
-//			if(value instanceof Number) {
-//				if(((Number)value).doubleValue() == replaceValue.doubleValue()) {
-//					value = null;
-//				}
-//			}
-//		}
-		
+		if(replaceValue != null) {
+			repVal = replaceValue;
+		}
+
+		if(value instanceof BigDecimal) {
+			BigDecimal b = (BigDecimal)value;
+
+			if(repVal != null && b.compareTo(repVal) == 0) {
+				logger.trace("Replace value found, skip value ...");
+				value = b = null;
+			}
+			
+			// multiply before check min and max
+			if(b != null && factor != null) {
+				logger.trace("Value multiplied ...");
+				value = b = b.multiply(factor);
+			}
+			
+			if(min != null && b != null && b.compareTo(min) == -1) {
+				logger.trace("Minimal value reached, skip value ...");
+				value = b = null;
+				
+			} else if (max != null && b != null && b.compareTo(max) == 1) {
+				logger.trace("Maximal value reached, skip value ...");
+				value = b = null;
+			}
+
+		}
+
 		return value;
 	}
 
@@ -162,10 +189,20 @@ public class EBusTelegramParser {
 		if(entry.getValue().containsKey("cscript")) {
 			CompiledScript cscript = (CompiledScript) entry.getValue().get("cscript");
 
-			// Add global varaibles thisValue and keyName to JavaScript context
+			// Add global variables thisValue and keyName to JavaScript context
 			Bindings bindings = cscript.getEngine().createBindings();
 			bindings.putAll(bindings2);
 			value = cscript.eval(bindings);
+		}
+
+		if(value instanceof Long) {
+			value = new BigDecimal((long)value);
+		} else if(value instanceof Integer) {
+			value = new BigDecimal((int)value);
+		} else if(value instanceof Float) {
+			value = new BigDecimal((float)value);
+		} else if(value instanceof Double) {
+			value = new BigDecimal((double)value);
 		}
 
 		return value;
@@ -230,7 +267,7 @@ public class EBusTelegramParser {
 
 		final Map<String, Object> valueRegistry = new HashMap<String, Object>();
 		final Map<String, Object> valueRegistry2 = new HashMap<String, Object>();
-		
+
 		if(telegram == null) {
 			return null;
 		}
@@ -256,7 +293,7 @@ public class EBusTelegramParser {
 		for (Map<String, Object> registryEntry : matchedTelegramRegistry) {
 
 			String classKey = registryEntry.containsKey("class") ? (String) registryEntry.get("class") : "";
-			
+
 			int debugLevel = 0;
 			if(registryEntry.containsKey("debug")) {
 				debugLevel = ((Long)registryEntry.get("debug")).intValue();
@@ -277,13 +314,20 @@ public class EBusTelegramParser {
 				String type = ((String) settings.get("type")).toLowerCase();
 				int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
 
-				Number valueMin = settings.containsKey("min") ? ((Number) settings.get("min")).doubleValue() : null;
-				Number valueMax = settings.containsKey("max") ? ((Number) settings.get("max")).doubleValue() : null;
-				Number replaceValue = settings.containsKey("replaceValue") ? ((Number) settings.get("replaceValue")).doubleValue() : null;
-				
-				Object value = getValue(byteBuffer, type, pos, valueMin, valueMax, replaceValue);
+				//				BigDecimal valueMin = settings.containsKey("min") ? BigDecimal.valueOf(((Number) settings.get("min")).doubleValue()) : null;
+				//				BigDecimal valueMax = settings.containsKey("max") ? BigDecimal.valueOf(((Number) settings.get("max")).doubleValue()) : null;
+				//				BigDecimal replaceValue = settings.containsKey("replaceValue") ? BigDecimal.valueOf(((Number) settings.get("replaceValue")).doubleValue()) : null;
 
-				
+
+				BigDecimal valueMin = NumberUtils.toBigDecimal(settings.get("min"));
+				BigDecimal valueMax = NumberUtils.toBigDecimal(settings.get("max"));
+				BigDecimal replaceValue = NumberUtils.toBigDecimal(settings.get("replaceValue"));
+				BigDecimal factor = NumberUtils.toBigDecimal(settings.get("factor"));
+
+				Object value = getValue(byteBuffer, type, pos,
+						valueMin, valueMax, replaceValue, factor);
+
+
 				// Add global variables thisValue and keyName to JavaScript context
 				HashMap<String, Object> bindings = new HashMap<String, Object>();
 				bindings.put(entry.getKey(), value);
