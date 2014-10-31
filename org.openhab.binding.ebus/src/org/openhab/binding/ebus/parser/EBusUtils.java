@@ -130,7 +130,7 @@ public class EBusUtils {
 	 * @return The decoded value
 	 */
 	public static float decodeDATA1c(byte data) {
-		return (((short)data & (byte)0xFF) / 2);
+		return (((short)data & 0xFF) / 2f);
 	}
 
 	/**
