@@ -21,5 +21,14 @@
 			"solar2_pump":				{"type": "byte", "pos":12, "label": "Solarpumpe"},
 			"op_hrs_solar2_pump":		{"type": "word", "pos": 13, "label": "Pumpe Laufzeit"},
 		}
-	}
+	},
+	
+	{
+                "comment":      "[OK] <Regler> Vaillant: Aussentemperatur Broadcast",
+                "class":        "vaillant",
+                "command":      "B5 16 03 01",
+                "values": {
+                        "temp_outdoor":    {"type": "data2b", "pos": 7, "label": "Aussentemperatur Istwert"}
+                }
+        }
 ]
