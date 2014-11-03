@@ -30,5 +30,37 @@
                 "values": {
                         "temp_outdoor":    {"type": "data2b", "pos": 7, "label": "Aussentemperatur Istwert"}
                 }
-        }
+        },
+
+        {
+                "comment":      "[OK] <Regler> Vaillant: DCF77 Zeit Broadcast",
+                "class":        "vaillant",
+                "command":      "B5 16 08 00",
+                "values": {
+		"time_sec":             {"type": "bcd", "pos":7, "label": "Zeit Sek."},
+		"time_min":             {"type": "bcd", "pos":8, "label": "Zeit Min"},
+		"time_hour":            {"type": "bcd", "pos":9, "label": "Zeit Stunde"},
+
+		"date_day":             {"type": "bcd", "pos":10, "label": "Datum Tag"},
+		"date_month":           {"type": "bcd", "pos":11, "label": "Datum Monat"},
+		"date_weekday":         {"type": "bcd", "pos":12, "label": "Datum Wochentag"},
+		"date_year":            {"type": "bcd", "pos":13, "label": "Datum Jahr", "debug": 1}
+		},
+		"computed_values": {
+		"time":                 {"type": "script", "script": "time_hour + ':' + time_hour + ':' + time_sec", "label": "Aktuelle Zeit"},
+		"date":                 {"type": "script", "script": "'20' + date_year + '-' + date_month + '-' + date_year", "label": "Aktuelles Datum"}
+		}
+        },
+
+	{
+		"comment":	"[OK] <Regler> Vaillant: Regler zu Brenner",
+		"class":	"burner",
+		"command":	"B5 10 09",
+		"values": {
+			"temp_vorlauf_soll":	{"type": "data1c", "pos": 8, "label": "Sollwert Vorlauftemperatur vom Regler"},
+			"temp_brw_soll":	{"type": "data1c", "pos": 9, "label": "Sollwert Brauchwasser vom Regler"},
+			"bit_heating_off":	{"type": "byte", "pos": 12, "bit": 1, "label": "Heizen aus, vom Regler"},
+			"bit_brw_off":		{"type": "byte", "pos": 12, "bit": 3, "label": "Brauchwasser aus, vom Regler"}
+			  }
+	}
 ]
