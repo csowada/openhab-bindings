@@ -3,6 +3,7 @@
 		"comment":	"[OK] <Brenner> Common: Aussentemperatur",
 		"class":	"burner",
 		"filter":	"?? FE 03 01 0E .*",
+		"debug":	2,
 
 		"values": {
 			"temp_outside0":	{"type": "word", "pos": 6, "label": "Aussentemperatur", "factor": 0.1 }
@@ -15,6 +16,7 @@
 		"class":	"burnerw",
 		"command":	"50 22",
 		"data": 	"CC 54 27",
+		"debug":	2,
 
 		"values": {
 			"_w_unknown2":	{"type": "byte", "pos": 12, "label": "-> 09 Taksperre, 05 Brenner ein ..."}
@@ -27,6 +29,7 @@
 		"class":	"burnerw",
 		"command":	"50 22",
 		"data": 	"CC 73 01",
+		"debug":	2,
 
 		"values": {
 			"_w_unknown4":	{"type": "byte", "pos": 12, "label": "-> 09 Taksperre, 05 Brenner ein ..."}
@@ -40,6 +43,7 @@
 		"class":	"burnerw",
 		"command":	"50 22",
 		"data": 	"CC 53 27",
+		"debug":	2,
 
 		"values": {
 			"_w_unknown3":	{"type": "word", "pos": 12, "label": "Flags 3"}
@@ -49,6 +53,7 @@
 	{
 		"comment":	"[??] <Brenner?> Kromschröder/Wolf: Regler - Es werden Daten gesendet, die Antworten ist unverändert. Uninteressant ?",
 		"filter":	"?? 50 50 14 .*",
+		"debug":	2,
 		
 		"values": {
 			"_unknown80":			{"type": "byte", "pos":6, "label": "Unknown 80 - 6-bit"},

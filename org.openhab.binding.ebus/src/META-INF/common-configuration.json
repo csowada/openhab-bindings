@@ -26,7 +26,6 @@
 	{
 		"comment":	"Betriebsdaten des Feuerungsautomaten an den Regler - Block 1",
 		"filter":	"?? ?? 05 03 08 01 .*",
-		"_filter":	"03 FE 05 03 08 01 .*",
 		"class":	"auto_stroker",
 		
 		"values": {
