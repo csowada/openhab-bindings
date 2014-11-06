@@ -60,7 +60,7 @@
 			"_unknown81":			{"type": "byte", "pos":7, "label": "Unknown 81 - 7-bit maske"},
 			"_unknown83":			{"type": "byte", "pos":9, "label": "Unknown 83 - 9-10 word  temp"},
 			"_unknown84":			{"type": "byte", "pos":10, "label": "Unknown 84, 9-10 word  temp"},
-			"_unknown85":			{"type": "byte", "pos":11, "label": "Unknown 85, 11 bit warmwasser?"},
+			"_unknown_bit_11":		{"type": "byte", "pos":11, "label": "08 WW, 00 aus"},
 			
 			"soll_vl":				{"type": "byte", "pos":8, "label": "Unknown 82 - 8-temp verlauf, Nachtabsenkung auf 5"},
 			"soll_ww":				{"type": "data1c", "pos":12, "label": "Warmwassertemperatur °C", "min": 1, "max": 100 }
