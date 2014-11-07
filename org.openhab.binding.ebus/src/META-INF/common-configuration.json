@@ -2,7 +2,7 @@
 	{
 		"comment":	"Identifikation",
 		"filter":	"?? ?? 07 04 00 .*",
-		"class":	"common"
+		"class":	"common",
 		
 		"values": {
 			"vendor":				{"type": "byte", "pos":9, "label": "Hersteller"},
@@ -19,7 +19,7 @@
 		"computed_values": {
 			"device":					{"type": "script", "script": "String.fromCharCode(_device_id0, _device_id1, _device_id2, _device_id3, _device_id4)", "label": "Geräte ID"},
 			"software_version":			{"type": "script", "script": "_software_ver && _software_rev ? _software_ver + (_software_rev / 100): 0", "label": "Software Version"},
-			"hardware_version":			{"type": "script", "script": "_hardware_ver && _hardware_rev ? _hardware_ver + (_hardware_rev / 100): 0", "label": "Hardware Version"},
+			"hardware_version":			{"type": "script", "script": "_hardware_ver && _hardware_rev ? _hardware_ver + (_hardware_rev / 100): 0", "label": "Hardware Version"}
 		}
 	},
 
@@ -58,7 +58,7 @@
 			"pressure_t_vessel": 	{"type": "data2b", "pos":10, "label": "Kesselsollwert-Druck", "min":0, "max":100},
 			"performance_burner": 	{"type": "data1c", "pos":12, "label": "Stellgrad", "min":0, "max":100},
 			"temp_t_boiler":		{"type": "data1c", "pos":13, "label": "Brauchwassersollwert", "min":0, "max":100},
-			"value_fuel": 			{"type": "byte", "pos":14, "label": "Brennstoffwert", "replaceValue": 255},
+			"value_fuel": 			{"type": "byte", "pos":14, "label": "Brennstoffwert", "replaceValue": 255}
 		}
 	},
 	
