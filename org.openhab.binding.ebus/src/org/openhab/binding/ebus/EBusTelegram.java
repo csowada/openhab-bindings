@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 /**
 * @author Christian Sowada
-* @since 1.6.0
+* @since 1.7.0
 */
 public class EBusTelegram {
 

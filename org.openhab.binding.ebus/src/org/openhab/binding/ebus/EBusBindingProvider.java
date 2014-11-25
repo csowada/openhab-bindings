@@ -14,7 +14,7 @@ import org.openhab.core.binding.BindingProvider;
 
 /**
 * @author Christian Sowada
-* @since 1.6.0
+* @since 1.7.0
 */
 public interface EBusBindingProvider extends BindingProvider {
 	

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Sowada
- * @since 1.6.0
+ * @since 1.7.0
  */
 public abstract class AbstractEBusConnector extends Thread {
 
@@ -97,10 +97,13 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @throws IOException
 	 */
 	public boolean disconnect() throws IOException {
+		
 		if(inputStream != null)
 			inputStream.close();
+		
 		if(outputStream != null)
 			outputStream.close();
+		
 		return true;
 	}
 

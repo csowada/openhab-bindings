@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: EBus Binding
+Bundle-Name: eBus Binding
 Bundle-SymbolicName: org.openhab.binding.ebus;singleton:=true
 Bundle-Version: 1.7.0.qualifier
 Bundle-Activator: org.openhab.binding.ebus.Activator
@@ -17,7 +17,7 @@ Import-Package: org.apache.commons.lang,
  org.osgi.framework,
  org.osgi.service.cm,
  org.slf4j
-Require-Bundle: org.openhab.io.transport.serial;bundle-version="1.5.0";resolution:=optional
+Require-Bundle: org.openhab.io.transport.serial;resolution:=optional
 Service-Component: OSGI-INF/ebusbinding.xml, OSGI-INF/genericbindingprovider.xml
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 * @author Christian Sowada
-* @since 1.6.0
+* @since 1.7.0
 */
 public class EBusSerialConnector extends AbstractEBusConnector {
 
@@ -42,9 +42,6 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 		this.port = port;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#connect()
-	 */
 	/* (non-Javadoc)
 	 * @see org.openhab.binding.ebus.connection.AbstractEBusConnector#connect()
 	 */
@@ -72,10 +69,13 @@ public class EBusSerialConnector extends AbstractEBusConnector {
 			
 		} catch (NoSuchPortException e) {
 			logger.error("Unable to connect to serial port {}", port);
+			
 		} catch (PortInUseException e) {
 			logger.error("Serial port {} is already in use", port);
+			
 		} catch (UnsupportedCommOperationException e) {
 			logger.error(e.toString(), e);
+			
 		}
 		
 		return false;

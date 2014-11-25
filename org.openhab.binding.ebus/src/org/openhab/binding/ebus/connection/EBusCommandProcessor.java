@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Sowada
- * @since 1.6.0
+ * @since 1.7.0
  */
 public class EBusCommandProcessor implements BindingChangeListener {
 

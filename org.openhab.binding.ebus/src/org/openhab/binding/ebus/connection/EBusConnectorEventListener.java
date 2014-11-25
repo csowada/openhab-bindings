@@ -12,7 +12,7 @@ import org.openhab.binding.ebus.EBusTelegram;
 
 /**
 * @author Christian Sowada
-* @since 1.6.0
+* @since 1.7.0
 */
 public interface EBusConnectorEventListener {
 
