@@ -44,6 +44,10 @@ public class EBusConfigurationProvider {
 
 	private Compilable compEngine; 
 
+	public boolean isEmpty() {
+		return telegramRegistry.isEmpty();
+	}
+	
 	/**
 	 * Constructor
 	 */
@@ -60,6 +64,12 @@ public class EBusConfigurationProvider {
 		}
 	}
 
+	public void clear() {
+		if(telegramRegistry != null) {
+			telegramRegistry.clear();
+		}
+	}
+	
 	/**
 	 * @param url
 	 * @throws IOException

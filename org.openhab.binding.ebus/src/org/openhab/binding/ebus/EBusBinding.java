@@ -9,7 +9,6 @@
 package org.openhab.binding.ebus;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
@@ -26,9 +25,6 @@ import org.openhab.binding.ebus.parser.EBusConfigurationProvider;
 import org.openhab.binding.ebus.parser.EBusTelegramParser;
 import org.openhab.binding.ebus.parser.EBusUtils;
 import org.openhab.core.binding.AbstractBinding;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.osgi.service.cm.Configuration;
@@ -54,90 +50,41 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	private ConfigurationAdmin configurationAdminService;
 	private EBusConfigurationProvider configurationProvider;
 
-	/** default sender id */
-	private byte senderId = (byte)0xFF;
-
-	public byte[] getSendData(EBusBindingProvider provider, String itemName, String type) {
-
-		byte[] data = null;
-		
-		String cmd = provider.getCommand(itemName);
-		String cmdClass = provider.getCommandClass(itemName);
-		Map<String, Object> command2 = null;
-		
-		if(configurationProvider != null) {
-			command2 = configurationProvider.getCommandById(cmd, cmdClass);
-		} else {
-			// items processed before binding is configurated (function update(...)
-			logger.debug("eBus configuration provider not ready, can't get send data yet.");
-		}
-
-		if(command2 != null) {
-
-			byte[] b = EBusUtils.toByteArray((String) command2.get("data"));
-			byte[] b2 = EBusUtils.toByteArray((String) command2.get("command"));
-			
-			Byte dst = provider.getTelegramDestination(itemName);
-			Byte src = provider.getTelegramSource(itemName);
-
-			if(dst == null) {
-				throw new RuntimeException("no destination!");
-			}
-
-			if(src == null) {
-				src = senderId;
-			}
-
-			byte[] buffer = new byte[b.length+6];
-			buffer[0] = src;
-			buffer[1] = dst;
-			buffer[4] = (byte) b.length;
-			System.arraycopy(b2, 0, buffer, 2, b2.length);
-			System.arraycopy(b, 0, buffer, 5, b.length);
-
-			data = buffer;
-		}
-		
-		// first try, data-ON, data-OFF, etc.
-		if(data == null && StringUtils.isNotEmpty(type)) {
-			data = provider.getTelegramData(itemName, type);
-		}
-
-		if(data == null) {
-			// ok, try data param
-			data = provider.getTelegramData(itemName);
-		}
-		
-		return data;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.openhab.core.binding.AbstractBinding#internalReceiveCommand(java.lang.String, org.openhab.core.types.Command)
 	 */
 	@Override
 	protected void internalReceiveCommand(String itemName, Command command) {
-		super.internalReceiveCommand(itemName, command);
 
-		String type = command.toString().toLowerCase();
+		final String type = command.toString().toLowerCase();
 
 		for (EBusBindingProvider provider : providers) {
+			byte[] data = commandProcessor.composeSendData(
+					provider, itemName, type);
 
-			byte[] data = getSendData(provider, itemName, type);
-
-			if(data != null) {
-				connector.send(data);
-			} else {
-				logger.warn("Nothing to send, .......");
-			}
+			connector.send(data);
 		}
 	}
 
+	/**
+	 * Set the OSGI Admin Service
+	 * @param configurationAdminService
+	 */
 	public void setConfigurationAdmin(ConfigurationAdmin configurationAdminService) {
 		this.configurationAdminService = configurationAdminService;
 	}
 
-	public void unsetConfigurationAdmin(ConfigurationAdmin cfg) {
+	/**
+	 * Unset the OSGI Admin Service
+	 * @param configurationAdminService
+	 */
+	public void unsetConfigurationAdmin(ConfigurationAdmin configurationAdminService) {
 		this.configurationAdminService = null;
+	}
+
+	private void checkConfigurationProvider() {
+		if(configurationProvider == null)
+			configurationProvider = new EBusConfigurationProvider();
 	}
 
 	/* (non-Javadoc)
@@ -149,31 +96,39 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 		logger.info("Update eBus Binding configuration ...");
 
 		try {
-			// stop last thread if avctive
+			// stop last thread if active
 			if(connector != null && connector.isAlive()) {
 				connector.interrupt();
 			}
 
-			configurationProvider = new EBusConfigurationProvider();
+			// check to ensure that it is available
+			checkConfigurationProvider();
+
+			// clear current configuration
+			configurationProvider.clear();
 
 			// load parser from default url
 			parser = new EBusTelegramParser(configurationProvider);
 
 			URL configurationUrl = null;
 			String parsers = (String) properties.get("parsers");
-			if(parsers == null) {
-				// set all known configurations as default
-				parsers = "common,wolf,vaillant,testing";
+
+			if(StringUtils.isEmpty(parsers)) {
+				// set to current stable configurations as default
+				parsers = "common,wolf";
 			}
 
 			for (String elem : parsers.split(",")) {
 				configurationUrl = null;
+
+				// check for keyword custom to load custom configuration
 				if(elem.trim().equals("custom")) {
 					String parserUrl = (String) properties.get("parserUrl");
 					if(parserUrl != null) {
 						logger.debug("Load custom eBus Parser with url {}", parserUrl);
 						configurationUrl = new URL(parserUrl);
 					}
+
 				} else {
 					logger.debug("Load eBus Parser Configuration \"{}\" ...", elem.trim());
 					configurationUrl = this.getClass().getResource(
@@ -192,16 +147,23 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 			}
 
 			if(StringUtils.isNotEmpty((String) properties.get("serialPort"))) {
+
+				// use the serial connector
 				connector = new EBusSerialConnector(
 						(String) properties.get("serialPort"));
+
 			} else if(StringUtils.isNotEmpty((String) properties.get("hostname"))) {
+
+				// use the tcp-ip connector
 				connector = new EBusTCPConnector(
 						(String) properties.get("hostname"),
 						Integer.parseInt((String) properties.get("port")));
 			}
 
+			// Set eBus sender id or default 0xFF
 			if(StringUtils.isNotEmpty((String)properties.get("senderId"))) {
-				senderId = EBusUtils.toByte((String) properties.get("senderId"));
+				connector.setSenderId(
+						EBusUtils.toByte((String) properties.get("senderId")));
 			}
 
 			// add event listener
@@ -212,7 +174,7 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 
 			// set the new connector
 			commandProcessor.setConnector(connector);
-			commandProcessor.setBinding(this);
+			commandProcessor.setConfigurationProvider(configurationProvider);
 
 		} catch (MalformedURLException e) {
 			logger.error(e.toString(), e);
@@ -227,11 +189,11 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 
 		if(commandProcessor == null) {
 			commandProcessor = new EBusCommandProcessor();
-			commandProcessor.setBinding(this);
+			commandProcessor.setConfigurationProvider(configurationProvider);
 		}
 
 		if(provider.providesBinding()) {
-			// items already processed, so to late for this listener. do it manually
+			// items already processed, so too late for this listener. do it manually
 			commandProcessor.allBindingsChanged(provider);
 		}
 
@@ -250,6 +212,9 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	public void activate() {
 		super.activate();
 		logger.debug("eBus binding has been started.");
+
+		// check to ensure that it is available
+		checkConfigurationProvider();
 
 		// observe connection, if not started 15 sec. later than start it manually
 		// replacing a bundle doesn't recall update function, more 
@@ -308,46 +273,39 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 	 */
 	@Override
 	public void onTelegramReceived(EBusTelegram telegram) {
-		Map<String, Object> results = parser.parse(telegram);
-		if(results != null) {
-			for (Entry<String, Object> entry : results.entrySet()) {
 
-				State state = null;
-				if(entry.getValue() instanceof BigDecimal) {
-					state = new DecimalType((BigDecimal)entry.getValue());
-				} else if(entry.getValue() instanceof Boolean) {
-					state = (boolean)entry.getValue() ? OnOffType.ON : OnOffType.OFF;
-				} else if(entry.getValue() instanceof String) {
-					state = new StringType((String)entry.getValue());
-				} else if(entry.getValue() == null) {
-					// noop
-				} else {
-					logger.error("Unknown data type!");
-				}
+		// parse the raw telegram to a key/value map
+		final Map<String, Object> results = parser.parse(telegram);
 
-				if(state != null) {
+		if(results == null) {
+			logger.debug("No valid parser result for raw telegram!");
+			return;
+		}
+		
+		for (Entry<String, Object> entry : results.entrySet()) {
 
-					// loop over all items to update the state
-					for (EBusBindingProvider provider : providers) {
-						for (String itemName : provider.getItemNames(entry.getKey())) {
-							
-							Byte telegramSource = provider.getTelegramSource(itemName);
-							Byte telegramDestination = provider.getTelegramDestination(itemName);
-							
-							// check if this item has a src or dst defined
-							if(telegramSource == null || telegram.getSource() == telegramSource) {
-								if(telegramDestination == null || telegram.getDestination() == telegramDestination) {
-									eventPublisher.postUpdate(itemName, state);
-								}
+			State state = StateUtils.convertToState(entry.getValue());
+
+			// process if the state is set
+			if(state != null) {
+
+				// loop over all items to update the state
+				for (EBusBindingProvider provider : providers) {
+					for (String itemName : provider.getItemNames(entry.getKey())) {
+
+						Byte telegramSource = provider.getTelegramSource(itemName);
+						Byte telegramDestination = provider.getTelegramDestination(itemName);
+
+						// check if this item has a src or dst defined
+						if(telegramSource == null || telegram.getSource() == telegramSource) {
+							if(telegramDestination == null || telegram.getDestination() == telegramDestination) {
+								eventPublisher.postUpdate(itemName, state);
 							}
-							
-							
 						}
 					}
-					
-					
-				}
-			}
-		};
+				} // for
+			} // if
+		}
 	}
+
 }

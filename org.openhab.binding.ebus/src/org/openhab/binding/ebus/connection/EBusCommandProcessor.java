@@ -15,8 +15,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.ebus.EBusBinding;
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ebus.EBusBindingProvider;
+import org.openhab.binding.ebus.parser.EBusConfigurationProvider;
+import org.openhab.binding.ebus.parser.EBusUtils;
 import org.openhab.core.binding.BindingChangeListener;
 import org.openhab.core.binding.BindingProvider;
 import org.slf4j.Logger;
@@ -35,7 +37,11 @@ public class EBusCommandProcessor implements BindingChangeListener {
 	private ScheduledExecutorService scheduler;
 	private AbstractEBusConnector connector;
 
-	private EBusBinding binding;
+	private EBusConfigurationProvider configurationProvider;
+
+//	private EBusBinding binding;
+	
+
 
 	/**
 	 * @param connector
@@ -86,9 +92,15 @@ public class EBusCommandProcessor implements BindingChangeListener {
 			final Runnable r = new Runnable() {
 				@Override
 				public void run() {
-					byte[] data = binding.getSendData(eBusProvider, itemName, null);
+					byte[] data = composeSendData(
+							eBusProvider, itemName, null);
+					
 					if(data != null && data.length > 0) {
-						connector.send(data);
+						if(connector == null) {
+							logger.warn("eBus connector not ready, can't send data yet!");
+						} else {
+							connector.send(data);
+						}
 					} else {
 						logger.warn("No data to send for item {}! Check your item configuration.", itemName);
 					}
@@ -122,7 +134,66 @@ public class EBusCommandProcessor implements BindingChangeListener {
 	/**
 	 * @param binding
 	 */
-	public void setBinding(EBusBinding binding) {
-		this.binding = binding;
+	public void setConfigurationProvider(EBusConfigurationProvider configurationProvider) {
+		this.configurationProvider = configurationProvider;
+	}
+	
+	/**
+	 * @param provider
+	 * @param itemName
+	 * @param type
+	 * @return
+	 */
+	public byte[] composeSendData(EBusBindingProvider provider, String itemName, String type) {
+
+		if(configurationProvider == null || configurationProvider.isEmpty()) {
+			logger.debug("eBus configuration provider not ready, can't get send data yet.");
+			return null;
+		}
+		
+		byte[] data = null;
+		
+		String cmd = provider.getCommand(itemName);
+		String cmdClass = provider.getCommandClass(itemName);
+		Map<String, Object> command2 = null;
+
+		command2 = configurationProvider.getCommandById(cmd, cmdClass);
+		if(command2 != null) {
+
+			byte[] b = EBusUtils.toByteArray((String) command2.get("data"));
+			byte[] b2 = EBusUtils.toByteArray((String) command2.get("command"));
+			
+			Byte dst = provider.getTelegramDestination(itemName);
+			Byte src = provider.getTelegramSource(itemName);
+
+			if(dst == null) {
+				throw new RuntimeException("no destination!");
+			}
+
+			if(src == null) {
+				src = connector.getSenderId();
+			}
+
+			byte[] buffer = new byte[b.length+6];
+			buffer[0] = src;
+			buffer[1] = dst;
+			buffer[4] = (byte) b.length;
+			System.arraycopy(b2, 0, buffer, 2, b2.length);
+			System.arraycopy(b, 0, buffer, 5, b.length);
+
+			data = buffer;
+		}
+		
+		// first try, data-ON, data-OFF, etc.
+		if(data == null && StringUtils.isNotEmpty(type)) {
+			data = provider.getTelegramData(itemName, type);
+		}
+
+		if(data == null) {
+			// ok, try data param
+			data = provider.getTelegramData(itemName);
+		}
+		
+		return data;
 	}
 }

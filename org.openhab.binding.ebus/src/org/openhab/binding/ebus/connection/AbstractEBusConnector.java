@@ -62,6 +62,17 @@ public abstract class AbstractEBusConnector extends Thread {
 
 	private int reConnectCounter = 0;
 	
+	/** default sender id */
+	private byte senderId = (byte)0xFF;
+	
+	public byte getSenderId() {
+		return senderId;
+	}
+
+	public void setSenderId(byte senderId) {
+		this.senderId = senderId;
+	}
+
 	/**
 	 * Constructor
 	 */
@@ -284,6 +295,12 @@ public abstract class AbstractEBusConnector extends Thread {
 	 * @return
 	 */
 	public boolean send(byte[] data) {
+		
+		if(data == null || data.length == 0) {
+			logger.debug("Send data is empty, skip");
+			return false;
+		}
+		
 		byte crc = 0;
 		for (int i = 0; i < data.length-1; i++) {
 			byte b = data[i];
