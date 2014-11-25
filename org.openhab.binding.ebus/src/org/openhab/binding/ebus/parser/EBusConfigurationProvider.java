@@ -50,7 +50,7 @@ public class EBusConfigurationProvider {
 	public EBusConfigurationProvider() {
 		final ScriptEngineManager mgr = new ScriptEngineManager();
 		final ScriptEngine engine = mgr.getEngineByName("JavaScript");
-
+		
 		if(engine == null) {
 			logger.warn("Unable to load \"JavaScript\" engine! Skip every eBus value calculated by JavaScript.");
 			
@@ -119,6 +119,8 @@ public class EBusConfigurationProvider {
 			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
 				if(entry.getValue().containsKey("script")) {
 					String script = (String) entry.getValue().get("script");
+					
+					// check if engine is available
 					if(StringUtils.isNotEmpty(script) && compEngine != null) {
 						try {
 							CompiledScript compile = compEngine.compile(script);
@@ -137,6 +139,8 @@ public class EBusConfigurationProvider {
 			for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
 				if(entry.getValue().containsKey("script")) {
 					String script = (String) entry.getValue().get("script");
+					
+					// check if engine is available
 					if(StringUtils.isNotEmpty(script) && compEngine != null) {
 						try {
 							CompiledScript compile = compEngine.compile(script);
