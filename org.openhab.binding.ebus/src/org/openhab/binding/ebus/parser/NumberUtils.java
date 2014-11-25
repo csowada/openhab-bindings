@@ -23,13 +23,16 @@ public class NumberUtils {
 	 */
 	public static BigDecimal toBigDecimal(Object obj) {
 		
-		//Byte, Double, Float, Integer, Long, Short
-		if(obj instanceof Integer || obj instanceof Long || obj instanceof Short) {
+		if(obj instanceof Integer) {
+			return BigDecimal.valueOf((int)obj);
+		} else if (obj instanceof Long ) {
 			return BigDecimal.valueOf((long)obj);
-			
-		} else if(obj instanceof Double || obj instanceof Float) {
+		} else if (obj instanceof Short ) {
+			return BigDecimal.valueOf((short)obj);
+		} else if (obj instanceof Double ) {
 			return BigDecimal.valueOf((double)obj);
-			
+		} else if (obj instanceof Float ) {
+			return BigDecimal.valueOf((float)obj);
 		}
 		
 		return null;

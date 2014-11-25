@@ -120,7 +120,7 @@ public class EBusTelegramParser {
 			break;
 
 		case "bit":
-			int bit = ((Long) settings.get("bit")).intValue();
+			int bit = ((Integer) settings.get("bit"));
 			value = byteBuffer.get(pos-1);
 
 			boolean isSet = ((byte)value >> bit& 0x1) == 1;
@@ -282,7 +282,7 @@ public class EBusTelegramParser {
 
 			int debugLevel = 0;
 			if(registryEntry.containsKey("debug")) {
-				debugLevel = ((Long)registryEntry.get("debug")).intValue();
+				debugLevel = ((Integer)registryEntry.get("debug"));
 			}
 
 			// get values block
@@ -298,7 +298,7 @@ public class EBusTelegramParser {
 				settings = entry.getValue();
 
 				String type = ((String) settings.get("type")).toLowerCase();
-				int pos = settings.containsKey("pos") ? ((Long) settings.get("pos")).intValue() : -1;
+				int pos = settings.containsKey("pos") ? ((Integer) settings.get("pos")).intValue() : -1;
 
 				//				BigDecimal valueMin = settings.containsKey("min") ? BigDecimal.valueOf(((Number) settings.get("min")).doubleValue()) : null;
 				//				BigDecimal valueMax = settings.containsKey("max") ? BigDecimal.valueOf(((Number) settings.get("max")).doubleValue()) : null;
