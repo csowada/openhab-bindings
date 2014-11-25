@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.parser.ParseException;
 import org.openhab.binding.ebus.connection.AbstractEBusConnector;
 import org.openhab.binding.ebus.connection.EBusCommandProcessor;
 import org.openhab.binding.ebus.connection.EBusConnectorEventListener;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Sowada
- * @since 1.6.0
+ * @since 1.7.0
  */
 public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements ManagedService, EBusConnectorEventListener {
 
@@ -216,8 +215,6 @@ public class EBusBinding extends AbstractBinding<EBusBindingProvider> implements
 			commandProcessor.setBinding(this);
 
 		} catch (MalformedURLException e) {
-			logger.error(e.toString(), e);
-		} catch (ParseException e) {
 			logger.error(e.toString(), e);
 		} catch (IOException e) {
 			throw new ConfigurationException("general", e.toString(), e);

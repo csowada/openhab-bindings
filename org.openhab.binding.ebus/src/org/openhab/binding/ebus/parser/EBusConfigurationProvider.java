@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.ebus.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,16 +26,14 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Sowada
- * @since 1.6.0
+ * @since 1.7.0
  */
 public class EBusConfigurationProvider {
 
@@ -51,11 +48,15 @@ public class EBusConfigurationProvider {
 	 * Constructor
 	 */
 	public EBusConfigurationProvider() {
-		ScriptEngineManager mgr = new ScriptEngineManager();
-		ScriptEngine engine = mgr.getEngineByName("JavaScript");
+		final ScriptEngineManager mgr = new ScriptEngineManager();
+		final ScriptEngine engine = mgr.getEngineByName("JavaScript");
 
-		if (engine instanceof Compilable) {
+		if(engine == null) {
+			logger.warn("Unable to load \"JavaScript\" engine! Skip every eBus value calculated by JavaScript.");
+			
+		} else if (engine instanceof Compilable) {
 			compEngine = (Compilable) engine;
+			
 		}
 	}
 
@@ -65,15 +66,16 @@ public class EBusConfigurationProvider {
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("unchecked")
-	public void loadConfigurationFile(URL url) throws IOException, ParseException {
-		final JSONParser parser = new JSONParser();
+	public void loadConfigurationFile(URL url) throws IOException {
 
-		InputStream inputStream = url.openConnection().getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-		ArrayList<Map<String, Object>> loadedTelegramRegistry = (JSONArray)parser.parse(in);
+		final ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+		final InputStream inputStream = url.openConnection().getInputStream();
 
+		final ArrayList<Map<String, Object>> loadedTelegramRegistry = 
+				(ArrayList<Map<String, Object>>) mapper.readValue(inputStream, List.class);
+		
 		for (Iterator<Map<String, Object>> iterator = loadedTelegramRegistry.iterator(); iterator.hasNext();) {
-			JSONObject object = (JSONObject) iterator.next();
+			Map<String, Object> object = iterator.next();
 			transformDataTypes(object);
 		}
 
@@ -86,13 +88,14 @@ public class EBusConfigurationProvider {
 	 * @param configurationEntry
 	 */
 	@SuppressWarnings("unchecked")
-	protected void transformDataTypes(JSONObject configurationEntry) {
+	protected void transformDataTypes(Map<String, Object> configurationEntry) {
 		
 		if(configurationEntry.get("filter") instanceof String) {
 			String filter = (String)configurationEntry.get("filter");
 			filter = filter.replaceAll("\\?\\?", "[0-9A-Z]{2}");
 			logger.trace("Compile RegEx filter: {}", filter);
 			configurationEntry.put("cfilter", Pattern.compile(filter));
+			
 		} else {
 			String filter = "[0-9A-Z]{2} [0-9A-Z]{2}";
 			if(configurationEntry.containsKey("command")) {
@@ -116,11 +119,13 @@ public class EBusConfigurationProvider {
 			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
 				if(entry.getValue().containsKey("script")) {
 					String script = (String) entry.getValue().get("script");
-					try {
-						CompiledScript compile = compEngine.compile(script);
-						entry.getValue().put("cscript", compile);
-					} catch (ScriptException e) {
-						e.printStackTrace();
+					if(StringUtils.isNotEmpty(script) && compEngine != null) {
+						try {
+							CompiledScript compile = compEngine.compile(script);
+							entry.getValue().put("cscript", compile);
+						} catch (ScriptException e) {
+							logger.error("Error while compiling JavaScript!", e);
+						}
 					}
 				}
 			}
@@ -132,11 +137,13 @@ public class EBusConfigurationProvider {
 			for (Entry<String, Map<String, Object>> entry : cvalues.entrySet()) {
 				if(entry.getValue().containsKey("script")) {
 					String script = (String) entry.getValue().get("script");
-					try {
-						CompiledScript compile = compEngine.compile(script);
-						entry.getValue().put("cscript", compile);
-					} catch (ScriptException e) {
-						e.printStackTrace();
+					if(StringUtils.isNotEmpty(script) && compEngine != null) {
+						try {
+							CompiledScript compile = compEngine.compile(script);
+							entry.getValue().put("cscript", compile);
+						} catch (ScriptException e) {
+							logger.error("Error while compiling JavaScript!", e);
+						}
 					}
 				}
 			}

@@ -2,21 +2,22 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EBus Binding
 Bundle-SymbolicName: org.openhab.binding.ebus;singleton:=true
-Bundle-Version: 1.6.0.qualifier
+Bundle-Version: 1.7.0.qualifier
 Bundle-Activator: org.openhab.binding.ebus.Activator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.apache.commons.lang;version="2.6.0",
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.lang,
+ org.codehaus.jackson,
+ org.codehaus.jackson.map,
  org.openhab.core.binding,
  org.openhab.core.events,
  org.openhab.core.items,
  org.openhab.core.library.types,
  org.openhab.core.types,
  org.openhab.model.item.binding,
- org.osgi.framework;version="1.3.0",
- org.osgi.service.cm;version="1.4.0",
- org.slf4j;version="1.7.2"
+ org.osgi.framework,
+ org.osgi.service.cm,
+ org.slf4j
 Require-Bundle: org.openhab.io.transport.serial;bundle-version="1.5.0";resolution:=optional
 Service-Component: OSGI-INF/ebusbinding.xml, OSGI-INF/genericbindingprovider.xml
-Bundle-ClassPath: lib/json-simple-1.1.1.jar,
- .
+Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
