@@ -19,6 +19,7 @@ import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.openhab.binding.ebus.EBusTelegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,9 +71,7 @@ public class EBusTelegramParser {
 		case "data2b":
 			hByte = byteBuffer.get(pos);
 			lByte = byteBuffer.get(pos-1);
-			//			value = EBusUtils.decodeDATA2b(hByte, lByte);
 			repVal = BigDecimal.valueOf(-128);
-			//			if((float)value == -128) value = null;
 			value = new BigDecimal(EBusUtils.decodeDATA2b(hByte, lByte));
 			break;
 
@@ -181,15 +180,8 @@ public class EBusTelegramParser {
 			value = cscript.eval(bindings);
 		}
 
-		if(value instanceof Long) {
-			value = new BigDecimal((long)value);
-		} else if(value instanceof Integer) {
-			value = new BigDecimal((int)value);
-		} else if(value instanceof Float) {
-			value = new BigDecimal((float)value);
-		} else if(value instanceof Double) {
-			value = new BigDecimal((double)value);
-		}
+		value = ObjectUtils.defaultIfNull(
+				NumberUtils.toBigDecimal(value), value);
 
 		return value;
 	}
