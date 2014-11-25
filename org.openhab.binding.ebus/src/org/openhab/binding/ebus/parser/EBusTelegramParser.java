@@ -33,10 +33,10 @@ public class EBusTelegramParser {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EBusTelegramParser.class);
 
-	private static final Logger logger2 = LoggerFactory
+	private static final Logger loggerAnalyses = LoggerFactory
 			.getLogger(EBusTelegramParser.class.getPackage().getName() + ".Analyses");
 
-	private static final Logger logger3 = LoggerFactory
+	private static final Logger loggerBrutforce = LoggerFactory
 			.getLogger(EBusTelegramParser.class.getPackage().getName() + ".BruteForce");
 
 	private Map<String, Object> settings;
@@ -57,7 +57,6 @@ public class EBusTelegramParser {
 			BigDecimal min, BigDecimal max, BigDecimal replaceValue, BigDecimal factor) {
 
 		Object value = null;
-		//		BigDecimal b = null;
 		byte hByte = 0;
 		byte lByte = 0;
 
@@ -183,6 +182,11 @@ public class EBusTelegramParser {
 		value = ObjectUtils.defaultIfNull(
 				NumberUtils.toBigDecimal(value), value);
 
+		// round to two digits, maybe not optimal for any result
+		if(value instanceof BigDecimal) {
+			((BigDecimal)value).setScale(2, BigDecimal.ROUND_HALF_UP);
+		}
+		
 		return value;
 	}
 
@@ -194,8 +198,8 @@ public class EBusTelegramParser {
 		byte[] data = telegram.getData();
 
 		String format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", "Pos", "WORD", "UInt", "DATA2B", "DATA2C", "DATA1c", "BCD");
-		logger3.trace("    " + format);
-		logger3.trace("    -----------------------------------------------------------------------------");
+		loggerBrutforce.trace("    " + format);
+		loggerBrutforce.trace("    -----------------------------------------------------------------------------");
 
 		for (int i = 0; i < data.length; i++) {
 
@@ -204,16 +208,15 @@ public class EBusTelegramParser {
 			Object data2c = i == data.length-1 ? "---" : EBusUtils.decodeDATA2c(data[i+1], data[i]);
 			Object data1c = i == data.length-1 ? "---" : EBusUtils.decodeDATA1c(data[i+1]);
 			int bcd = EBusUtils.decodeBCD(data[i]);
-			//			int uint = EBusUtils.unsignedInt(data[i]);
 			int uint = data[i] & 0xFF;
 			format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", i+6, word, uint, data2b, data2c, data1c, bcd);
-			logger3.trace("    " + format);
+			loggerBrutforce.trace("    " + format);
 		}
 
 		if(telegram.getType() == EBusTelegram.MASTER_SLAVE) {
 			data = telegram.getSlaveData();
 
-			logger3.trace("    ---------------------------------- Answer ----------------------------------");
+			loggerBrutforce.trace("    ---------------------------------- Answer ----------------------------------");
 
 			for (int i = 0; i < data.length; i++) {
 
@@ -222,11 +225,10 @@ public class EBusTelegramParser {
 				Object data2c = i == data.length-1 ? "---" : EBusUtils.decodeDATA2c(data[i+1], data[i]);
 				Object data1c = i == data.length-1 ? "---" : EBusUtils.decodeDATA1c(data[i+1]);
 				int bcd = EBusUtils.decodeBCD(data[i]);
-				//				int uint = EBusUtils.unsignedInt(data[i]);
 				int uint = data[i] & 0xFF;
 
 				format = String.format("%-4s%-13s%-13s%-13s%-13s%-13s%-13s", i+6, word, uint, data2b, data2c, data1c, bcd);
-				logger3.trace("    " + format);
+				loggerBrutforce.trace("    " + format);
 			}
 
 		}
@@ -255,12 +257,12 @@ public class EBusTelegramParser {
 
 		final List<Map<String, Object>> matchedTelegramRegistry = configurationProvider.getCommandsByFilter(bufferString);
 
-		logger2.debug(bufferString);
+		loggerAnalyses.debug(bufferString);
 
 		if(matchedTelegramRegistry.isEmpty()) {
-			logger2.debug("  >>> Unknown ----------------------------------------");
-			if(logger3.isTraceEnabled()) {
-				logger3.trace(bufferString);
+			loggerAnalyses.debug("  >>> Unknown ----------------------------------------");
+			if(loggerBrutforce.isTraceEnabled()) {
+				loggerBrutforce.trace(bufferString);
 				bruteforceEBusTelegram(telegram);
 			}
 
@@ -281,7 +283,7 @@ public class EBusTelegramParser {
 			@SuppressWarnings("unchecked")
 			Map<String, Map<String, Object>> values = (Map<String, Map<String, Object>>) registryEntry.get("values");
 
-			logger2.debug("  >>> {}", registryEntry.containsKey("comment") ? 
+			loggerAnalyses.debug("  >>> {}", registryEntry.containsKey("comment") ? 
 					registryEntry.get("comment") : "<No comment available>");
 
 			for (Entry<String, Map<String, Object>> entry : values.entrySet()) {
@@ -291,11 +293,6 @@ public class EBusTelegramParser {
 
 				String type = ((String) settings.get("type")).toLowerCase();
 				int pos = settings.containsKey("pos") ? ((Integer) settings.get("pos")).intValue() : -1;
-
-				//				BigDecimal valueMin = settings.containsKey("min") ? BigDecimal.valueOf(((Number) settings.get("min")).doubleValue()) : null;
-				//				BigDecimal valueMax = settings.containsKey("max") ? BigDecimal.valueOf(((Number) settings.get("max")).doubleValue()) : null;
-				//				BigDecimal replaceValue = settings.containsKey("replaceValue") ? BigDecimal.valueOf(((Number) settings.get("replaceValue")).doubleValue()) : null;
-
 
 				BigDecimal valueMin = NumberUtils.toBigDecimal(settings.get("min"));
 				BigDecimal valueMax = NumberUtils.toBigDecimal(settings.get("max"));
@@ -324,9 +321,9 @@ public class EBusTelegramParser {
 				String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
 				String format = String.format("%-35s%-10s%s", uniqueKey, value, label);
 				if(debugLevel >= 2) {
-					logger2.debug("    >>> " + format);
+					loggerAnalyses.debug("    >>> " + format);
 				} else {
-					logger2.trace("    >>> " + format);
+					loggerAnalyses.trace("    >>> " + format);
 				}
 
 				valueRegistry.put(uniqueKey, value);
@@ -352,7 +349,7 @@ public class EBusTelegramParser {
 					if(debugLevel >= 2) {
 						String label = (String) (settings.containsKey("label") ? settings.get("label") : "");
 						String format = String.format("%-35s%-10s%s", uniqueKey, value, label);
-						logger2.debug("    >>> " + format);
+						loggerAnalyses.debug("    >>> " + format);
 					}
 
 				} catch (ScriptException e) {

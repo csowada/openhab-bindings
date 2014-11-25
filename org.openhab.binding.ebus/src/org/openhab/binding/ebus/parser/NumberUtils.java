@@ -33,8 +33,10 @@ public class NumberUtils {
 			return BigDecimal.valueOf((double)obj);
 		} else if (obj instanceof Float ) {
 			return BigDecimal.valueOf((float)obj);
+		} else if(obj instanceof BigDecimal) {
+			return (BigDecimal) obj;
 		}
-		
+
 		return null;
 	}
 	
